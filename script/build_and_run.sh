@@ -35,14 +35,15 @@ APP_CONTENTS="$APP_BUNDLE/Contents"
 APP_MACOS="$APP_CONTENTS/MacOS"
 APP_HELPERS="$APP_CONTENTS/Helpers"
 APP_RESOURCES="$APP_CONTENTS/Resources"
-APP_BINARY="$APP_MACOS/$TARGET_NAME"
+APP_BINARY="$APP_MACOS/$APP_DISPLAY"     # the executable carries the app name, not the SwiftPM one
 CLI_BINARY="$APP_HELPERS/hopusage"
 INFO_PLIST="$APP_CONTENTS/Info.plist"
 RESOURCE_BUNDLE_NAME="${TARGET_NAME}_${TARGET_NAME}.bundle"
 ENTITLEMENTS="$ROOT_DIR/script/OpenUsage.dev.entitlements.plist"
 SIGN_ENTITLEMENTS="$ROOT_DIR/script/OpenUsage.local.entitlements.plist"
 
-pkill -x "$TARGET_NAME" >/dev/null 2>&1 || true
+# Stop only the dev build staged here, never an installed app that happens to share a process name.
+pkill -f "^$APP_BINARY" >/dev/null 2>&1 || true
 
 echo "==> swift build ($CONFIG)"
 swift build -c "$CONFIG"
@@ -123,7 +124,7 @@ cat >"$INFO_PLIST" <<PLIST
 <plist version="1.0">
 <dict>
   <key>CFBundleExecutable</key>
-  <string>$TARGET_NAME</string>
+  <string>$APP_DISPLAY</string>
   <key>CFBundleIdentifier</key>
   <string>$BUNDLE_ID</string>
   <key>CFBundleName</key>
@@ -224,12 +225,12 @@ case "$MODE" in
     ;;
   logs)
     launch_app
-    /usr/bin/log stream --info --style compact --predicate "process == \"$TARGET_NAME\""
+    /usr/bin/log stream --info --style compact --predicate "process == \"$APP_DISPLAY\""
     ;;
   verify)
     launch_app
     sleep 1
-    pgrep -x "$TARGET_NAME" >/dev/null && echo "==> running"
+    pgrep -f "^$APP_BINARY" >/dev/null && echo "==> running"
     ;;
   *)
     echo "usage: $0 [run|build|logs|verify]" >&2

@@ -49,7 +49,7 @@ APP_CONTENTS="$APP_BUNDLE/Contents"
 APP_MACOS="$APP_CONTENTS/MacOS"
 APP_HELPERS="$APP_CONTENTS/Helpers"
 APP_RESOURCES="$APP_CONTENTS/Resources"
-APP_BINARY="$APP_MACOS/$APP_NAME"
+APP_BINARY="$APP_MACOS/$APP_DISPLAY"
 CLI_BINARY="$APP_HELPERS/hopusage"
 DMG_PATH="$DIST_DIR/$DMG_NAME"
 # dSYMs for crash symbolication (uploaded to PostHog by release.yml). A folder, since posthog-cli's
@@ -168,7 +168,7 @@ cat >"$APP_CONTENTS/Info.plist" <<PLIST
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>CFBundleExecutable</key><string>$APP_NAME</string>
+  <key>CFBundleExecutable</key><string>$APP_DISPLAY</string>
   <key>CFBundleIdentifier</key><string>$BUNDLE_ID</string>
   <key>CFBundleName</key><string>$APP_DISPLAY</string>
   <key>CFBundleDisplayName</key><string>$APP_DISPLAY</string>

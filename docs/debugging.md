@@ -30,13 +30,13 @@ This launches the dev app and then streams its unified logs. Under the hood it f
 the app's process, equivalent to:
 
 ```sh
-log stream --info --style compact --predicate 'process == "OpenUsage"'
+log stream --info --style compact --predicate 'process == "HopUsage"'
 ```
 
 To read logs *after the fact* instead of live, use `log show` with a time window:
 
 ```sh
-log show --last 10m --info --predicate 'process == "OpenUsage"'
+log show --last 10m --info --predicate 'process == "HopUsage"'
 ```
 
 ## Log file
