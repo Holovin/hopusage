@@ -24,7 +24,7 @@ providers, turns it into a `WidgetRegistry`, creates the stores, starts the peri
 starts the local HTTP API. Everything else receives what it needs from here rather than reaching for
 globals, which keeps the pieces testable in isolation.
 
-The `openusage` executable imports the same module. A normal invocation reads `ProviderSnapshotCache`
+The `hopusage` executable imports the same module. A normal invocation reads `ProviderSnapshotCache`
 and exits; `--force` constructs the canonical `ProviderCatalog` and calls `WidgetDataStore`'s forced
 refresh path before reading. Providers annotate the scalar resources they export through the stable
 limits contract; the CLI and `/v1/limits` share one serializer over those same normalized snapshots.

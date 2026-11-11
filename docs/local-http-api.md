@@ -12,7 +12,7 @@ The server starts automatically with the app. If the port is already in use, the
 
 Returns a machine-facing envelope for all **enabled** providers. Providers and resources are keyed by
 stable IDs; values are raw scalars with explicit units. This is the preferred route for new integrations
-and the exact format printed by the `openusage` CLI.
+and the exact format printed by the `hopusage` CLI.
 
 ### `GET /v1/limits/:id`
 
@@ -57,7 +57,7 @@ Methods other than `GET`/`OPTIONS` return **405**; unknown routes return **404**
 
 ```jsonc
 {
-  "schema": "openusage.limits.v1",
+  "schema": "hopusage.limits.v1",
   "generatedAt": "2026-07-13T01:40:00.000Z",
   "providers": {
     "codex": {

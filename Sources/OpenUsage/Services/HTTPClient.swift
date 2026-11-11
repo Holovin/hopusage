@@ -35,7 +35,7 @@ struct URLSessionHTTPClient: HTTPClient {
     /// certificate validation.
     var allowsInsecureLoopback: Bool = false
 
-    /// One session for every provider request, built once with the optional `~/.openusage/config.json`
+    /// One session for every provider request, built once with the optional `~/.hopusage/config.json`
     /// proxy applied (see `ProxyConfig`). Default configuration — same cookie/cache semantics as
     /// `URLSession.shared` — when no valid proxy is configured.
     private static let session: URLSession = {

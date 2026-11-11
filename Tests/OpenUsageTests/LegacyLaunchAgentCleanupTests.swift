@@ -9,7 +9,7 @@ final class LegacyLaunchAgentCleanupTests: XCTestCase {
         let scenarios: [(name: String, program: String?, bundle: String, remove: Bool)] = [
             ("legacy lowercase executable", "\(bundle)/Contents/MacOS/openusage", bundle, true),
             ("current executable", "\(bundle)/Contents/MacOS/HopUsage", bundle, true),
-            ("foreign executable", "/usr/local/bin/openusage", bundle, false),
+            ("foreign executable", "/usr/local/bin/hopusage", bundle, false),
             ("missing executable", nil, bundle, false),
             ("unbundled development build", "/Users/dev/.build/HopUsage", "/Users/dev/.build", false),
             ("sibling with matching prefix", "\(bundle)2/Contents/MacOS/openusage", bundle, false),

@@ -16,9 +16,9 @@ final class AppBundleLocatorTests: XCTestCase {
         ]
         let plistData = try PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)
         try plistData.write(to: contents.appendingPathComponent("Info.plist"))
-        let helper = helpers.appendingPathComponent("openusage")
+        let helper = helpers.appendingPathComponent("hopusage")
         try Data().write(to: helper)
-        let symlink = bin.appendingPathComponent("openusage")
+        let symlink = bin.appendingPathComponent("hopusage")
         try FileManager.default.createSymbolicLink(at: symlink, withDestinationURL: helper)
         defer { try? FileManager.default.removeItem(at: root) }
 

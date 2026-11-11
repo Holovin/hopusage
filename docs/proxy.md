@@ -3,7 +3,7 @@
 HopUsage can route all provider requests through an optional proxy.
 
 - Supported: `socks5://`, `http://`, `https://`
-- Config file: `~/.openusage/config.json`
+- Config file: `~/.hopusage/config.json`
 - Default: off
 - UI: none — file only
 

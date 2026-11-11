@@ -2,7 +2,7 @@ import Foundation
 import Network
 
 /// Optional proxy routing for provider HTTP requests — the same contract as the original app
-/// (docs/proxy.md): `~/.openusage/config.json` containing
+/// (docs/proxy.md): `~/.hopusage/config.json` containing
 /// `{"proxy": {"enabled": true, "url": "socks5://127.0.0.1:10808"}}`.
 ///
 /// Loaded once at startup; restart the app after editing the file. Missing, disabled, invalid, or
@@ -29,7 +29,7 @@ struct ProxyConfig: Equatable, Sendable {
     var username: String?
     var password: String?
 
-    static let configPath = "~/.openusage/config.json"
+    static let configPath = "~/.hopusage/config.json"
 
     /// The app-wide proxy, read from disk exactly once (first use).
     static let current: ProxyConfig? = load(

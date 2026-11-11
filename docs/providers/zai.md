@@ -17,7 +17,7 @@ When Z.ai reports your plan name, HopUsage shows it beside the provider name.
 Z.ai has no companion CLI/app that HopUsage can reuse a credential from, so you supply an API key.
 HopUsage reads it from the first place it finds one, in this order:
 
-1. `~/.config/openusage/zai.json` — `{"apiKey":"…"}` (the file Settings writes to)
+1. `~/.config/hopusage/zai.json` — `{"apiKey":"…"}` (the file Settings writes to)
 2. `~/.config/zai/key.json`
 3. The `ZAI_API_KEY` environment variable
 4. The `GLM_API_KEY` environment variable (the legacy Zhipu name, still accepted)

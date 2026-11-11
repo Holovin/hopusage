@@ -50,7 +50,7 @@ APP_MACOS="$APP_CONTENTS/MacOS"
 APP_HELPERS="$APP_CONTENTS/Helpers"
 APP_RESOURCES="$APP_CONTENTS/Resources"
 APP_BINARY="$APP_MACOS/$APP_NAME"
-CLI_BINARY="$APP_HELPERS/openusage"
+CLI_BINARY="$APP_HELPERS/hopusage"
 DMG_PATH="$DIST_DIR/$DMG_NAME"
 # dSYMs for crash symbolication (uploaded to PostHog by release.yml). A folder, since posthog-cli's
 # `dsym upload --directory` and Sparkle both want a directory of bundles, not a single path.
