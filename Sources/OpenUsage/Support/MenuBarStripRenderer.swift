@@ -122,7 +122,7 @@ enum MenuBarStripRenderer {
     /// Last-resort icon if the brand mark fails to load.
     static let fallbackIcon: NSImage = {
         let image = NSImage(
-            systemSymbolName: "gauge.with.dots.needle.bottom.50percent",
+            systemSymbolName: MenuBarIcon.symbolName,
             accessibilityDescription: "HopUsage"
         ) ?? NSImage()
         image.isTemplate = true
@@ -130,19 +130,18 @@ enum MenuBarStripRenderer {
     }()
 }
 
-/// The brand gauge mark plus wordmark drawn in place of the strip while screen-share privacy is
+/// The gauge glyph plus wordmark drawn in place of the strip while screen-share privacy is
 /// concealing usage. Same black-on-clear template treatment, glyph box, and type size as a
 /// single-metric Text strip, so the swap doesn't jump the menu bar's rhythm.
 private struct MenuBarPrivacyLabel: View {
     var body: some View {
         HStack(spacing: 5) {
-            // The same mark and inset as `MenuBarIcon` (the art carries its own margin), sized to the
-            // strip's glyph box so the swap keeps the provider-glyph scale.
-            if let mark = ProviderMarks.mark(for: "openusage") {
-                ProviderIconShape(mark: mark, inset: 0.08)
-                    .fill(Color.black)
-                    .frame(width: 16, height: 16)
-            }
+            // The same glyph as `MenuBarIcon`, sized to the strip's glyph box so the swap keeps the
+            // provider-glyph scale.
+            Image(systemName: MenuBarIcon.symbolName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 16, height: 16)
             Text("HopUsage")
                 .font(.system(size: 12, weight: .bold))
         }

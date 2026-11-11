@@ -1,24 +1,28 @@
 import AppKit
 import SwiftUI
 
-/// Renders the OpenUsage brand gauge mark into a template `NSImage` for the menu bar.
-/// Reuses the same SVG→`ProviderIconShape` pipeline as the provider tiles, so there is no
-/// asset catalog or second SVG parser to maintain.
+/// Renders the HopUsage gauge glyph into a template `NSImage` for the menu bar.
+///
+/// Fork note: the original OpenUsage brand mark (`ProviderIcons/openusage.svg`) is a trademark of its
+/// author, so this fork draws the SF Symbol in `symbolName` everywhere the brand mark used to appear:
+/// the menu bar, the screen-share privacy label, and the share card watermark.
 @MainActor
 enum MenuBarIcon {
+    /// The SF Symbol that stands in for the brand mark across the app.
+    nonisolated static let symbolName = "gauge.with.dots.needle.bottom.100percent"
+
     /// Side length (points) of the menu bar glyph.
     private static let side: CGFloat = 18
 
-    /// Cached template image, or `nil` if the brand mark fails to load/parse.
+    /// Cached template image, or `nil` if the symbol is unavailable.
     static let image: NSImage? = render()
 
     private static func render() -> NSImage? {
-        guard let mark = ProviderMarks.mark(for: "openusage") else { return nil }
         let renderer = ImageRenderer(
-            // Smaller inset than the provider default so the brand gauge keeps its prior menu-bar size
-            // (its art already carries ~8% margin inside the source viewBox).
-            content: ProviderIconShape(mark: mark, inset: 0.08)
-                .fill(Color.black)
+            content: Image(systemName: symbolName)
+                .resizable()
+                .scaledToFit()
+                .foregroundStyle(Color.black)
                 .frame(width: side, height: side)
         )
         renderer.scale = 2
