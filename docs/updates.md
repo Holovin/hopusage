@@ -1,5 +1,9 @@
 # Updates
 
+> **Fork note:** updates are switched off in this fork (`UpdaterController.isEnabled`), so the update
+> controls stay disabled in every build. The rest of this page describes the original behavior, which
+> returns once the fork has its own appcast and Sparkle key.
+
 OpenUsage keeps itself up to date using [Sparkle](https://sparkle-project.org), the standard update
 framework for Mac apps. Updates are downloaded from OpenUsage's own release feed and verified before
 they install, so you always get a genuine, unmodified build.

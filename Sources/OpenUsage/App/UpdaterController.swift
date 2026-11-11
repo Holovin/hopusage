@@ -18,6 +18,12 @@ final class UpdaterController {
     /// single source of truth rather than a cached property.
     static let betaChannelDefaultsKey = "betaUpdatesEnabled"
 
+    /// Fork switch: the updater is off in every build of this fork. The feed and public key that
+    /// `script/release.sh` bakes in belong to the original OpenUsage, so a started updater would replace
+    /// this fork with the original app. Set this to `true` only after pointing `release.sh` at this
+    /// fork's own appcast and Sparkle key pair.
+    private static let isEnabled = false
+
     // Two delegates on purpose: SPUUpdaterDelegate is main-actor isolated in Sparkle, while
     // SPUStandardUserDriverDelegate is nonisolated. Conforming to both from one class would infer a
     // single isolation and break one of the two conformances under Swift 6.
@@ -63,6 +69,10 @@ final class UpdaterController {
     /// Starts the updater if (and only if) this build ships an appcast feed. Safe to call once at launch.
     func start() {
         guard controller == nil else { return }
+        guard Self.isEnabled else {
+            AppLog.info(.updates, "disabled: updater is switched off in this fork")
+            return
+        }
         guard Bundle.main.object(forInfoDictionaryKey: "SUFeedURL") != nil else {
             AppLog.info(.updates, "disabled: no SUFeedURL (unbundled or dev build)")
             return
