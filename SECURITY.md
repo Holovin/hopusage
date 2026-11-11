@@ -1,20 +1,15 @@
 # Security Policy
 
+HopUsage is an unofficial fork of [OpenUsage](https://github.com/robinebers/openusage). Report a
+vulnerability that also affects the original project to its maintainers as well.
+
 ## Reporting a Vulnerability
 
-If you find a security vulnerability in OpenUsage, please report it responsibly. Do not open a public issue.
+Do not open a public issue. Use GitHub's private reporting instead:
 
-### Preferred: GitHub Security Advisories
-
-1. Go to the [Security Advisories page](https://github.com/robinebers/openusage/security/advisories/new)
+1. Go to the [Security Advisories page](https://github.com/Holovin/hopusage/security/advisories/new)
 2. Click "Report a vulnerability"
 3. Fill in the details
-
-This keeps the report private until a fix is released.
-
-### Alternative: Email
-
-Send details to [rob@robinebers.com](mailto:rob@robinebers.com) with the subject line "OpenUsage Security Report".
 
 ## What to Include
 
@@ -23,22 +18,15 @@ Send details to [rob@robinebers.com](mailto:rob@robinebers.com) with the subject
 - Affected versions
 - Impact assessment (what can an attacker do?)
 
-## Response Timeline
-
-- Acknowledgment within 48 hours
-- Assessment and plan within 7 days
-- Fix released as soon as practical, depending on severity
-
 ## Scope
 
-The following are in scope:
+In scope:
 
-- The OpenUsage desktop application
+- The HopUsage desktop application
 - The built-in providers (credential handling, API calls)
 - The local HTTP API
-- Build and release infrastructure
 
-The following are out of scope:
+Out of scope:
 
 - Third-party provider APIs (report to the provider directly)
 - Social engineering attacks
@@ -46,4 +34,5 @@ The following are out of scope:
 
 ## Supported Versions
 
-Only the latest release is supported with security updates.
+Only the latest state of the `fork/v0.7-base` branch is supported. This is a personal fork with no
+response-time guarantee.
