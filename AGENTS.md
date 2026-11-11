@@ -4,6 +4,25 @@ OpenUsage is a SwiftPM-based SwiftUI menu-bar app for macOS that shows AI provid
 
 This file documents the engineering conventions for the project. Read it before contributing.
 
+## Fork
+
+This repository is HopUsage, an unofficial fork of OpenUsage. The rules below override anything later in
+this file that contradicts them.
+
+- **Base:** the fork stays on the 0.7 line. `fork/v0.7-base` is the main branch and always holds the
+  newest backport. `main` only mirrors the original project; never commit to it.
+- **Backports:** each original release, betas included, is backported on its own branch named
+  `fork/v0.7-backport-v<version>`, cut from `fork/v0.7-base`. For each release: research what changed,
+  group it by feature, agree with the owner on what to port, then port it. When a backport is done,
+  `fork/v0.7-base` moves to it.
+- **Switched off, keep off:** the Sparkle updater, PostHog telemetry, and iCloud Sync, each behind a
+  flag with a comment. The original workflows live in `.github/workflows-disabled/`.
+- **Renamed:** the app name, bundle ids, the bundled executable, the `hopusage` command, config paths,
+  and the JSON schema. **Not renamed, leave as is:** SwiftPM targets and folders (`OpenUsage*`), the log
+  subsystem, and `openusage.*` settings keys, so backports conflict less.
+- **Commits:** fork-only changes use the `chore(fork):` prefix, one concern per commit.
+- The Releases section below describes the original pipeline. It does not run in this fork.
+
 ## Agent Instructions
 
 AGENTS.md is the source of truth for agent instructions in this repository. CLAUDE.md files may only point to the nearest AGENTS.md file with `@AGENTS.md`; do not add guidance, duplicate instructions, or project rules to CLAUDE.md.
