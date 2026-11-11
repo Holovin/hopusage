@@ -30,7 +30,7 @@ cd "$ROOT_DIR"
 : "${OPENUSAGE_VERSION:?set OPENUSAGE_VERSION, e.g. 0.7.0}"
 
 APP_NAME="OpenUsage"
-BUNDLE_ID="com.robinebers.openusage"
+BUNDLE_ID="com.holovin-local.hopusage"
 MIN_SYSTEM_VERSION="15.0"
 VERSION="$OPENUSAGE_VERSION"
 # CFBundleShortVersionString carries the full version, including any pre-release suffix (e.g.
@@ -186,7 +186,7 @@ cat >"$APP_CONTENTS/Info.plist" <<PLIST
   <key>SUScheduledCheckInterval</key><integer>3600</integer>
   <key>NSUbiquitousContainers</key>
   <dict>
-    <key>iCloud.com.robinebers.openusage</key>
+    <key>iCloud.com.holovin-local.hopusage</key>
     <dict>
       <key>NSUbiquitousContainerIsDocumentScopePublic</key><false/>
       <key>NSUbiquitousContainerName</key><string>OpenUsage</string>
@@ -200,7 +200,7 @@ PLIST
 cp "$ICLOUD_PROVISIONING_PROFILE" "$APP_CONTENTS/embedded.provisionprofile"
 "$ROOT_DIR/script/render_icloud_entitlements.sh" \
   "$ENTITLEMENTS_TEMPLATE" "$ICLOUD_PROVISIONING_PROFILE" "$ENTITLEMENTS" \
-  "iCloud.com.robinebers.openusage"
+  "iCloud.com.holovin-local.hopusage"
 
 # Embed + sign Sparkle (Developer ID, hardened runtime, secure timestamp).
 "$ROOT_DIR/script/embed_sparkle.sh" "$APP_BUNDLE" "$APP_BINARY" "$CODESIGN_IDENTITY" "--options runtime --timestamp"
@@ -211,7 +211,7 @@ echo "==> signing app (Developer ID, hardened runtime)"
 codesign --force --options runtime --timestamp --entitlements "$ENTITLEMENTS" \
   --sign "$CODESIGN_IDENTITY" "$APP_BUNDLE"
 codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE"
-codesign -d --entitlements :- "$APP_BUNDLE" 2>&1 | grep -q "iCloud.com.robinebers.openusage" \
+codesign -d --entitlements :- "$APP_BUNDLE" 2>&1 | grep -q "iCloud.com.holovin-local.hopusage" \
   || { echo "signed app is missing the production iCloud entitlement" >&2; exit 1; }
 
 # Notarize + staple the app itself (not just the DMG) so it launches cleanly even offline after a

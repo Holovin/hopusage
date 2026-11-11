@@ -47,7 +47,7 @@ Apple requires the iCloud container assignment to be present in the provisioning
 the app. OpenUsage uses separate resources so development builds cannot write production history:
 
 - `com.robinebers.openusage.dev` uses `iCloud.com.robinebers.openusage.dev`.
-- `com.robinebers.openusage` uses `iCloud.com.robinebers.openusage`.
+- `com.holovin-local.hopusage` uses `iCloud.com.holovin-local.hopusage`.
 
 Create a `MAC_APP_DEVELOPMENT` profile that includes every registered development Mac and a
 `MAC_APP_DIRECT` profile for releases. Install the development profile on each included Mac. The

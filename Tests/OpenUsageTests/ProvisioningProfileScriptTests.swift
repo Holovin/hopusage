@@ -13,7 +13,7 @@ final class ProvisioningProfileScriptTests: XCTestCase {
             applicationID: "TEAM123.com.robinebers.some-other-app",
             containerID: "TEAM123.iCloud.com.robinebers.openusage.dev"
         ))
-        XCTAssertFalse(try matches(containerID: "TEAM123.iCloud.com.robinebers.openusage"))
+        XCTAssertFalse(try matches(containerID: "TEAM123.iCloud.com.holovin-local.hopusage"))
     }
 
     private func matches(
