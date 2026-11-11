@@ -24,6 +24,13 @@ enum TelemetryConfig {
 
     /// US cloud. Switch to "https://eu.i.posthog.com" only with an EU-region project token.
     static let host = "https://us.i.posthog.com"
+
+    /// Fork switch: telemetry is off in every build of this fork. The baked token belongs to the
+    /// original OpenUsage's PostHog project, so the daily ping, extra analytics, and crash reports would
+    /// all go to its author. While this is `false` the sink stays inert: the PostHog SDK is never set up
+    /// and nothing is sent. Set it to `true` only after replacing the token and host with this fork's
+    /// own project.
+    static let isEnabled = false
 }
 
 /// The transport seam telemetry is emitted through. Abstracted from PostHog so the recorder's
@@ -49,6 +56,11 @@ final class PostHogTelemetrySink: TelemetrySink {
     private let configured: Bool
 
     init(enabled: Bool, token: String = TelemetryConfig.token, host: String = TelemetryConfig.host) {
+        guard TelemetryConfig.isEnabled else {
+            configured = false
+            AppLog.info(.config, "telemetry inert: switched off in this fork")
+            return
+        }
         guard token.hasPrefix("phc_"), token != TelemetryConfig.placeholderToken else {
             configured = false
             AppLog.info(.config, "telemetry inert: no PostHog project token configured")

@@ -1,5 +1,9 @@
 # Privacy & Usage Data
 
+> **Fork note:** telemetry is switched off in this fork (`TelemetryConfig.isEnabled`). No ping, extra
+> analytics, or crash report is sent, whatever **Help Make OpenUsage Better** is set to. The telemetry
+> sections below describe the original behavior.
+
 OpenUsage always sends an **anonymous daily active ping** and **anonymous crash reports** so we can
 count active users and fix app crashes. These are not optional.
 
