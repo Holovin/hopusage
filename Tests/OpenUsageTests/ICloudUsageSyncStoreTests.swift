@@ -138,7 +138,7 @@ final class ICloudUsageSyncStoreTests: XCTestCase {
         let keychain = ServiceKeychain()
         let development = KeychainICloudDeviceIDStore(
             keychain: keychain,
-            bundleIdentifier: "com.robinebers.openusage.dev"
+            bundleIdentifier: "com.holovin-local.hopusage.dev"
         )
         let production = KeychainICloudDeviceIDStore(
             keychain: keychain,

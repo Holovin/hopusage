@@ -3,21 +3,21 @@ import XCTest
 
 final class ProvisioningProfileScriptTests: XCTestCase {
     func testProfileMatcherAcceptsBareAndMatchingTeamPrefixedUbiquityIdentifiers() throws {
-        XCTAssertTrue(try matches(containerID: "iCloud.com.robinebers.openusage.dev"))
-        XCTAssertTrue(try matches(containerID: "TEAM123.iCloud.com.robinebers.openusage.dev"))
+        XCTAssertTrue(try matches(containerID: "iCloud.com.holovin-local.hopusage.dev"))
+        XCTAssertTrue(try matches(containerID: "TEAM123.iCloud.com.holovin-local.hopusage.dev"))
     }
 
     func testProfileMatcherRejectsWrongTeamBundleAndContainerIdentifiers() throws {
-        XCTAssertFalse(try matches(containerID: "OTHERTEAM.iCloud.com.robinebers.openusage.dev"))
+        XCTAssertFalse(try matches(containerID: "OTHERTEAM.iCloud.com.holovin-local.hopusage.dev"))
         XCTAssertFalse(try matches(
             applicationID: "TEAM123.com.robinebers.some-other-app",
-            containerID: "TEAM123.iCloud.com.robinebers.openusage.dev"
+            containerID: "TEAM123.iCloud.com.holovin-local.hopusage.dev"
         ))
         XCTAssertFalse(try matches(containerID: "TEAM123.iCloud.com.holovin-local.hopusage"))
     }
 
     private func matches(
-        applicationID: String = "TEAM123.com.robinebers.openusage.dev",
+        applicationID: String = "TEAM123.com.holovin-local.hopusage.dev",
         containerID: String
     ) throws -> Bool {
         let script = URL(fileURLWithPath: #filePath)
@@ -35,8 +35,8 @@ final class ProvisioningProfileScriptTests: XCTestCase {
             script.path,
             applicationID,
             containerID,
-            "com.robinebers.openusage.dev",
-            "iCloud.com.robinebers.openusage.dev"
+            "com.holovin-local.hopusage.dev",
+            "iCloud.com.holovin-local.hopusage.dev"
         ]
         try process.run()
         process.waitUntilExit()
