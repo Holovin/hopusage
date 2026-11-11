@@ -8,7 +8,7 @@
 > unchanged as a record of the design decision at that time.
 
 **Research report — 2026-07-04**
-**Question:** What should the hover panel for the Today / Yesterday / Last 30 Days spend rows look like, given the attached AI-generated concept (a "Models" flyout with a "TOP DRIVER" hero card, donut, and ranked model list)? The owner's verdict on the concept: directionally right, but "a bit over the top" — inconsistent type sizes, not native enough. Goal: an Apple-first, native macOS treatment that belongs in OpenUsage, works for Cursor / Claude / Codex / Grok, and is not Cursor-branded.
+**Question:** What should the hover panel for the Today / Yesterday / Last 30 Days spend rows look like, given the attached AI-generated concept (a "Models" flyout with a "TOP DRIVER" hero card, donut, and ranked model list)? The owner's verdict on the concept: directionally right, but "a bit over the top" — inconsistent type sizes, not native enough. Goal: an Apple-first, native macOS treatment that belongs in HopUsage, works for Cursor / Claude / Codex / Grok, and is not Cursor-branded.
 
 ---
 
@@ -35,7 +35,7 @@ The app **does not** use semantic `.headline` / `.subheadline` / `.caption` for 
 | Supporting / detail / under-bar | 12 | 11 | `.regular` | `.primary` for the value, `.secondary` for context |
 | Plan badge, stale tag | 11 | 10 | `.regular` | `.secondary` / `.tertiary` |
 | Nav bar title (Customize/Settings) | — | — | `.headline` (semantic) | — |
-| Footer identity ("OpenUsage 0.7.x", "Next update in 3m") | — | — | `.caption2` (semantic) | `.secondary` |
+| Footer identity ("HopUsage 0.7.x", "Next update in 3m") | — | — | `.caption2` (semantic) | `.secondary` |
 | UsageTrendDetail header title | 13 | — | `.semibold` | `.primary` |
 | UsageTrendDetail readout / axis / note | 11 / 10 | — | `.regular` | `.secondary`, `.monospacedDigit()` |
 | Tooltip bubble | 12 | — | `.regular` | `.primary` |

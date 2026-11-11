@@ -21,7 +21,7 @@ MODE="${1:-run}"
 CONFIG="${CONFIG:-release}"
 
 TARGET_NAME="OpenUsage"                 # SwiftPM target / binary name
-APP_DISPLAY="OpenUsage"                 # user-facing app name
+APP_DISPLAY="HopUsage"                  # user-facing app name
 BUNDLE_ID="${BUNDLE_ID:-com.holovin-local.hopusage.dev}"
 ICLOUD_CONTAINER_ID="iCloud.com.holovin-local.hopusage.dev"
 MIN_SYSTEM_VERSION="15.0"
@@ -153,7 +153,7 @@ cat >"$INFO_PLIST" <<PLIST
       <key>NSUbiquitousContainerIsDocumentScopePublic</key>
       <false/>
       <key>NSUbiquitousContainerName</key>
-      <string>OpenUsage</string>
+      <string>HopUsage</string>
       <key>NSUbiquitousContainerSupportedFolderLevels</key>
       <string>None</string>
     </dict>

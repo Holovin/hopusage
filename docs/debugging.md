@@ -15,7 +15,7 @@ The project script owns the build/run loop. From the repo root:
 
 The script builds a signed app bundle under `dist/` and launches it in place — nothing is installed to
 `/Applications`. The dev build uses its own bundle id (`com.holovin-local.hopusage.dev`), so it keeps its
-own settings and keychain and never disturbs a released OpenUsage. It ships no update feed, so it never
+own settings and keychain and never disturbs a released HopUsage. It ships no update feed, so it never
 checks for updates — test updates with a real signed, notarized release build.
 
 ## Stream logs
@@ -42,7 +42,7 @@ log show --last 10m --info --predicate 'process == "OpenUsage"'
 ## Log file
 
 In addition to the unified log above, the app writes a file log to
-`~/Library/Logs/OpenUsage/OpenUsage.log` — this is what to send with a support report. It is capped at
+`~/Library/Logs/HopUsage/HopUsage.log` — this is what to send with a support report. It is capped at
 ~10 MB with one `.1` archive. Raise the detail in **Settings -> Advanced -> Log Level** (use **Debug**
 for full detail), then grab the file with **Copy Log Path** or **Reveal in Finder** in that same
 section. See [Logging](logging.md) for the levels, subsystem tags, and the never-log-secrets guarantee.

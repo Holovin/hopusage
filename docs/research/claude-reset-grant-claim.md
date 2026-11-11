@@ -1,7 +1,7 @@
 # Claude Usage-Limit Reset Grants: How Claiming Works
 
 Protocol reference for claiming one of Anthropic's `cedar_ember` usage-limit reset grants, written
-2026-10-18 for issue #1291. OpenUsage claims from the resets popover (`ClaudeProvider+ResetClaim.swift`).
+2026-10-18 for issue #1291. HopUsage claims from the resets popover (`ClaudeProvider+ResetClaim.swift`).
 
 Sources: issue #1291; strings in the local Claude Code 2.1.302 binary; seven public projects that send
 the same request (for example `lidge-jun/opencodex` `src/providers/anthropic-reset-grants.ts`,
@@ -28,7 +28,7 @@ publishes a real response.
 ```
 
 Anthropic decides eligibility by client surface. A User-Agent it doesn't recognize as Claude Code comes
-back `eligible: false, ineligible_reason: "surface"`. OpenUsage rejects the whole block when a grant
+back `eligible: false, ineligible_reason: "surface"`. HopUsage rejects the whole block when a grant
 is malformed (no string `id` or numeric `resets_left`), like Claude Code does.
 
 ## Claiming
@@ -43,14 +43,14 @@ Headers: `Authorization: Bearer <token>`, `anthropic-beta: oauth-2025-04-20`,
 ```
 
 - `orgUUID` is `organization.uuid` from `GET /api/oauth/profile` for the same token.
-- `grant_id` matches `^[a-z0-9_-]{1,40}$`. OpenUsage always sends `next_grant_id`.
+- `grant_id` matches `^[a-z0-9_-]{1,40}$`. HopUsage always sends `next_grant_id`.
 - `request_id` matches `^[A-Za-z0-9_-]{1,64}$`. The popover mints one UUID per confirm and reuses it
   for every retry and every credential fallback, so a retry can't spend twice.
-- Claude Code refreshes OAuth before claiming. OpenUsage refreshes only a token that is about to expire.
+- Claude Code refreshes OAuth before claiming. HopUsage refreshes only a token that is about to expire.
 
 Response: `{ result, reason, resets_left, cleared, weekly_resets_at, cooldown_until }`.
 
-| `result` / `reason` | Meaning | OpenUsage outcome |
+| `result` / `reason` | Meaning | HopUsage outcome |
 |---|---|---|
 | `reset` | Limits cleared | Success |
 | `already_used` | This request id already spent the grant | Success |
@@ -61,10 +61,10 @@ Response: `{ result, reason, resets_left, cleared, weekly_resets_at, cooldown_un
 | `not_authorized`, `no_profile_scope`, `grant_id_required`, anything else, non-2xx | Error | Failed |
 
 Claude Code's copy for `already_used` distinguishes "Your earlier reset went through after all" (a retry of
-an unsettled claim) from "That reset was already used, nothing changed". OpenUsage mints a fresh request
+an unsettled claim) from "That reset was already used, nothing changed". HopUsage mints a fresh request
 id per confirm, so `already_used` can only answer its own earlier attempt.
 
-After any outcome except Failed, OpenUsage drops its hourly grants answer and forces a refresh, so the
+After any outcome except Failed, HopUsage drops its hourly grants answer and forces a refresh, so the
 row doesn't show a spent reset for an hour.
 
 ## Verification

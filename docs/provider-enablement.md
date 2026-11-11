@@ -1,18 +1,18 @@
 # Which Providers Are On
 
-How OpenUsage decides which providers start on, what happens when an update adds a new provider, and the one rule that governs it all: **your own toggles always win and are never overridden.**
+How HopUsage decides which providers start on, what happens when an update adds a new provider, and the one rule that governs it all: **your own toggles always win and are never overridden.**
 
 ## First install
 
-A fresh install starts with no providers on and opens a welcome screen. It looks for sign-ins already on your Mac — an existing local login, saved API key, or supported environment variable — without contacting any provider or asking for Keychain access. The providers it finds are preselected; **Show All** lists the rest. A Claude desktop or Codex sign-in that macOS hasn't shared with OpenUsage yet still counts as found.
+A fresh install starts with no providers on and opens a welcome screen. It looks for sign-ins already on your Mac — an existing local login, saved API key, or supported environment variable — without contacting any provider or asking for Keychain access. The providers it finds are preselected; **Show All** lists the rest. A Claude desktop or Codex sign-in that macOS hasn't shared with HopUsage yet still counts as found.
 
 Click **Connect Selected** to turn the selected providers on. They connect one at a time, so at most one macOS access dialog is open at once; choosing **Always Allow** lets later updates read that sign-in without asking again. A provider that can't connect stays off and shows why, with **Retry**. **Open Dashboard** continues with what connected, and scheduled updates start from there.
 
-**Skip for Now** opens the dashboard with nothing on; turn providers on later in **Customize**. Closing the welcome window quits OpenUsage, and the welcome screen returns on the next launch. See [Dashboard § First launch](dashboard.md#first-launch) for how the dashboard presents this.
+**Skip for Now** opens the dashboard with nothing on; turn providers on later in **Customize**. Closing the welcome window quits HopUsage, and the welcome screen returns on the next launch. See [Dashboard § First launch](dashboard.md#first-launch) for how the dashboard presents this.
 
 ## When an update adds a new provider
 
-The same detection runs for providers that arrive later. On the first launch after an update, OpenUsage compares the providers it now ships with the ones this install has seen before. For each brand-new one, it runs the same local-only credential check:
+The same detection runs for providers that arrive later. On the first launch after an update, HopUsage compares the providers it now ships with the ones this install has seen before. For each brand-new one, it runs the same local-only credential check:
 
 - **Credentials are available locally** → the provider turns on and appears on the dashboard.
 - **No credentials are available** → it stays off. You can always turn it on later in **Customize**.

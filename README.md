@@ -1,24 +1,27 @@
-# OpenUsage
+# HopUsage
+
+> **HopUsage is an unofficial fork of [OpenUsage](https://github.com/robinebers/openusage).** It is not
+> the official OpenUsage and is not endorsed by or affiliated with its author. Self-updates and
+> telemetry are switched off in this fork.
 
 Track your AI coding subscriptions from the macOS menu bar — native Swift edition.
 
-OpenUsage shows how much of your AI coding plans you've used: session and weekly limits, credits, and spend, all in one popover. Pin your most important metrics straight into the menu bar.
+HopUsage shows how much of your AI coding plans you've used: session and weekly limits, credits, and spend, all in one popover. Pin your most important metrics straight into the menu bar.
 
 <p align="center">
-  <img src="assets/screenshot.jpg?v=20260706" alt="OpenUsage menu bar tracker showing Claude and Codex session, weekly, and spend usage" width="900">
+  <img src="assets/screenshot.jpg?v=20260706" alt="HopUsage menu bar tracker showing Claude and Codex session, weekly, and spend usage" width="900">
 </p>
 
 ## Installation
 
-**Homebrew:**
+This fork publishes no releases and no Homebrew cask. Build it from source:
 
 ```sh
-brew install --cask openusage
+./script/build_and_run.sh
 ```
 
-**Direct download:** grab the latest universal DMG from the [releases page](https://github.com/robinebers/openusage/releases/latest), open it, and drag OpenUsage to your Applications folder.
-
-Either way, the app updates itself in place via signed, notarized [Sparkle](docs/updates.md) updates. Requires macOS 15 (Sequoia) or later.
+That stages and launches `dist/HopUsage.app`. The app does not update itself; see
+[Updates](docs/updates.md). Requires macOS 15 (Sequoia) or later.
 
 ## Supported Providers
 
@@ -34,7 +37,7 @@ Either way, the app updates itself in place via signed, notarized [Sparkle](docs
 - **[OpenRouter](docs/providers/openrouter.md)** — credit balance, daily/weekly/monthly spend (API key)
 - **[Z.ai](docs/providers/zai.md)** — session, weekly, web-search quotas (GLM Coding Plan, API key)
 
-Most providers read the credentials already on your machine (keychain, auth files, app state) — no extra login. OpenRouter and Z.ai are the exceptions: they have no local credential to reuse, so you supply an API key (see [OpenRouter setup](docs/providers/openrouter.md) or [Z.ai setup](docs/providers/zai.md)). Credentials are used only for the corresponding provider requests. OpenUsage's separate anonymous summaries and public pricing downloads are documented under [Privacy & usage data](docs/privacy.md).
+Most providers read the credentials already on your machine (keychain, auth files, app state) — no extra login. OpenRouter and Z.ai are the exceptions: they have no local credential to reuse, so you supply an API key (see [OpenRouter setup](docs/providers/openrouter.md) or [Z.ai setup](docs/providers/zai.md)). Credentials are used only for the corresponding provider requests. HopUsage's separate anonymous summaries and public pricing downloads are documented under [Privacy & usage data](docs/privacy.md).
 
 ## Features
 

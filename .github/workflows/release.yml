@@ -150,9 +150,9 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.meta.outputs.tag }}
-          name: OpenUsage ${{ steps.meta.outputs.version }}
+          name: HopUsage ${{ steps.meta.outputs.version }}
           prerelease: ${{ steps.meta.outputs.prerelease }}
-          files: dist/OpenUsage-${{ steps.meta.outputs.version }}.dmg
+          files: dist/HopUsage-${{ steps.meta.outputs.version }}.dmg
 
       - name: Preserve Tauri updater manifest on stable releases
         if: steps.meta.outputs.channel == 'stable'
@@ -168,7 +168,7 @@ jobs:
 
       - name: Generate appcast with Sparkle
         env:
-          DMG: OpenUsage-${{ steps.meta.outputs.version }}.dmg
+          DMG: HopUsage-${{ steps.meta.outputs.version }}.dmg
           CHANNEL: ${{ steps.meta.outputs.channel }}
           # Per-tag GitHub release asset base. generate_appcast applies this prefix only to the new DMG
           # in feed/; preserved items keep their own (older-tag) URLs.

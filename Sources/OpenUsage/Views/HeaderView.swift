@@ -111,10 +111,10 @@ struct HeaderView: View {
         }
 
         Button { AboutPanel.present() } label: {
-            Label("About OpenUsage", systemImage: "info.circle")
+            Label("About HopUsage", systemImage: "info.circle")
         }
         Button(role: .destructive) { NSApplication.shared.terminate(nil) } label: {
-            Label("Quit OpenUsage", systemImage: "power")
+            Label("Quit HopUsage", systemImage: "power")
         }
         .keyboardShortcut("q") // ⌘Q — unowned elsewhere, so safe to register on the item.
     }

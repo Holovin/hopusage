@@ -267,7 +267,7 @@ final class CursorOptionalEndpointTests: XCTestCase {
     ) async throws -> (ProviderSnapshot, String) {
         let directory = FileManager.default.temporaryDirectory
             .appendingPathComponent("OpenUsageTests.CursorOptional.\(UUID().uuidString)", isDirectory: true)
-        let sink = LogFile(directory: directory, fileName: "OpenUsage.log")
+        let sink = LogFile(directory: directory, fileName: "HopUsage.log")
         sink.open()
         let originalSink = AppLog.sink
         AppLog.sink = sink
@@ -279,7 +279,7 @@ final class CursorOptionalEndpointTests: XCTestCase {
         }
 
         let snapshot = await operation()
-        let logs = try String(contentsOf: directory.appendingPathComponent("OpenUsage.log"), encoding: .utf8)
+        let logs = try String(contentsOf: directory.appendingPathComponent("HopUsage.log"), encoding: .utf8)
         return (snapshot, logs)
     }
 

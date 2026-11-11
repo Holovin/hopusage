@@ -20,13 +20,13 @@ unavailable when Cursor supplies only the two pools. Older team accounts without
 keep their dollar meter, including accounts that return zero placeholders beside positive spend.
 Without a dollar limit or usable model pools, Team/Enterprise accounts use the reported total percentage.
 
-When Cursor reports your plan name, OpenUsage shows it beside the provider name.
-Enterprise/team seats sometimes still return `GetPlanInfo.planName = Pro`; OpenUsage prefers the
+When Cursor reports your plan name, HopUsage shows it beside the provider name.
+Enterprise/team seats sometimes still return `GetPlanInfo.planName = Pro`; HopUsage prefers the
 billing membership from Cursor's local state (`stripeMembershipType`) or `usage-summary` when that
 membership is `enterprise` / `team` and GetPlanInfo is missing or still says Pro.
 
 Enterprise/team seats that already return usable model-pool percentages from the primary usage API
-may still omit on-demand there. In that case OpenUsage merges Extra Usage from `usage-summary`
+may still omit on-demand there. In that case HopUsage merges Extra Usage from `usage-summary`
 without replacing the live pool meters. Personal Pro seats are not probed for that merge.
 
 Grok Bot has its own usage allowance, separate from Cursor's normal billing-cycle meter. Its widget
@@ -35,17 +35,17 @@ into the Grok CLI is not required.
 
 ## Where credentials come from
 
-Just be signed into the Cursor app. OpenUsage reads Cursor's local state database (and its keychain entries) for the session tokens; refreshed tokens are persisted back. Nothing extra to install or configure.
+Just be signed into the Cursor app. HopUsage reads Cursor's local state database (and its keychain entries) for the session tokens; refreshed tokens are persisted back. Nothing extra to install or configure.
 
 ## Spend history
 
-Today, Yesterday, Last 30 Days, and Usage Trend come from Cursor's usage history—the same data shown on Cursor's Usage page. OpenUsage keeps each day on your Mac, separately for each Cursor account, and re-checks today and yesterday on every refresh. It fills in missing older days in the background within 20 seconds per refresh. A failed or short download never erases stored days. The chart appears once all 30 days are stored; heavy accounts may take a couple of refreshes the first time.
+Today, Yesterday, Last 30 Days, and Usage Trend come from Cursor's usage history—the same data shown on Cursor's Usage page. HopUsage keeps each day on your Mac, separately for each Cursor account, and re-checks today and yesterday on every refresh. It fills in missing older days in the background within 20 seconds per refresh. A failed or short download never erases stored days. The chart appears once all 30 days are stored; heavy accounts may take a couple of refreshes the first time.
 
 ## Troubleshooting
 
 - **"Not logged in" / token errors** — open Cursor and make sure you're signed in, then refresh.
 - **Some metrics missing** — Cursor omits fields depending on plan type; missing metrics simply show "No data".
-- **Optional lookup failed** — Grok Bot, plan, credit-grant, prepaid-balance, and request-fallback failures stay nonfatal when primary usage is available. OpenUsage records fixed, credential-free reasons in the diagnostic log.
+- **Optional lookup failed** — Grok Bot, plan, credit-grant, prepaid-balance, and request-fallback failures stay nonfatal when primary usage is available. HopUsage records fixed, credential-free reasons in the diagnostic log.
 
 ## Under the hood
 

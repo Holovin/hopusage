@@ -117,7 +117,7 @@ actor ICloudUsageHistoryFileStore: UsageHistoryFileStoring {
             throw ICloudUsageSyncError.unavailable
         }
         let directory = container
-            .appendingPathComponent("OpenUsage", isDirectory: true)
+            .appendingPathComponent("HopUsage", isDirectory: true)
             .appendingPathComponent("History", isDirectory: true)
             .appendingPathComponent("v1", isDirectory: true)
         if create {
@@ -316,7 +316,7 @@ final class ICloudUsageSyncStore {
         } catch {
             let id = saved ?? UUID().uuidString.lowercased()
             defaults.set(id, forKey: deviceIDKey)
-            let message = "OpenUsage couldn’t save this Mac’s sync identity in Keychain. "
+            let message = "HopUsage couldn’t save this Mac’s sync identity in Keychain. "
                 + "Sync may create a duplicate device if app preferences are reset."
             AppLog.warn(.keychain, "iCloud device identity failed: \(error.localizedDescription)")
             return (id, message)

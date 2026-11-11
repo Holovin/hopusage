@@ -13,7 +13,7 @@ Tracks your ChatGPT/Codex subscription limits using the login from the Codex CLI
 | Extra Usage | Flex credits, shown verbatim as dollars + credits (e.g. `$31.84 · 796 credits`) |
 | Today / Yesterday / Last 30 Days | Local spend, as cost, tokens, or both (see below) |
 
-When Codex reports your plan name, OpenUsage shows it beside the provider name.
+When Codex reports your plan name, HopUsage shows it beside the provider name.
 Pro plans use the current names **Pro 100**, **Pro 200**, and **Pro 500** instead of the older usage multipliers.
 
 | Usage API plan | Display name |
@@ -30,49 +30,49 @@ If Codex reports only a 7-day window, it maps to Weekly without inventing a 5-ho
 
 ## Where credentials come from
 
-Sign in once with the Codex CLI (`codex`); OpenUsage reads the same auth files (`$CODEX_HOME` respected) with a Keychain fallback. The first Keychain read can ask you to grant OpenUsage access; choosing **Always Allow** authorizes the signed app for later background reads. macOS may ask once more after Codex renews its Keychain login. If you choose **Deny**, OpenUsage stops asking until you refresh manually. Tokens refresh automatically and rotate back into the same auth file or Keychain item they came from.
+Sign in once with the Codex CLI (`codex`); HopUsage reads the same auth files (`$CODEX_HOME` respected) with a Keychain fallback. The first Keychain read can ask you to grant HopUsage access; choosing **Always Allow** authorizes the signed app for later background reads. macOS may ask once more after Codex renews its Keychain login. If you choose **Deny**, HopUsage stops asking until you refresh manually. Tokens refresh automatically and rotate back into the same auth file or Keychain item they came from.
 
-The Keychain fallback selects the Codex CLI item for `$CODEX_HOME` (or `~/.codex` when unset), including when that home is a symlink. Other Codex homes can have separate Keychain logins; OpenUsage does not pick an unrelated item just because it has the same service name.
+The Keychain fallback selects the Codex CLI item for `$CODEX_HOME` (or `~/.codex` when unset), including when that home is a symlink. Other Codex homes can have separate Keychain logins; HopUsage does not pick an unrelated item just because it has the same service name.
 
 ### Codex Swap accounts
 
-OpenUsage shows accounts saved by [Codex Swap (`xswap`)](https://github.com/maddada/codex-swap).
+HopUsage shows accounts saved by [Codex Swap (`xswap`)](https://github.com/maddada/codex-swap).
 Each account and workspace gets its own card, labeled with its alias and email. Cards and pins stay
-with the same account when you switch the default login. Restart OpenUsage after adding, removing,
+with the same account when you switch the default login. Restart HopUsage after adding, removing,
 or renaming an account. Custom locations set with `XSWAP_HOME` or `XDG_DATA_HOME` are supported.
 Upgrading from a version without Swap support refreshes saved shell settings before account discovery.
 
-- Matching file, Keychain, and Swap logins share a card. If one expires, OpenUsage tries another
+- Matching file, Keychain, and Swap logins share a card. If one expires, HopUsage tries another
   login for that account. Keychain-only accounts and Swap custom main homes are included, even
   when they have no saved Swap slot. Keychain reads run in the background.
-- OpenUsage only reads Swap credentials; Codex handles renewing them. If a card needs a login,
-  run `xswap run <account>` or `xswap login <account>`, then refresh OpenUsage.
+- HopUsage only reads Swap credentials; Codex handles renewing them. If a card needs a login,
+  run `xswap run <account>` or `xswap login <account>`, then refresh HopUsage.
 - Concurrent `xswap run` sessions are supported. Close Codex sessions before using `xswap switch`
   to change the global login, as required by Swap.
 
 ### Other Codex homes and pi logins
 
-OpenUsage also finds signed-in accounts in `CODEX_HOME`, `~/.codex`, `~/.config/codex`, sibling
+HopUsage also finds signed-in accounts in `CODEX_HOME`, `~/.codex`, `~/.config/codex`, sibling
 `~/.codex-*` folders, sibling `~/.config/codex-*` folders, and pi's `auth.json` (`openai-codex`,
 `openai-codex-2`, …). Logins are matched by ChatGPT workspace and email, so two users in the same
 workspace remain separate cards, and the same account signed in through several homes and pi shares
 one card, named by its xswap alias, then its pi label, then its workspace and email. A login held only
 in the Keychain counts as an account too. A single account keeps the plain Codex card, which still
 uses a login found only in a sibling home or in pi, and counts that home's session logs in its
-spend tiles. Restart OpenUsage after adding or removing a login.
+spend tiles. Restart HopUsage after adding or removing a login.
 
 A card renews the token in its own Codex homes the way the plain Codex card does, so an account you
 only use through a second home keeps working between sessions; the plain card does the same for a
-lone sibling home. Logins that belong to xswap, pi, or the Keychain are read as they are: OpenUsage
+lone sibling home. Logins that belong to xswap, pi, or the Keychain are read as they are: HopUsage
 never rotates those tokens, even when `CODEX_HOME` is a link to a home xswap manages or points at an
 xswap slot that names no account. Every source is re-read on each refresh, a login another tool
 changed mid-refresh is left untouched (a renewed token that could not be saved still serves that
 refresh), and each card tries every matching login. If a read-only login has expired, use that
-account once in xswap or pi so the tool renews its own token, then refresh OpenUsage.
+account once in xswap or pi so the tool renews its own token, then refresh HopUsage.
 
 ### Whose spending goes on which card
 
-Codex session logs don't say which account ran them, so OpenUsage goes by folder: each Codex home's
+Codex session logs don't say which account ran them, so HopUsage goes by folder: each Codex home's
 spending goes to the account signed in to that home right now.
 
 - An `xswap run` account home counts for its own account.
@@ -86,7 +86,7 @@ spending goes to the account signed in to that home right now.
 - A home whose login names no account counts for the account xswap registered there, or for the
   Keychain login in the main home. Without either, it counts for no card.
 - pi spending goes to the account in pi's `openai-codex` login; after changing that login, restart
-  OpenUsage. OpenCode spending goes to the account signed in to the main home.
+  HopUsage. OpenCode spending goes to the account signed in to the main home.
 
 With one account, all of this lands on its single card. Live limits and reset-credit actions work on
 every card regardless.
@@ -97,7 +97,7 @@ Copied sessions count once per card; a session copied into two accounts' folders
 
 **Customize → Codex → Cost Estimates → Fallback Model** optionally estimates usage that has no known price. The default is **None**. Choose a public model to use its rates for those estimates; known model prices and recorded costs remain unchanged. The existing unknown-model warning and tooltip remain visible when a fallback is used. Switching the choice recalculates local history without changing the model Codex runs. See [model pricing](../pricing.md) for details.
 
-Today / Yesterday / Last 30 Days are computed **locally**: OpenUsage reads the Codex CLI's session rollouts under `~/.codex/sessions/` and `archived_sessions/` (or `$CODEX_HOME`) itself — no external tools needed. Symlinks are followed, so a Codex home linked into a synced location (say, a Dropbox folder) is read all the same. Codex usage from the [pi](https://github.com/earendil-works/pi) coding agent counts too: OpenUsage reads pi's session logs under `~/.pi/agent/sessions/` (or `$PI_CODING_AGENT_SESSION_DIR`) and folds any Codex usage there into the same tiles and trend. The same applies when OpenCode uses its built-in ChatGPT Pro/Plus OAuth login: OpenUsage reads the `openai` rows from OpenCode's local database — including OpenCode 2's newer logs — and attributes them to Codex. Newer OpenCode 2 logs only count from after that ChatGPT login; older OpenCode logs still count as before. OpenCode keeps a separate database and login per release channel (stable and preview), and each one is judged by its own login — a preview channel on ChatGPT still counts when the stable channel uses an API key, and vice versa. OpenCode API-key traffic is not included. Days are grouped in your Mac's local time zone, so they line up with your own calendar. Each period is one tile showing cost and tokens together (`$4.08 · 1.2M tokens`); a day with no usage reads **No data** rather than a misleading `$0.00 · 0 tokens` — the same as every other spend-tracking provider. The live Session and Weekly meters are unaffected. The dollars are estimated from token counts at API rates (that's the ⓘ) using the shared [model pricing](../pricing.md); sessions that ran on the fast/priority or Ultrafast service tier — as recorded in each session's own log — use the corresponding rates for exactly those turns. Older logs without tier metadata, and everything else, price at standard rates; the current `config.toml` setting is not consulted, so flipping the tier never reprices past days. Auto-review keeps its `codex-auto-review` name and measured tokens. Requests from October 6, 2026 at 00:00 UTC cost $0, following the calendar date of [OpenAI’s announcement](https://x.com/thsottiaux/status/2107368734981517634); earlier requests retain the previous dated model estimates. The same cutoff applies to native Codex logs, pi, and OpenCode. Auto-review remains a separate model entry even when a period combines earlier paid estimates with free requests, and a selected fallback model never charges for those free requests. Luna Reserve usage keeps its `gpt-reserve` name the same way, priced at GPT-5.6 Luna rates. The token counts themselves are measured. Subagent and forked sessions copy their parent session's token history into their own log; OpenUsage recognizes those copies and counts each token once, no matter how many subagents a session spawns. No log data leaves your Mac.
+Today / Yesterday / Last 30 Days are computed **locally**: HopUsage reads the Codex CLI's session rollouts under `~/.codex/sessions/` and `archived_sessions/` (or `$CODEX_HOME`) itself — no external tools needed. Symlinks are followed, so a Codex home linked into a synced location (say, a Dropbox folder) is read all the same. Codex usage from the [pi](https://github.com/earendil-works/pi) coding agent counts too: HopUsage reads pi's session logs under `~/.pi/agent/sessions/` (or `$PI_CODING_AGENT_SESSION_DIR`) and folds any Codex usage there into the same tiles and trend. The same applies when OpenCode uses its built-in ChatGPT Pro/Plus OAuth login: HopUsage reads the `openai` rows from OpenCode's local database — including OpenCode 2's newer logs — and attributes them to Codex. Newer OpenCode 2 logs only count from after that ChatGPT login; older OpenCode logs still count as before. OpenCode keeps a separate database and login per release channel (stable and preview), and each one is judged by its own login — a preview channel on ChatGPT still counts when the stable channel uses an API key, and vice versa. OpenCode API-key traffic is not included. Days are grouped in your Mac's local time zone, so they line up with your own calendar. Each period is one tile showing cost and tokens together (`$4.08 · 1.2M tokens`); a day with no usage reads **No data** rather than a misleading `$0.00 · 0 tokens` — the same as every other spend-tracking provider. The live Session and Weekly meters are unaffected. The dollars are estimated from token counts at API rates (that's the ⓘ) using the shared [model pricing](../pricing.md); sessions that ran on the fast/priority or Ultrafast service tier — as recorded in each session's own log — use the corresponding rates for exactly those turns. Older logs without tier metadata, and everything else, price at standard rates; the current `config.toml` setting is not consulted, so flipping the tier never reprices past days. Auto-review keeps its `codex-auto-review` name and measured tokens. Requests from October 6, 2026 at 00:00 UTC cost $0, following the calendar date of [OpenAI’s announcement](https://x.com/thsottiaux/status/2107368734981517634); earlier requests retain the previous dated model estimates. The same cutoff applies to native Codex logs, pi, and OpenCode. Auto-review remains a separate model entry even when a period combines earlier paid estimates with free requests, and a selected fallback model never charges for those free requests. Luna Reserve usage keeps its `gpt-reserve` name the same way, priced at GPT-5.6 Luna rates. The token counts themselves are measured. Subagent and forked sessions copy their parent session's token history into their own log; HopUsage recognizes those copies and counts each token once, no matter how many subagents a session spawns. No log data leaves your Mac.
 
 Large session files are read in small chunks instead of being loaded into memory. Unusually large
 individual records are skipped and logged; local spend can be incomplete if a skipped record contained usage.
@@ -108,9 +108,9 @@ For supported GPT-5.4, GPT-5.5, GPT-5.6, and GPT-6 models, requests above 272k i
 
 - **"Not logged in"** — run `codex` and sign in, then refresh.
 - **A Codex Swap account needs login**: run `xswap login <account>` for the named account, then refresh.
-- **A pi-only account needs login**: use that account in pi to renew its token, then refresh OpenUsage.
+- **A pi-only account needs login**: use that account in pi to renew its token, then refresh HopUsage.
 - **API-key-only setups** can't read subscription usage — sign in with your ChatGPT account instead.
-- **Spend tiles show "No data"** — OpenUsage found no qualifying Codex usage in Codex, pi, or OpenCode logs from the last 30 days. If your Codex home lives somewhere custom, set `CODEX_HOME` so both the Codex CLI and OpenUsage look in the same place.
+- **Spend tiles show "No data"** — HopUsage found no qualifying Codex usage in Codex, pi, or OpenCode logs from the last 30 days. If your Codex home lives somewhere custom, set `CODEX_HOME` so both the Codex CLI and HopUsage look in the same place.
 - **OpenCode usage is missing** — OpenCode must currently have an `openai` OAuth credential in
   `auth.json` or, on OpenCode 2, in that channel's `credential` table. An OpenAI API key is
   deliberately excluded from Codex subscription totals. Logging out of OpenCode 2 stops attribution
@@ -124,11 +124,11 @@ For Codex Swap cards, a 401/403 instead tries the next matching access token wit
 Credential changes while a request is pending discard that result and retry from current matching
 logins. The reset-credit action is also bound to its card's account, including after a default switch.
 
-Spark and Spark Weekly come from the same response's `additional_rate_limits` array — model-specific limits that reuse the duration-based Session/Weekly classification. OpenUsage surfaces the entry whose name identifies GPT-5.3-Codex-Spark as those two meters; accounts without the limit simply omit the entry, so the rows read "No data". Other model limits in that array aren't shown.
+Spark and Spark Weekly come from the same response's `additional_rate_limits` array — model-specific limits that reuse the duration-based Session/Weekly classification. HopUsage surfaces the entry whose name identifies GPT-5.3-Codex-Spark as those two meters; accounts without the limit simply omit the entry, so the rows read "No data". Other model limits in that array aren't shown.
 
-OpenUsage preserves Codex's reported `used_percent` verbatim. If the API reports 1% used for an untouched window, the app shows 99% left; if it reports 0%, the app shows 100% left. Codex rows use the normal reset label rather than inferring a special "Not started" state. Burn-rate pacing still waits until enough of the window has elapsed — and until something has actually been used — to make a useful projection.
+HopUsage preserves Codex's reported `used_percent` verbatim. If the API reports 1% used for an untouched window, the app shows 99% left; if it reports 0%, the app shows 100% left. Codex rows use the normal reset label rather than inferring a special "Not started" state. Burn-rate pacing still waits until enough of the window has elapsed — and until something has actually been used — to make a useful projection.
 
-The "Rate Limit Resets" row shows the on-demand reset-credit count, e.g. `2 available`, with a colored dot for the soonest credit's expiry — blue beyond a week, yellow within a week, red within 48 hours. OpenUsage also makes a best-effort `GET https://chatgpt.com/backend-api/wham/rate-limit-reset-credits` call — the dedicated endpoint that lists each credit's expiry — and surfaces those in a popover when you hover the value: a timeline of each reset, soonest-first — a numbered color dot, the exact expiry time (`Jul 12 at 5:30 PM`), and the countdown to it (`12d 18h`) on the trailing edge. When no credits are available it reads `0 available` and the popover shows `You have no rate limit resets`. If the dedicated call fails, the row falls back to the count embedded in the usage body (`rate_limit_reset_credits.available_count`); since that body carries no per-credit expiries, the popover states the count (`N available`) and notes that expiry times are unavailable rather than implying there are none.
+The "Rate Limit Resets" row shows the on-demand reset-credit count, e.g. `2 available`, with a colored dot for the soonest credit's expiry — blue beyond a week, yellow within a week, red within 48 hours. HopUsage also makes a best-effort `GET https://chatgpt.com/backend-api/wham/rate-limit-reset-credits` call — the dedicated endpoint that lists each credit's expiry — and surfaces those in a popover when you hover the value: a timeline of each reset, soonest-first — a numbered color dot, the exact expiry time (`Jul 12 at 5:30 PM`), and the countdown to it (`12d 18h`) on the trailing edge. When no credits are available it reads `0 available` and the popover shows `You have no rate limit resets`. If the dedicated call fails, the row falls back to the count embedded in the usage body (`rate_limit_reset_credits.available_count`); since that body carries no per-credit expiries, the popover states the count (`N available`) and notes that expiry times are unavailable rather than implying there are none.
 
 ### Using a reset from the popover
 

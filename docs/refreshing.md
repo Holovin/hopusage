@@ -23,7 +23,7 @@ showing the old account's limits and plan under the new login.
 A cached value only counts as *fresh* (skip-a-refresh fresh) when it was fetched **during the current running session**. So a value cached in an earlier session always re-fetches on the first pass after launch — you still see it instantly, but the app never waits out the old interval before getting live numbers. This matters after an update: a new app version refreshes right away instead of showing the previous version's data until its interval lapses. Within a session, a freshly fetched value then counts as fresh for one refresh interval before the next pass re-fetches it.
 
 Claude, Codex, and pi spend history has a separate local-log parse cache under
-`~/Library/Application Support/OpenUsage/log-scan-cache/`. It stores parsed usage events before OpenUsage
+`~/Library/Application Support/HopUsage/log-scan-cache/`. It stores parsed usage events before HopUsage
 applies model-rate estimates, so pricing updates take effect without re-reading unchanged JSONL. On
 relaunch, an entry is reused only when its path, size, modification time, and parser version still match.
 When a supported JSONL file only grows, the scanner resumes from the last complete line and reads only
@@ -54,11 +54,11 @@ Rows that have never had data show "No data" rather than made-up numbers.
 
 ## Keychain access
 
-Some logins live in your macOS Keychain, and macOS asks before OpenUsage can read them.
+Some logins live in your macOS Keychain, and macOS asks before HopUsage can read them.
 
 - Choose **Always Allow** so later refreshes stay quiet.
-- Each login shows one request at a time, and OpenUsage waits for your answer.
-- If you choose **Deny**, OpenUsage stops asking for that login until you refresh manually.
+- Each login shows one request at a time, and HopUsage waits for your answer.
+- If you choose **Deny**, HopUsage stops asking for that login until you refresh manually.
 
 ## Stale data
 

@@ -4,8 +4,8 @@
 > controls stay disabled in every build. The rest of this page describes the original behavior, which
 > returns once the fork has its own appcast and Sparkle key.
 
-OpenUsage keeps itself up to date using [Sparkle](https://sparkle-project.org), the standard update
-framework for Mac apps. Updates are downloaded from OpenUsage's own release feed and verified before
+HopUsage keeps itself up to date using [Sparkle](https://sparkle-project.org), the standard update
+framework for Mac apps. Updates are downloaded from HopUsage's own release feed and verified before
 they install, so you always get a genuine, unmodified build.
 
 ## How it works
@@ -16,8 +16,8 @@ they install, so you always get a genuine, unmodified build.
   notes, download, install) front and center. The banner's close button snoozes it; it comes back the
   next time the app finds the update.
 - **Manual check.** Open **Settings → Updates** and click **Check for Updates…** at any time.
-  For both manual checks and banner installs, OpenUsage brings itself to the foreground before opening
-  Sparkle so the update window doesn't get buried behind another app. Because OpenUsage normally lives
+  For both manual checks and banner installs, HopUsage brings itself to the foreground before opening
+  Sparkle so the update window doesn't get buried behind another app. Because HopUsage normally lives
   only in the menu bar, it briefly shows a Dock icon for the update session, then hides again.
 - **Turn it off.** The **Check Automatically** switch in **Settings → Updates** stops the
   background checks. You can still check manually.
@@ -32,8 +32,8 @@ Everyone always receives stable releases — the beta option only *adds* pre-rel
 
 ## Where updates come from
 
-Update builds are published on OpenUsage's GitHub releases, and the list of available versions (the
+Update builds are published on HopUsage's GitHub releases, and the list of available versions (the
 "appcast") is served from `https://robinebers.github.io/openusage/appcast.xml`. Each download is
-signed two ways — Apple notarization plus OpenUsage's own signature — and the app refuses anything that
+signed two ways — Apple notarization plus HopUsage's own signature — and the app refuses anything that
 doesn't match. This is only available in the official signed release build, not in local developer
 builds.

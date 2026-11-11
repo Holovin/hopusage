@@ -4,7 +4,7 @@ import XCTest
 final class AppBundleLocatorTests: XCTestCase {
     func testFindsContainingAppThroughHelperSymlink() throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        let app = root.appendingPathComponent("OpenUsage.app")
+        let app = root.appendingPathComponent("HopUsage.app")
         let contents = app.appendingPathComponent("Contents")
         let helpers = contents.appendingPathComponent("Helpers")
         let bin = root.appendingPathComponent("bin")

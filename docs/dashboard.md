@@ -8,7 +8,7 @@ A fresh install opens a welcome screen instead of turning providers on by itself
 
 When no provider is on, the dashboard shows **Choose Providers**, which opens Customize.
 
-An orange **A New OpenUsage Is Coming** card sits at the very top of the dashboard for everyone. It warns that the next update removes spend and token tracking and moves sign-in into the app. **Read What's Changing** opens [the announcement](https://github.com/robinebers/openusage/issues/1441). The ✕ asks you to confirm before the card goes away for good.
+An orange **A New HopUsage Is Coming** card sits at the very top of the dashboard for everyone. It warns that the next update removes spend and token tracking and moves sign-in into the app. **Read What's Changing** opens [the announcement](https://github.com/robinebers/openusage/issues/1441). The ✕ asks you to confirm before the card goes away for good.
 
 Updates never change the providers you already have on or off — but when an update ships a provider you've never seen, a local check runs once for just that provider and turns it on only if you actually have the tool. See [Which Providers Are On](provider-enablement.md) for the full lifecycle.
 
@@ -65,11 +65,11 @@ Copy a clean, branded PNG of one provider's usage to your clipboard, ready to pa
 - Right-click a provider header and choose **Share Screenshot**.
 - Open the footer's **Options** menu and choose **Share Screenshot** ▸ *\<provider\>*. The submenu lists every provider currently showing on the dashboard.
 
-The image is a flexible-height PNG using the app's look — the provider's mark and name up top, the metric rows you currently see for that provider, and a small OpenUsage mark centered at the bottom. It follows your Light/Dark appearance and shows everything on the card as-is (nothing is hidden or blurred).
+The image is a flexible-height PNG using the app's look — the provider's mark and name up top, the metric rows you currently see for that provider, and a small HopUsage mark centered at the bottom. It follows your Light/Dark appearance and shows everything on the card as-is (nothing is hidden or blurred).
 
 ## Footer
 
-The bar pinned to the bottom of the popover. On the left: the app version, and a live "Next update in …" countdown you can click (or press **⌘R**) to refresh right away. On the right: an **Options** menu button. It holds everything in one place — **Customize**, **Settings**, **Share Screenshot** (submenu of providers), **Check for Updates…**, **Report an Issue…**, **About OpenUsage**, and **Quit OpenUsage**. **Report an Issue…** opens GitHub's issue chooser in your browser.
+The bar pinned to the bottom of the popover. On the left: the app version, and a live "Next update in …" countdown you can click (or press **⌘R**) to refresh right away. On the right: an **Options** menu button. It holds everything in one place — **Customize**, **Settings**, **Share Screenshot** (submenu of providers), **Check for Updates…**, **Report an Issue…**, **About HopUsage**, and **Quit HopUsage**. **Report an Issue…** opens GitHub's issue chooser in your browser.
 
 ## Customize
 
@@ -85,7 +85,7 @@ The default reset layout keeps each provider's core quota meters and Usage Trend
 
 Made a change you didn't mean to? Press **⌘Z** to undo — it works anywhere in the popover (the dashboard and Customize alike) and steps back through your recent customization changes one at a time: hiding or showing a metric, reordering metrics or whole providers, starring or unstarring, and moving a metric across the divider all undo. Each step restores the exact previous arrangement. Undo is per-session (it starts fresh after a relaunch), and resetting clears it.
 
-When OpenUsage ships a new default metric, existing layouts get it once. If you turn it off, it stays off. A provider's **Reset** button (top right of its detail) restores that provider's default metrics, order, menu-bar stars, and which metrics start on demand, but leaves other providers and the provider order untouched. The **Reset All Customization** button (top right of the provider list) does the same for every provider at once, restores the default provider order, and re-detects your installed tools — turning providers back on for exactly the tools set up on your Mac, using the same local check as the welcome screen (see [Which Providers Are On](provider-enablement.md)). It asks for confirmation first, since it wipes the whole layout and re-detects providers, and can't be undone.
+When HopUsage ships a new default metric, existing layouts get it once. If you turn it off, it stays off. A provider's **Reset** button (top right of its detail) restores that provider's default metrics, order, menu-bar stars, and which metrics start on demand, but leaves other providers and the provider order untouched. The **Reset All Customization** button (top right of the provider list) does the same for every provider at once, restores the default provider order, and re-detects your installed tools — turning providers back on for exactly the tools set up on your Mac, using the same local check as the welcome screen (see [Which Providers Are On](provider-enablement.md)). It asks for confirmation first, since it wipes the whole layout and re-detects providers, and can't be undone.
 
 ## Keyboard
 

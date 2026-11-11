@@ -89,6 +89,6 @@ struct CursorUsageHistoryStore: Sendable {
 
     private static var defaultDirectory: URL {
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("OpenUsage/cursor-usage-history", isDirectory: true)
+            .appendingPathComponent("HopUsage/cursor-usage-history", isDirectory: true)
     }
 }

@@ -34,7 +34,7 @@ struct OpenUsageCLI {
         } catch CLIError.usage(let message) {
             fail("\(message)\nRun 'openusage --help' for usage.", code: 2)
         } catch CLIError.appDefaultsUnavailable {
-            fail("Could not open the OpenUsage settings domain.", code: 4)
+            fail("Could not open the HopUsage settings domain.", code: 4)
         } catch UsageReaderError.unknownProvider(let providerID) {
             fail("Unknown provider: \(providerID)", code: 2)
         } catch {
@@ -54,7 +54,7 @@ struct OpenUsageCLI {
     private static let help = """
     Usage: openusage [provider] [--force]
 
-    Read limits through OpenUsage's shared five-minute cache and exit. Output is always JSON.
+    Read limits through HopUsage's shared five-minute cache and exit. Output is always JSON.
 
     Options:
       --force      Refresh even when the shared cache is still fresh

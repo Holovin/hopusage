@@ -13,7 +13,7 @@ struct NewVersionNoticeCard: View {
     var body: some View {
         DismissableHintCard(
             systemImage: "exclamationmark.triangle.fill",
-            title: "A New OpenUsage Is Coming",
+            title: "A New HopUsage Is Coming",
             message: "The next update removes spend and token tracking, with no transition period. You'll also sign in to each account inside the app.",
             buttonTitle: "Read What's Changing",
             tint: .orange,

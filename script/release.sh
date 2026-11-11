@@ -29,7 +29,8 @@ cd "$ROOT_DIR"
 : "${SPARKLE_PUBLIC_KEY:?set SPARKLE_PUBLIC_KEY to your base64 EdDSA public key}"
 : "${OPENUSAGE_VERSION:?set OPENUSAGE_VERSION, e.g. 0.7.0}"
 
-APP_NAME="OpenUsage"
+APP_NAME="OpenUsage"      # SwiftPM product / binary name
+APP_DISPLAY="HopUsage"    # user-facing app name
 BUNDLE_ID="com.holovin-local.hopusage"
 MIN_SYSTEM_VERSION="15.0"
 VERSION="$OPENUSAGE_VERSION"
@@ -40,10 +41,10 @@ VERSION="$OPENUSAGE_VERSION"
 # be numeric. (Sparkle's own docs use a beta short version, e.g. "2.0b1".)
 BUILD="${OPENUSAGE_BUILD:-$(git rev-list --count HEAD)}"
 FEED_URL="${FEED_URL:-https://robinebers.github.io/openusage/appcast.xml}"
-DMG_NAME="$APP_NAME-$VERSION.dmg"
+DMG_NAME="$APP_DISPLAY-$VERSION.dmg"
 
 DIST_DIR="$ROOT_DIR/dist"
-APP_BUNDLE="$DIST_DIR/$APP_NAME.app"
+APP_BUNDLE="$DIST_DIR/$APP_DISPLAY.app"
 APP_CONTENTS="$APP_BUNDLE/Contents"
 APP_MACOS="$APP_CONTENTS/MacOS"
 APP_HELPERS="$APP_CONTENTS/Helpers"
@@ -77,7 +78,7 @@ notarize() {  # $1: artifact to submit (.zip or .dmg)
     --apple-id "$NOTARY_APPLE_ID" --password "$NOTARY_APP_PASSWORD" --team-id "$NOTARY_TEAM_ID" --wait
 }
 
-echo "==> building $APP_NAME $VERSION ($BUILD) — universal (arm64 + x86_64)"
+echo "==> building $APP_DISPLAY $VERSION ($BUILD) — universal (arm64 + x86_64)"
 # Build both arch slices and let SwiftPM lipo-merge them into one universal binary. With multiple
 # --arch, --show-bin-path resolves to the merged products dir (.build/apple/Products/Release), which
 # also holds the *.bundle resources, so the staging loop below is unchanged.
@@ -169,8 +170,8 @@ cat >"$APP_CONTENTS/Info.plist" <<PLIST
 <dict>
   <key>CFBundleExecutable</key><string>$APP_NAME</string>
   <key>CFBundleIdentifier</key><string>$BUNDLE_ID</string>
-  <key>CFBundleName</key><string>$APP_NAME</string>
-  <key>CFBundleDisplayName</key><string>$APP_NAME</string>
+  <key>CFBundleName</key><string>$APP_DISPLAY</string>
+  <key>CFBundleDisplayName</key><string>$APP_DISPLAY</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>$VERSION</string>
   <key>CFBundleVersion</key><string>$BUILD</string>
@@ -189,7 +190,7 @@ cat >"$APP_CONTENTS/Info.plist" <<PLIST
     <key>iCloud.com.holovin-local.hopusage</key>
     <dict>
       <key>NSUbiquitousContainerIsDocumentScopePublic</key><false/>
-      <key>NSUbiquitousContainerName</key><string>OpenUsage</string>
+      <key>NSUbiquitousContainerName</key><string>HopUsage</string>
       <key>NSUbiquitousContainerSupportedFolderLevels</key><string>None</string>
     </dict>
   </dict>
@@ -218,7 +219,7 @@ codesign -d --entitlements :- "$APP_BUNDLE" 2>&1 | grep -q "iCloud.com.holovin-l
 # Sparkle update extracts it from the disk image.
 if [ "$NOTARIZE" = "1" ]; then
   echo "==> notarizing app (this can take a few minutes)"
-  APP_ZIP="$DIST_DIR/$APP_NAME-notarize.zip"
+  APP_ZIP="$DIST_DIR/$APP_DISPLAY-notarize.zip"
   ditto -c -k --keepParent "$APP_BUNDLE" "$APP_ZIP"
   notarize "$APP_ZIP"
   xcrun stapler staple "$APP_BUNDLE"
@@ -227,10 +228,10 @@ fi
 
 echo "==> building $DMG_PATH"
 STAGE="$(mktemp -d)"
-cp -R "$APP_BUNDLE" "$STAGE/$APP_NAME.app"
+cp -R "$APP_BUNDLE" "$STAGE/$APP_DISPLAY.app"
 ln -s /Applications "$STAGE/Applications"
 rm -f "$DMG_PATH"
-hdiutil create -volname "$APP_NAME" -srcfolder "$STAGE" -ov -format UDZO "$DMG_PATH" >/dev/null
+hdiutil create -volname "$APP_DISPLAY" -srcfolder "$STAGE" -ov -format UDZO "$DMG_PATH" >/dev/null
 rm -rf "$STAGE"
 codesign --force --timestamp --sign "$CODESIGN_IDENTITY" "$DMG_PATH"
 

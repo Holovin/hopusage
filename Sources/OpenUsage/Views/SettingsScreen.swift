@@ -113,7 +113,7 @@ struct SettingsScreen: View {
             row("Global Shortcut") {
                 ShortcutRecorderField(name: .togglePopover, isVisible: layout.screen == .settings)
                     .id(shortcutFieldGeneration)
-                    .hoverTooltip("Open OpenUsage from anywhere")
+                    .hoverTooltip("Open HopUsage from anywhere")
             }
         }
     }
@@ -208,13 +208,13 @@ struct SettingsScreen: View {
                 Toggle("", isOn: $privacy.hideUsageWhileScreenSharing)
                     .settingsSwitchStyle()
             }
-            Text("While your screen is shared or recorded, the menu bar shows “OpenUsage” instead of your usage.")
+            Text("While your screen is shared or recorded, the menu bar shows “HopUsage” instead of your usage.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 12)
                 .padding(.bottom, 8)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            row("Help Make OpenUsage Better") {
+            row("Help Make HopUsage Better") {
                 Toggle("", isOn: Binding(
                     get: { container.telemetry.isEnabled },
                     set: { container.telemetry.setEnabled($0) }
@@ -282,8 +282,8 @@ struct SettingsScreen: View {
                         .font(.caption)
                         .foregroundStyle(.orange)
                         .hoverTooltip(notificationsAuth == .denied
-                            ? "Notifications are turned off for OpenUsage. Enable them in System Settings."
-                            : "OpenUsage needs permission to send alerts.")
+                            ? "Notifications are turned off for HopUsage. Enable them in System Settings."
+                            : "HopUsage needs permission to send alerts.")
                 }
             }
             .padding(.horizontal, 8)
@@ -390,7 +390,7 @@ struct SettingsScreen: View {
                 .padding(.bottom, 8)
                 .frame(maxWidth: .infinity, alignment: .leading)
             if commandLineTool.status == .conflict {
-                inlineNotice("\(commandLineTool.destinationPath) already exists and wasn't installed by OpenUsage.")
+                inlineNotice("\(commandLineTool.destinationPath) already exists and wasn't installed by HopUsage.")
             } else if let errorMessage = commandLineTool.errorMessage {
                 inlineNotice(errorMessage)
             }

@@ -130,7 +130,7 @@ Keyring-mode homes (5b) still leave the family unscoped.
 ## Verification
 
 - Per phase: `swift build` + full `swift test`; new suites land with their phase.
-- Live: `script/build_and_run.sh`, then `~/Library/Logs/OpenUsage/OpenUsage.log` — discovery trail,
+- Live: `script/build_and_run.sh`, then `~/Library/Logs/HopUsage/HopUsage.log` — discovery trail,
   identity resolution, and (Phase 1+) account-registry lines.
 - Beta release per phase via the release-swift skill; soak before the next phase merges.
 - CLI/API: `openusage claude` (alias) and `openusage claude@<hash>` (direct);

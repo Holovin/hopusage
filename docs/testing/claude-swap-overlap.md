@@ -40,7 +40,7 @@ guest path, the full suite was rerun and passed. No production code change was n
 ### Repeated Live Check on 2026-09-13
 
 The updated app was launched through the guest's `cua-driver` CLI from
-`/Users/admin/openusage-qa/20260913/OpenUsage.app`. Its executable SHA-256 matches the host build:
+`/Users/admin/openusage-qa/20260913/HopUsage.app`. Its executable SHA-256 matches the host build:
 `059369d3aeeb95c37cefadde69e5cf779ad3e549d591df354f148b19dae77793`.
 
 Claude Desktop remained signed into the work account. Two `cswap run --require-session` instances
@@ -111,7 +111,7 @@ It returned actual session and weekly limits. The local-history parity harness w
 
 **Passed after both sessions completed interactive startup.**
 
-The updated debug app was built, copied to `/Users/admin/openusage-qa/OpenUsage.app`, and launched
+The updated debug app was built, copied to `/Users/admin/openusage-qa/HopUsage.app`, and launched
 through the VM's `cua-driver` 0.23.2 CLI. Its executable SHA-256 matches the host build:
 `96ee030dade69c52fd2323f3f1d63a5cd7c9338e01d14fd004186cde4fd75577`.
 
@@ -120,7 +120,7 @@ Two saved Swap accounts were present. Desktop's window shows the work account si
 Two separate `cswap run` processes were launched through GUI Terminal, with separate personal
 and work session directories. Their auth status identifies the correct account and organization.
 
-The default was switched from work to personal, then back to work. OpenUsage's bundled CLI
+The default was switched from work to personal, then back to work. HopUsage's bundled CLI
 performed forced live refreshes in both states. Both returned exactly two cards, zero errors,
 unchanged card IDs and unchanged organization-first names:
 
@@ -144,7 +144,7 @@ to organization-first, then the app was rebuilt and restarted before repeating v
 The user resolved the work session's folder-trust prompt. Both original session processes then
 reached their normal Claude Code prompts and remained running throughout the repeat check.
 With Desktop also running, the default was switched from work to personal and back to work again.
-The bundled OpenUsage CLI was launched from GUI Terminal through cua-driver and forced a refresh
+The bundled HopUsage CLI was launched from GUI Terminal through cua-driver and forced a refresh
 after each switch. Both runs returned exactly the same two card IDs and names, zero errors, and
 the same 0% work / 52% personal weekly usage. The original work default was restored.
 
@@ -164,7 +164,7 @@ the graphical session kept its standard permission settings unchanged. The user'
 resolved this setup obstacle; it is no longer an outstanding test requirement.
 
 Initial SSH-only vault reads were unavailable through Keychain; launching Swap from GUI Terminal
-resolved session creation. OpenUsage also initially waited in a Desktop Safe Storage Keychain read,
+resolved session creation. HopUsage also initially waited in a Desktop Safe Storage Keychain read,
 then completed startup. The original work default has been restored. No host account credentials
 were copied into the VM.
 
