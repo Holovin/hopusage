@@ -3,7 +3,7 @@
     "refractivity"
   ],
   "fill" : {
-    "automatic-gradient" : "extended-srgb:0.17008,0.49616,1.02141,1.00000"
+    "automatic-gradient" : "srgb:0.51765,0.89020,0.74510,1.00000"
   },
   "groups" : [
     {
@@ -18,12 +18,12 @@
             {
               "appearance" : "dark",
               "value" : {
-                "solid" : "extended-srgb:0.17008,0.49616,1.02141,1.00000"
+                "solid" : "srgb:0.51765,0.89020,0.74510,1.00000"
               }
             }
           ],
-          "image-name" : "dashboard-3-line.svg",
-          "name" : "dashboard-3-line",
+          "image-name" : "gauge.svg",
+          "name" : "gauge",
           "position" : {
             "scale" : 37.48,
             "translation-in-points" : [
