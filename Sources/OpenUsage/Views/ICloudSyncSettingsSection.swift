@@ -32,11 +32,16 @@ struct ICloudSyncSettingsSection: View {
                     Spacer(minLength: 8)
                     Toggle("", isOn: $sync.enabled)
                         .settingsSwitchStyle()
+                        .disabled(!ICloudUsageSyncStore.isAvailableInThisBuild)
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, density.controlRowPadding)
                 .animation(Motion.spring, value: sync.isSyncing)
-                Text("Shares usage history through iCloud, so you can see one combined summary for all your Macs.")
+                Text(
+                    ICloudUsageSyncStore.isAvailableInThisBuild
+                        ? "Shares usage history through iCloud, so you can see one combined summary for all your Macs."
+                        : "iCloud Sync is switched off in this fork."
+                )
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 12)

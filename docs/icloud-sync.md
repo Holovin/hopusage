@@ -1,5 +1,8 @@
 # iCloud Sync
 
+> **Fork note:** iCloud Sync is switched off in this fork (`ICloudUsageSyncStore.isAvailableInThisBuild`),
+> and its Settings switch is disabled. The rest of this page describes the original behavior.
+
 **Sync Across Macs** is off by default. When it is on, each Mac writes one versioned HopUsage history
 file to the app's private iCloud container and reads the files written by other Macs signed into the same
 iCloud account. A random device ID is kept in the login Keychain so the same Mac continues updating its

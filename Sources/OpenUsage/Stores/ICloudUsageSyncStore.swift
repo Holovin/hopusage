@@ -154,6 +154,12 @@ final class ICloudUsageSyncStore {
     private static let enabledKey = "openusage.icloudSync.enabled.v1"
     private static let deviceIDKey = "openusage.icloudSync.deviceID.v1"
 
+    /// Fork switch: iCloud Sync is off in every build of this fork. Syncing needs an iCloud container and
+    /// a provisioning profile registered to the signing team, and this fork has neither. While this is
+    /// `false` the Settings switch is disabled and a saved "on" choice is turned back off at launch. Set
+    /// it to `true` only after registering the container named in `script/*.entitlements.plist`.
+    static let isAvailableInThisBuild = false
+
     private let defaults: UserDefaults
     private let fileStore: any UsageHistoryFileStoring
     private let identityError: String?

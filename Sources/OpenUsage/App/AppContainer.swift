@@ -96,6 +96,7 @@ final class AppContainer {
             providerIdentityKeys: accountAssembly.identityKeysByCard
         )
         let iCloudSync = ICloudUsageSyncStore(dataStore: dataStore)
+        if !ICloudUsageSyncStore.isAvailableInThisBuild { iCloudSync.enabled = false }
         // Re-enabling a provider should fetch it promptly, so clear any leftover failure backoff before
         // the enablement wake refreshes. `weak` breaks the cycle (dataStore already captures enablement).
         enablement.onProviderEnabled = { [weak dataStore] id in dataStore?.clearFailureBackoff(for: id) }
