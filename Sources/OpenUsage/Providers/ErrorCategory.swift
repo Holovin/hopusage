@@ -168,6 +168,7 @@ extension CopilotUsageError: CategorizedError {
         case .invalidResponse: .decoding
         case .requestFailed(let status): ErrorCategory.http(status)
         case .quotaUnavailable: .notAvailable
+        case .rateLimited: .rateLimited
         }
     }
 }

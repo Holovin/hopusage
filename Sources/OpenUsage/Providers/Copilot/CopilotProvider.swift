@@ -67,6 +67,10 @@ final class CopilotProvider: ProviderRuntime {
         do {
             let response = try await usageClient.fetchUsage(token: token.value)
 
+            // GitHub sends its rate limits as 403 too; that is a wait, not a rejected token.
+            if CopilotUsageMapper.isRateLimit(response) {
+                return ProviderSnapshot.error(provider: provider, error: CopilotUsageError.rateLimited)
+            }
             if response.statusCode == 401 || response.statusCode == 403 {
                 return ProviderSnapshot.error(provider: provider, error: CopilotAuthError.tokenInvalid)
             }
