@@ -11,6 +11,8 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
 
     public override init() {
         super.init()
+        // Provider responses carry emails, org ids, and usage: keep them out of `~/Library/Caches`.
+        URLCache.shared = URLCache(memoryCapacity: 0, diskCapacity: 0)
     }
 
     public func applicationDidFinishLaunching(_ notification: Notification) {

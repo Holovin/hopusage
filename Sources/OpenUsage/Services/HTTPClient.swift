@@ -36,18 +36,27 @@ struct URLSessionHTTPClient: HTTPClient {
     var allowsInsecureLoopback: Bool = false
 
     /// One session for every provider request, built once with the optional `~/.hopusage/config.json`
-    /// proxy applied (see `ProxyConfig`). Default configuration — same cookie/cache semantics as
-    /// `URLSession.shared` — when no valid proxy is configured.
+    /// proxy applied (see `ProxyConfig`).
     private static let session: URLSession = {
-        let configuration = URLSessionConfiguration.default
         if let proxy = ProxyConfig.current {
-            configuration.proxyConfigurations = [proxy.proxyConfiguration()]
             // Record that a proxy is in effect (useful in a support log). Scheme/host/port only —
             // any embedded `user:pass` lives in separate fields and is never logged.
             AppLog.info(.config, "proxy enabled \(proxy.scheme.rawValue)://\(proxy.host):\(proxy.port)")
         }
-        return URLSession(configuration: configuration)
+        return URLSession(configuration: sessionConfiguration(proxy: ProxyConfig.current))
     }()
+
+    /// Provider responses carry emails, org ids, and usage, and every read must reach the provider, so
+    /// the session keeps no URL cache, on disk or in memory, with or without a proxy.
+    static func sessionConfiguration(proxy: ProxyConfig?) -> URLSessionConfiguration {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.urlCache = nil
+        configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
+        if let proxy {
+            configuration.proxyConfigurations = [proxy.proxyConfiguration()]
+        }
+        return configuration
+    }
 
     /// Loopback-only session: ephemeral (no shared cookie/cache state), no proxy (localhost), and a
     /// delegate that trusts a self-signed cert exclusively for `127.0.0.1`. Built once.
