@@ -19,7 +19,7 @@ the same account and organization through both Claude Code and Claude Desktop st
 
 Fable is enabled and always visible directly below Weekly by default. Sonnet stays off until you
 enable it in Customize. Rate Limit Resets is on but tucked behind the caret. When Claude reports your plan name, HopUsage shows it beside the provider name.
-The plan comes from Anthropic's live account profile, so an upgrade (say, Max 5x to Max 20x) shows up on
+The plan comes from Anthropic's live account profile, so an upgrade (say, Max to Ultra) shows up on
 the next refresh without signing in to Claude Code again. If the profile can't be read, the badge falls
 back to the plan saved with your login.
 
