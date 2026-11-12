@@ -119,6 +119,10 @@ enum ClaudeUsageMapper {
         return .text(label: "Note", value: noteText)
     }
 
+    /// The longest `Retry-After` wait that is honored. A longer one is cut to an hour, so a bad header
+    /// can't park the provider for days.
+    static let maxRetryAfterSeconds = 60 * 60
+
     static func parseRetryAfterSeconds(_ response: HTTPResponse, now: Date = Date()) -> Int? {
         guard let raw = response.header("retry-after")?.trimmingCharacters(in: .whitespacesAndNewlines),
               !raw.isEmpty
@@ -126,10 +130,10 @@ enum ClaudeUsageMapper {
             return nil
         }
         if let seconds = Int(raw), seconds >= 0 {
-            return seconds
+            return min(seconds, maxRetryAfterSeconds)
         }
         if let date = HTTPDateFormatter.date(from: raw) {
-            return max(0, Int(ceil(date.timeIntervalSince(now))))
+            return Int(min(max(0, ceil(date.timeIntervalSince(now))), Double(maxRetryAfterSeconds)))
         }
         return nil
     }
