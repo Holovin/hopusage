@@ -38,6 +38,14 @@ enum ZAIUsageMapper {
         return ((root["msg"] as? String) ?? "").lowercased().contains("coding plan")
     }
 
+    /// True when a 2xx quota body is Z.ai refusing the key: `{"success":false,"code":401,…}`. The
+    /// provider reads it as a rejected key, the same as an HTTP 401, not as an invalid response.
+    static func isRejectedKey(_ body: Data) -> Bool {
+        guard let root = ProviderParse.jsonObject(body),
+              (root["success"] as? Bool) == false else { return false }
+        return (root["code"] as? Int) == 401
+    }
+
     /// Session + weekly + web-search meters from the quota payload. Missing required values are an
     /// invalid response rather than zero usage; an explicit empty array remains a valid no-data state.
     static func mapQuota(_ body: Data) throws -> [MetricLine] {
