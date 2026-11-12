@@ -56,7 +56,7 @@ enum CodexUsageMapper {
             ))
         }
 
-        if let remaining = readCreditsRemaining(response: response, body: body) {
+        if let remaining = readCreditsRemaining(response: response, body: body), ProviderParse.int(remaining) != nil {
             lines.append(.values(label: "Credits", values: creditValues(remaining: remaining)))
         }
 
@@ -222,7 +222,7 @@ enum CodexUsageMapper {
     private static func readPeriodMs(_ window: [String: Any]?) -> Int? {
         guard let window else { return nil }
         guard let seconds = ProviderParse.number(window["limit_window_seconds"]) else { return nil }
-        return Int(seconds * 1000)
+        return ProviderParse.int(seconds * 1000)
     }
 
     /// Codex flex credits as raw values: the floored credit count and its dollar value (count × 4¢),
@@ -251,11 +251,12 @@ enum CodexUsageMapper {
         resetCredits: HTTPResponse?
     ) -> (count: Int, expiries: [Date])? {
         guard let source = resetCreditsSource(body: body, resetCredits: resetCredits),
-              let count = ProviderParse.number(source["available_count"]), count >= 0
+              let number = ProviderParse.number(source["available_count"]), number >= 0,
+              let count = ProviderParse.int(number.rounded(.down))
         else {
             return nil
         }
-        return (Int(count.rounded(.down)), availableExpiries(in: source["credits"]))
+        return (count, availableExpiries(in: source["credits"]))
     }
 
     /// The dictionary the count and expiry list are read from: the dedicated endpoint's body when it

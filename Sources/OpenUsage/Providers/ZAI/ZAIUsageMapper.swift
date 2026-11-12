@@ -131,10 +131,9 @@ enum ZAIUsageMapper {
         default: return nil
         }
         let duration = unitMs * number
-        guard duration >= 1, duration < Double(Int.max) else {
+        guard duration >= 1, let periodMs = ProviderParse.int(duration) else {
             throw ZAIUsageError.invalidResponse
         }
-        let periodMs = Int(duration)
         // Sub-daily → session; multi-day → weekly. The computed window rides along so the meter's
         // cadence reflects the payload instead of a hardcoded constant.
         if periodMs < 24 * 60 * 60 * 1000 {

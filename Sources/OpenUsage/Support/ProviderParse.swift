@@ -21,6 +21,11 @@ enum ProviderParse {
     /// Permissive numeric read: accepts JSON numbers and numeric strings, rejecting booleans and
     /// non-finite values. `JSONSerialization` bridges booleans through `NSNumber`, so the Core
     /// Foundation type check is required to keep `true`/`false` from becoming `1`/`0`.
+    /// `Int(_:)` traps on a value outside the Int range; this returns nil instead.
+    static func int(_ value: Double) -> Int? {
+        abs(value) < Double(Int.max) ? Int(value) : nil
+    }
+
     static func number(_ value: Any?) -> Double? {
         if let number = value as? NSNumber {
             guard CFGetTypeID(number) != CFBooleanGetTypeID() else { return nil }

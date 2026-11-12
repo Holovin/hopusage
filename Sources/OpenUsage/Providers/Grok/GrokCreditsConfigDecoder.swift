@@ -69,7 +69,7 @@ enum GrokCreditsConfigDecoder {
             guard let object = capObject as? [String: Any] else {
                 throw GrokUsageError.invalidResponse
             }
-            guard let cap = ProviderParse.number(object["val"] ?? 0), cap.isFinite else {
+            guard let cap = ProviderParse.number(object["val"] ?? 0), ProviderParse.int(cap) != nil else {
                 throw GrokUsageError.invalidResponse
             }
             onDemandCap = cap
