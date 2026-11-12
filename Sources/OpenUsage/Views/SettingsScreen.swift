@@ -17,9 +17,9 @@ struct SettingsScreen: View {
 
     @State private var launchAtLogin = LaunchAtLoginSetting()
     @State private var commandLineTool = CommandLineToolInstaller()
-    @AppStorage(TotalSpendSetting.key) private var showTotalSpend = true
-    @AppStorage(AppearanceSetting.key) private var appearance = AppearanceSetting.system
-    @AppStorage(TimeFormatSetting.key) private var timeFormat = TimeFormatSetting.auto
+    @AppStorage(TotalSpendSetting.key) private var showTotalSpend = TotalSpendSetting.fallback
+    @AppStorage(AppearanceSetting.key) private var appearance = AppearanceSetting.fallback
+    @AppStorage(TimeFormatSetting.key) private var timeFormat = TimeFormatSetting.fallback
     @AppStorage(DensitySetting.key) private var density = DensitySetting.regular
     @AppStorage(ReduceAnimationsSetting.key) private var reduceAnimations = ReduceAnimationsSetting.fallback
     @AppStorage(LogLevelSetting.key) private var logLevel = LogLevelSetting.fallback

@@ -14,7 +14,7 @@ struct DashboardContentView: View {
     @Binding var scrollPosition: ScrollPosition
 
     @AppStorage(DensitySetting.key) private var density = DensitySetting.regular
-    @AppStorage(TotalSpendSetting.key) private var showTotalSpend = true
+    @AppStorage(TotalSpendSetting.key) private var showTotalSpend = TotalSpendSetting.fallback
 
     var body: some View {
         PopoverScrollView {

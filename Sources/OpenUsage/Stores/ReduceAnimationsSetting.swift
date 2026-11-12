@@ -5,7 +5,8 @@ import Foundation
 /// the same reduced-animation behavior throughout the SwiftUI tree and the AppKit panel bridge.
 enum ReduceAnimationsSetting {
     static let key = "reduceAnimations"
-    static let fallback = false
+    /// Fork default: on (the original leaves it off).
+    static let fallback = true
 
     static func resolve(appPreference: Bool, systemReduceMotion: Bool) -> Bool {
         appPreference || systemReduceMotion
@@ -16,7 +17,7 @@ enum ReduceAnimationsSetting {
     @MainActor
     static var isEnabled: Bool {
         resolve(
-            appPreference: UserDefaults.standard.bool(forKey: key),
+            appPreference: UserDefaults.standard.object(forKey: key) as? Bool ?? fallback,
             systemReduceMotion: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
         )
     }

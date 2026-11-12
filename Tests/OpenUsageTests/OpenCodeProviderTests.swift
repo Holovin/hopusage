@@ -165,6 +165,7 @@ final class OpenCodeProviderTests: XCTestCase {
             now: { fixedNow }
         )
 
+        store.resetDisplayMode = .relative
         await store.refreshAll(force: true)
 
         let descriptor = try XCTUnwrap(descriptors.first { $0.id == "opencode.session" })

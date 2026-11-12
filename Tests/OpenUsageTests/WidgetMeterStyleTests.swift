@@ -18,6 +18,7 @@ final class WidgetMeterStyleTests: XCTestCase {
             let (store, descriptor) = await makeRefreshedStore(
                 format: item.format, used: item.used, limit: item.limit, suite: item.name
             )
+            store.meterStyle = .remaining
 
             let remaining = store.data(for: descriptor)
             XCTAssertEqual(remaining.valueText, item.remaining, item.name)
@@ -45,7 +46,7 @@ final class WidgetMeterStyleTests: XCTestCase {
             suite: "override"
         )
 
-        XCTAssertEqual(store.meterStyle, .remaining)
+        store.meterStyle = .remaining
         XCTAssertEqual(store.data(for: descriptor).displayMode, .remaining)
         XCTAssertEqual(store.data(for: descriptor).valueText, "20%")
 
@@ -120,9 +121,9 @@ final class WidgetMeterStyleTests: XCTestCase {
         XCTAssertEqual(used.displayedValue, remaining.displayedValue)
     }
 
-    func testMeterStyleDefaultsToRemainingWithEmptySuite() {
+    func testMeterStyleDefaultsToUsedWithEmptySuite() {
         let store = makeEmptyStore(makeUserDefaults("default"))
-        XCTAssertEqual(store.meterStyle, .remaining)
+        XCTAssertEqual(store.meterStyle, .used)
     }
 
     func testMeterStylePersistsAcrossStoreInstances() {
@@ -132,12 +133,12 @@ final class WidgetMeterStyleTests: XCTestCase {
         defer { defaults.removePersistentDomain(forName: suiteName) }
 
         let store = makeEmptyStore(defaults)
-        XCTAssertEqual(store.meterStyle, .remaining)
+        XCTAssertEqual(store.meterStyle, .used)
 
-        store.meterStyle = .used // triggers didSet -> persists
+        store.meterStyle = .remaining // triggers didSet -> persists
 
         let reloaded = makeEmptyStore(defaults)
-        XCTAssertEqual(reloaded.meterStyle, .used)
+        XCTAssertEqual(reloaded.meterStyle, .remaining)
     }
 
     // MARK: - Helpers

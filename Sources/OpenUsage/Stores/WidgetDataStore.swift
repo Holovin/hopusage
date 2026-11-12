@@ -47,6 +47,12 @@ final class WidgetDataStore {
     private static let meterStyleKey = "meterStyle"
     private static let resetDisplayModeKey = "resetDisplayMode"
     private static let alwaysShowPacingKey = "alwaysShowPacing"
+
+    /// Fork defaults for Usage Display: Used, Exact Time, and pacing always shown. The original starts
+    /// with Left, Countdown, and pacing only near a limit.
+    static let defaultMeterStyle: WidgetDisplayMode = .used
+    static let defaultResetDisplayMode: ResetDisplayMode = .absolute
+    static let defaultAlwaysShowPacing = true
     /// How long a provider that just failed is skipped before the loop will probe it again. A failed
     /// refresh isn't cached, so — unlike a success, which the snapshot cache gates for an interval —
     /// nothing else stops the loop from re-probing a broken provider (logged-out Devin/Grok especially)
@@ -128,9 +134,9 @@ final class WidgetDataStore {
     /// their defaults — the Settings "Reset All Settings" path. Cached usage snapshots are data, not
     /// settings, and stay untouched.
     func resetDisplaySettings() {
-        meterStyle = .remaining
-        resetDisplayMode = .relative
-        alwaysShowPacing = false
+        meterStyle = Self.defaultMeterStyle
+        resetDisplayMode = Self.defaultResetDisplayMode
+        alwaysShowPacing = Self.defaultAlwaysShowPacing
     }
 
     init(
@@ -166,9 +172,9 @@ final class WidgetDataStore {
                 await AppNotifications.shared.post(idPrefix: idPrefix, title: title, subtitle: subtitle, body: body)
             }
         self.providerIdentityKeys = providerIdentityKeys
-        self.meterStyle = defaults.enumValue(forKey: Self.meterStyleKey, default: .remaining)
-        self.resetDisplayMode = defaults.enumValue(forKey: Self.resetDisplayModeKey, default: .relative)
-        self.alwaysShowPacing = defaults.bool(forKey: Self.alwaysShowPacingKey)
+        self.meterStyle = defaults.enumValue(forKey: Self.meterStyleKey, default: Self.defaultMeterStyle)
+        self.resetDisplayMode = defaults.enumValue(forKey: Self.resetDisplayModeKey, default: Self.defaultResetDisplayMode)
+        self.alwaysShowPacing = defaults.bool(forKey: Self.alwaysShowPacingKey, default: Self.defaultAlwaysShowPacing)
         // Stale-while-revalidate: load whatever was cached (expired included) so the menu bar and
         // dashboard show last-known values immediately at launch instead of "—"; the refresh loop
         // replaces them as soon as fresh data lands.

@@ -11,7 +11,8 @@ enum AppearanceSetting: String, Hashable, Sendable, CaseIterable, UserDefaultsBa
     case dark
 
     static let key = "appearance"
-    static var fallback: AppearanceSetting { .system }
+    // Fork default: Dark (the original follows the system).
+    static var fallback: AppearanceSetting { .dark }
 
     /// Posted by `applyCurrent()` after the app-level appearance is set, so the popover owner can
     /// mirror the override onto the menu-bar panel.
@@ -35,7 +36,7 @@ enum AppearanceSetting: String, Hashable, Sendable, CaseIterable, UserDefaultsBa
         }
     }
 
-    // `current` (the stored choice, `.system` when unset) comes from `UserDefaultsBacked`.
+    // `current` (the stored choice, `fallback` when unset) comes from `UserDefaultsBacked`.
 
     /// Reads the stored choice and applies it app-wide. Call once at launch and again whenever
     /// the setting changes — app windows restyle immediately, and the notification lets the

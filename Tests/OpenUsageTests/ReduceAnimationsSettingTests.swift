@@ -12,7 +12,7 @@ final class ReduceAnimationsSettingTests: XCTestCase {
 
     func testPersistenceKeyAndFallbackStayStable() {
         XCTAssertEqual(ReduceAnimationsSetting.key, "reduceAnimations")
-        XCTAssertFalse(ReduceAnimationsSetting.fallback)
+        XCTAssertTrue(ReduceAnimationsSetting.fallback)
     }
 
     func testRootTransactionOnlyDisablesAnimationsWhenReduced() {

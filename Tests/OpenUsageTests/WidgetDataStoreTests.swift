@@ -95,6 +95,7 @@ final class WidgetDataStoreTests: XCTestCase {
         // Hermetic: pin the meter style via an isolated suite so a persisted `.used` in `.standard`
         // can't flip the expected "remaining" output.
         let store = WidgetDataStore(registry: registry, providers: [runtime], defaults: makeUserDefaults("resolve-progress"))
+        store.meterStyle = .remaining
 
         await store.refreshAll()
         let data = store.data(for: descriptor)
@@ -623,6 +624,7 @@ final class WidgetDataStoreTests: XCTestCase {
             cache: cache,
             defaults: makeUserDefaults("fresh-cache-meter")
         )
+        store.meterStyle = .remaining
 
         await store.refreshAll()
 
@@ -668,6 +670,7 @@ final class WidgetDataStoreTests: XCTestCase {
             cache: cache,
             defaults: makeUserDefaults("expired-cache-meter")
         )
+        store.meterStyle = .remaining
 
         await store.refreshAll()
 
@@ -680,20 +683,21 @@ final class WidgetDataStoreTests: XCTestCase {
         let registry = WidgetRegistry(providers: [provider], descriptors: [])
         let defaults = makeUserDefaults("reset-display-settings")
         let store = WidgetDataStore(registry: registry, providers: [], defaults: defaults)
-        store.meterStyle = .used
-        store.resetDisplayMode = .absolute
-        store.alwaysShowPacing = true
+        store.meterStyle = .remaining
+        store.resetDisplayMode = .relative
+        store.alwaysShowPacing = false
 
         store.resetDisplaySettings()
 
-        XCTAssertEqual(store.meterStyle, .remaining)
-        XCTAssertEqual(store.resetDisplayMode, .relative)
-        XCTAssertFalse(store.alwaysShowPacing)
+        // The fork's defaults: Used, Exact Time, pacing always shown.
+        XCTAssertEqual(store.meterStyle, .used)
+        XCTAssertEqual(store.resetDisplayMode, .absolute)
+        XCTAssertTrue(store.alwaysShowPacing)
         // A second store on the same suite must load the defaults back, not the pre-reset values.
         let reloaded = WidgetDataStore(registry: registry, providers: [], defaults: defaults)
-        XCTAssertEqual(reloaded.meterStyle, .remaining)
-        XCTAssertEqual(reloaded.resetDisplayMode, .relative)
-        XCTAssertFalse(reloaded.alwaysShowPacing)
+        XCTAssertEqual(reloaded.meterStyle, .used)
+        XCTAssertEqual(reloaded.resetDisplayMode, .absolute)
+        XCTAssertTrue(reloaded.alwaysShowPacing)
     }
 
     private func makeUserDefaults(_ name: String) -> UserDefaults {
