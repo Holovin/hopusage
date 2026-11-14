@@ -35,6 +35,10 @@ struct HeaderView: View {
     /// Control height, so the capsule matches the footer's other chrome.
     private static let controlHeight: CGFloat = 28
 
+    /// Fork: the Report an Issue item is switched off, this is a personal build. Flip it to bring the
+    /// original's item back.
+    private static let showsReportIssue = false
+
     var body: some View {
         leadingControl
     }
@@ -99,15 +103,21 @@ struct HeaderView: View {
 
         shareScreenshotMenu
 
-        Button { updater.checkForUpdates() } label: {
-            Label("Check for Updates…", systemImage: "arrow.triangle.2.circlepath")
+        // Fork: the updater is switched off (`UpdaterController.isEnabled`), so the item is hidden
+        // instead of sitting there greyed out. It comes back with the updater.
+        if updater.isActive {
+            Button { updater.checkForUpdates() } label: {
+                Label("Check for Updates…", systemImage: "arrow.triangle.2.circlepath")
+            }
+            .disabled(!updater.canCheckForUpdates)
         }
-        .disabled(!updater.canCheckForUpdates)
 
         Divider()
 
-        Link(destination: URL(string: "https://github.com/Holovin/hopusage/issues/new/choose")!) {
-            Label("Report an Issue…", systemImage: "ladybug")
+        if Self.showsReportIssue {
+            Link(destination: URL(string: "https://github.com/Holovin/hopusage/issues/new/choose")!) {
+                Label("Report an Issue…", systemImage: "ladybug")
+            }
         }
 
         Button { AboutPanel.present() } label: {

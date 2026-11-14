@@ -70,6 +70,9 @@ The image is a flexible-height PNG using the app's look — the provider's mark 
 
 ## Footer
 
+> **Fork note:** the Options menu has no **Check for Updates…** (the updater is switched off) and no
+> **Report an Issue…** item. The paragraph below describes the original menu.
+
 The bar pinned to the bottom of the popover. On the left: the app version, and a live "Next update in …" countdown you can click (or press **⌘R**) to refresh right away. On the right: an **Options** menu button. It holds everything in one place — **Customize**, **Settings**, **Share Screenshot** (submenu of providers), **Check for Updates…**, **Report an Issue…**, **About HopUsage**, and **Quit HopUsage**. **Report an Issue…** opens GitHub's issue chooser in your browser.
 
 ## Customize
