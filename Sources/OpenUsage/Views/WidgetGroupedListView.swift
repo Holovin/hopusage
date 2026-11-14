@@ -6,7 +6,8 @@ import SwiftUI
 /// uses.
 ///
 /// Reordering works here directly (no Customize needed): drag any metric row to reorder it within its
-/// provider, or drag a provider's header line to reorder whole providers. Customize stays the discoverable,
+/// provider (switched off in the fork, see `dashboardRowsReorder`), or drag a provider's header line to
+/// reorder whole providers. Customize stays the discoverable,
 /// obvious place to do the same plus toggle metrics on/off. Both surfaces use the same local gesture/geometry
 /// helper so they work inside the menu-bar popover without a system drag/drop session.
 struct WidgetGroupedListView: View {
@@ -23,6 +24,11 @@ struct WidgetGroupedListView: View {
     @AppStorage(DensitySetting.key) private var density = DensitySetting.regular
 
     @Environment(\.resetClaims) private var resetClaims
+
+    /// Fork: dragging a metric row on the dashboard is switched off, so a stray drag can't reshuffle a
+    /// card. Rows are reordered in Customize; provider headers still drag here. Flip it to bring the
+    /// original's row drag back.
+    private static let dashboardRowsReorder = false
 
     var body: some View {
         // Provider-section spacing is noticeably wider than the in-card row rhythm (so groups
@@ -237,7 +243,10 @@ struct WidgetGroupedListView: View {
             .environment(\.resetClaim, resetClaims[providerID])
             .contentShape(Rectangle())
             .opacity(activeMetricID == descriptor.id ? 0 : 1)
-            .highPriorityGesture(metricDragGesture(for: descriptor, providerID: providerID))
+            .highPriorityGesture(
+                metricDragGesture(for: descriptor, providerID: providerID),
+                including: Self.dashboardRowsReorder ? .all : .subviews
+            )
             .contextMenu { rowMenu(descriptor, providerID: providerID) }
             .reorderFrame(id: descriptor.id, in: .named(reorderSpaceName))
     }
