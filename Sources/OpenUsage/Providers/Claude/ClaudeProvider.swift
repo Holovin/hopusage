@@ -340,7 +340,7 @@ final class ClaudeProvider: ProviderRuntime {
         }
 
         MetricLine.appendNoDataIfNeeded(&mapped.lines)
-        return ProviderSnapshot.make(
+        var snapshot = ProviderSnapshot.make(
             provider: provider,
             plan: mapped.plan,
             lines: mapped.lines,
@@ -348,6 +348,9 @@ final class ClaudeProvider: ProviderRuntime {
             usageHistory: usageHistory,
             warning: warning
         )
+        let titles = ClaudeUsageMapper.lineTitles(plan: mapped.plan)
+        snapshot.lineTitles = titles.isEmpty ? nil : titles
+        return snapshot
     }
 
     private func fetchLiveUsage(

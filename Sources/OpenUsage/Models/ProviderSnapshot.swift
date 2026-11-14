@@ -20,7 +20,7 @@ struct ProviderSnapshot: Hashable, Sendable, Codable {
     /// failure path. Always `nil` on success (and error snapshots aren't cached), so it never persists.
     var errorCategory: ErrorCategory?
     /// Row titles this reading renames, keyed by line label (Cursor's team-pool Extra Usage reads
-    /// "Team Spend"). Older cached snapshots carry none.
+    /// "Team Spend", Claude Enterprise's reads "Spend"). Older cached snapshots carry none.
     var lineTitles: [String: String]?
 
     init(

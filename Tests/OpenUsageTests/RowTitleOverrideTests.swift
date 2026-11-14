@@ -1,7 +1,8 @@
 import XCTest
 @testable import OpenUsage
 
-/// A reading can rename a row: Cursor's team-pool Extra Usage reads "Team Spend".
+/// A reading can rename a row: Cursor's team-pool Extra Usage reads "Team Spend", and Claude's Extra
+/// Usage reads "Spend" on an Enterprise plan.
 final class RowTitleOverrideTests: XCTestCase {
     private func cursorTitles(spendLimitUsage: [String: Any]) throws -> [String: String] {
         let usage: [String: Any] = [
@@ -22,6 +23,12 @@ final class RowTitleOverrideTests: XCTestCase {
     func testCursorPersonalLimitKeepsExtraUsage() throws {
         let titles = try cursorTitles(spendLimitUsage: ["limitType": "team", "individualLimit": 5_000, "individualRemaining": 4_000])
         XCTAssertTrue(titles.isEmpty)
+    }
+
+    func testClaudeEnterpriseReadsSpend() {
+        XCTAssertEqual(ClaudeUsageMapper.lineTitles(plan: "Enterprise"), ["Extra usage spent": "Spend"])
+        XCTAssertTrue(ClaudeUsageMapper.lineTitles(plan: "Max").isEmpty)
+        XCTAssertTrue(ClaudeUsageMapper.lineTitles(plan: nil).isEmpty)
     }
 
     func testASnapshotWithoutTitlesStillDecodes() throws {
