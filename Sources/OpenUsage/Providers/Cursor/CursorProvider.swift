@@ -468,12 +468,14 @@ final class CursorProvider: ProviderRuntime {
     }
 
     private func snapshot(_ mapped: CursorMappedUsage, usageHistory: ProviderUsageHistory? = nil) -> ProviderSnapshot {
-        ProviderSnapshot.make(
+        var snapshot = ProviderSnapshot.make(
             provider: provider,
             plan: mapped.plan,
             lines: mapped.lines,
             refreshedAt: now(),
             usageHistory: usageHistory
         )
+        snapshot.lineTitles = mapped.lineTitles.isEmpty ? nil : mapped.lineTitles
+        return snapshot
     }
 }

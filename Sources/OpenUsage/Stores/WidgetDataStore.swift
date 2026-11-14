@@ -603,6 +603,7 @@ final class WidgetDataStore {
            let line = snapshot.line(label: descriptor.metricLabel),
            let data = resolve(line, descriptor: descriptor) {
             result = data
+            result.title = snapshot.lineTitles?[descriptor.metricLabel] ?? result.title
         } else {
             // No real metric line backs this placed tile, so the sample's numbers are placeholders.
             // Flag it as no-data; the tile renders "No data" instead of inventing usage.

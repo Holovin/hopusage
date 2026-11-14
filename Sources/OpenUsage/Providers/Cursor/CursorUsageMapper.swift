@@ -3,6 +3,8 @@ import Foundation
 struct CursorMappedUsage: Equatable, Sendable {
     var plan: String?
     var lines: [MetricLine]
+    /// Row titles this reading renames, keyed by line label.
+    var lineTitles: [String: String] = [:]
 }
 
 /// The handful of facts the three plan-usage decisions read off Cursor's untyped `usage` payload —
@@ -142,6 +144,7 @@ enum CursorUsageMapper {
         }
 
         var lines: [MetricLine] = []
+        var lineTitles: [String: String] = [:]
         appendCredits(creditGrants: creditGrants, stripeBalanceCents: stripeBalanceCents, to: &lines)
 
         let planUsedCents = ProviderParse.number(planUsage["totalSpend"])
@@ -217,9 +220,14 @@ enum CursorUsageMapper {
         }
 
         if let spendLimitUsage {
-            let limit = ProviderParse.number(spendLimitUsage["individualLimit"]) ?? ProviderParse.number(spendLimitUsage["pooledLimit"]) ?? 0
+            let individualLimit = ProviderParse.number(spendLimitUsage["individualLimit"])
+            let limit = individualLimit ?? ProviderParse.number(spendLimitUsage["pooledLimit"]) ?? 0
             let remaining = ProviderParse.number(spendLimitUsage["individualRemaining"]) ?? ProviderParse.number(spendLimitUsage["pooledRemaining"]) ?? 0
             let spent = onDemandSpendCents(from: spendLimitUsage, limit: limit, remaining: remaining)
+            // The team's shared pool is not a personal cap, so the row says whose spend it is.
+            if individualLimit == nil && facts.isTeamByShape && (limit > 0 || spent > 0) {
+                lineTitles["On-demand"] = "Team Spend"
+            }
             if limit > 0 {
                 lines.append(.progress(
                     label: "On-demand",
@@ -235,7 +243,7 @@ enum CursorUsageMapper {
             }
         }
 
-        return CursorMappedUsage(plan: planLabel(planName), lines: lines)
+        return CursorMappedUsage(plan: planLabel(planName), lines: lines, lineTitles: lineTitles)
     }
 
     private static func onDemandSpendCents(from spendLimitUsage: [String: Any], limit: Double, remaining: Double) -> Double {
