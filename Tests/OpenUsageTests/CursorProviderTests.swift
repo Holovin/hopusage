@@ -159,7 +159,7 @@ final class CursorUsageMapperTests: XCTestCase {
         let mapped = try CursorUsageMapper.mapUsage(
             usage: usage, planName: "Team", creditGrants: nil, stripeBalanceCents: 0
         )
-        guard case .progress(_, let used, let limit, let format, _, _, _) =
+        guard case .progress(_, let used, let limit, let format, _, _, _, _) =
             mapped.lines.first(where: { $0.label == "Total usage" }) else {
             return XCTFail("Missing percent total for Team percent-only payload")
         }
@@ -415,7 +415,7 @@ final class CursorProviderTests: XCTestCase {
 
             XCTAssertNil(snapshot.errorCategory)
             XCTAssertEqual(snapshot.plan, "Team")
-            guard case .progress(_, let used, let limit, let format, _, _, _) =
+            guard case .progress(_, let used, let limit, let format, _, _, _, _) =
                 snapshot.lines.first(where: { $0.label == "Total usage" }) else {
                 return XCTFail("Missing percent total for Pro team seat")
             }
@@ -501,7 +501,7 @@ final class CursorProviderTests: XCTestCase {
 }
 
 private func progress(_ lines: [MetricLine], _ label: String) -> (used: Double, limit: Double, resetsAt: Date?, periodDurationMs: Int?)? {
-    guard case .progress(_, let used, let limit, _, let resetsAt, let periodDurationMs, _) = lines.first(where: { $0.label == label }) else {
+    guard case .progress(_, let used, let limit, _, let resetsAt, let periodDurationMs, _, _) = lines.first(where: { $0.label == label }) else {
         return nil
     }
     return (used, limit, resetsAt, periodDurationMs)

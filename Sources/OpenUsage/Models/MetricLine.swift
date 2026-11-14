@@ -110,14 +110,16 @@ enum MetricLine: Hashable, Sendable, Codable {
         format: ProgressFormat,
         resetsAt: Date? = nil,
         periodDurationMs: Int? = nil,
-        colorHex: String? = nil
+        colorHex: String? = nil,
+        /// The currency of a `.dollars` meter billed in something other than USD. `nil` means USD.
+        currencyCode: String? = nil
     )
     case badge(label: String, text: String, colorHex: String? = nil, subtitle: String? = nil)
 
     var label: String {
         switch self {
         case .text(let label, _, _, _),
-             .progress(let label, _, _, _, _, _, _),
+             .progress(let label, _, _, _, _, _, _, _),
              .values(let label, _, _, _, _, _),
              .badge(let label, _, _, _),
              .chart(let label, _, _):
@@ -162,6 +164,7 @@ enum MetricLine: Hashable, Sendable, Codable {
         case modelBreakdown
         case periodDurationMs
         case colorHex
+        case currencyCode
         case subtitle
         case text
         case points
@@ -204,7 +207,8 @@ enum MetricLine: Hashable, Sendable, Codable {
                 format: try container.decode(ProgressFormat.self, forKey: .format),
                 resetsAt: try container.decodeIfPresent(Date.self, forKey: .resetsAt),
                 periodDurationMs: try container.decodeIfPresent(Int.self, forKey: .periodDurationMs),
-                colorHex: try container.decodeIfPresent(String.self, forKey: .colorHex)
+                colorHex: try container.decodeIfPresent(String.self, forKey: .colorHex),
+                currencyCode: try container.decodeIfPresent(String.self, forKey: .currencyCode)
             )
         case .badge:
             self = .badge(
@@ -239,7 +243,7 @@ enum MetricLine: Hashable, Sendable, Codable {
             if !expiriesAt.isEmpty { try container.encode(expiriesAt, forKey: .expiriesAt) }
             if !unknownModels.isEmpty { try container.encode(unknownModels, forKey: .unknownModels) }
             try container.encodeIfPresent(modelBreakdown, forKey: .modelBreakdown)
-        case .progress(let label, let used, let limit, let format, let resetsAt, let periodDurationMs, let colorHex):
+        case .progress(let label, let used, let limit, let format, let resetsAt, let periodDurationMs, let colorHex, let currencyCode):
             try container.encode(LineType.progress, forKey: .type)
             try container.encode(label, forKey: .label)
             try container.encode(used, forKey: .used)
@@ -248,6 +252,7 @@ enum MetricLine: Hashable, Sendable, Codable {
             try container.encodeIfPresent(resetsAt, forKey: .resetsAt)
             try container.encodeIfPresent(periodDurationMs, forKey: .periodDurationMs)
             try container.encodeIfPresent(colorHex, forKey: .colorHex)
+            try container.encodeIfPresent(currencyCode, forKey: .currencyCode)
         case .badge(let label, let text, let colorHex, let subtitle):
             try container.encode(LineType.badge, forKey: .type)
             try container.encode(label, forKey: .label)

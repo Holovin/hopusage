@@ -256,7 +256,7 @@ final class ClaudeLaunchSnapshotTests: XCTestCase {
     }
 
     private func progressUsed(_ lines: [MetricLine]?, _ label: String) -> Double? {
-        guard case .progress(_, let used, _, _, _, _, _) = lines?.first(where: { $0.label == label }) else {
+        guard case .progress(_, let used, _, _, _, _, _, _) = lines?.first(where: { $0.label == label }) else {
             return nil
         }
         return used

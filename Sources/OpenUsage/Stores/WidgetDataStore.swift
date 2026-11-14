@@ -650,7 +650,7 @@ final class WidgetDataStore {
 
     private func resolve(_ line: MetricLine, descriptor: WidgetDescriptor) -> WidgetData? {
         switch line {
-        case .progress(_, let used, let limit, let format, let resetsAt, let periodDurationMs, _):
+        case .progress(_, let used, let limit, let format, let resetsAt, let periodDurationMs, _, let currencyCode):
             // A percent meter is a bounded 0...100 domain; sanitize an out-of-range sample (a provider
             // reporting a negative or >100 utilization) here, at the single construction choke point
             // every provider funnels through, so no surface — headline, flip tooltip, menu bar — can
@@ -675,6 +675,7 @@ final class WidgetDataStore {
             // Descriptor opt-in (session-window meters read "Not started" when unused); the fresh
             // `.progress` result doesn't start from the sample, so carry the signal explicitly.
             result.sessionStartSignal = descriptor.sample.sessionStartSignal
+            result.currencyCode = currencyCode
             return result
         case .text:
             // Text lines carry provider notices for the local API; no dashboard descriptor consumes

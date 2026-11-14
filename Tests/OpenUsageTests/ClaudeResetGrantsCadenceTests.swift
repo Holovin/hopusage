@@ -136,7 +136,7 @@ final class ClaudeResetGrantsCadenceTests: XCTestCase {
             let held = await provider.refresh()
 
             XCTAssertNil(replaced.warning)
-            guard case .progress(_, let used, _, _, _, _, _) = replaced.line(label: "Session") else {
+            guard case .progress(_, let used, _, _, _, _, _, _) = replaced.line(label: "Session") else {
                 return XCTFail("Expected replacement login's live usage")
             }
             XCTAssertEqual(used, 77)
@@ -168,7 +168,7 @@ final class ClaudeResetGrantsCadenceTests: XCTestCase {
 
         let snapshot = await provider.refresh()
 
-        guard case .progress(_, let used, _, _, _, _, _) = snapshot.line(label: "Session") else {
+        guard case .progress(_, let used, _, _, _, _, _, _) = snapshot.line(label: "Session") else {
             return XCTFail("Expected replacement login's live usage")
         }
         XCTAssertEqual(used, 77)

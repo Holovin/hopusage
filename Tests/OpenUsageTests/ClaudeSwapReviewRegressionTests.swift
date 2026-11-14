@@ -85,7 +85,7 @@ final class ClaudeSwapReviewRegressionTests: XCTestCase {
         XCTAssertEqual(auth.loadCredentialCandidates().map(\.oauth.accessToken), ["session", "limited-default"])
         XCTAssertNil(result.warning)
         for (label, expected) in [("Session", 37.0), ("Weekly", 64.0)] {
-            guard case let .progress(_, used, _, _, _, _, _) = result.line(label: label) else {
+            guard case let .progress(_, used, _, _, _, _, _, _) = result.line(label: label) else {
                 XCTFail("Missing live \(label) limits")
                 continue
             }

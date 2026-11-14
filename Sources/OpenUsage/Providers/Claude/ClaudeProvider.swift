@@ -500,7 +500,7 @@ final class ClaudeProvider: ProviderRuntime {
         let lines = snapshot.lines.compactMap { line -> MetricLine? in
             guard ClaudeUsageMapper.liveLimitLabels.contains(line.label) else { return nil }
             switch line {
-            case .progress(_, _, _, _, let resetsAt?, _, _) where resetsAt <= now:
+            case .progress(_, _, _, _, let resetsAt?, _, _, _) where resetsAt <= now:
                 return nil
             default:
                 return ClaudeUsageMapper.droppingElapsedResetGrants(line, now: now)

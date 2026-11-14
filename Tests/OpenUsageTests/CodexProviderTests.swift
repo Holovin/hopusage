@@ -458,7 +458,7 @@ final class CodexUsageMapperTests: XCTestCase {
     }
 
     private func progress(_ lines: [MetricLine], _ label: String) -> (used: Double, limit: Double, resetsAt: Date?, periodDurationMs: Int?)? {
-        guard case .progress(_, let used, let limit, _, let resetsAt, let periodDurationMs, _) = lines.first(where: { $0.label == label }) else {
+        guard case .progress(_, let used, let limit, _, let resetsAt, let periodDurationMs, _, _) = lines.first(where: { $0.label == label }) else {
             return nil
         }
         return (used, limit, resetsAt, periodDurationMs)
@@ -531,7 +531,7 @@ final class CodexProviderTests: XCTestCase {
         XCTAssertNil(snapshot.errorCategory)
         XCTAssertNotNil(snapshot.warning)
         XCTAssertNil(snapshot.usageHistory)
-        guard case .progress(_, let used, let limit, _, _, _, _) = snapshot.line(label: "Weekly") else {
+        guard case .progress(_, let used, let limit, _, _, _, _, _) = snapshot.line(label: "Weekly") else {
             return XCTFail("Live weekly quota was lost while local history was pending")
         }
         XCTAssertEqual(used, 58)

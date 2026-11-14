@@ -3,16 +3,26 @@ import Foundation
 /// Shared display formatters for live usage data: the mode-aware deadline/reset phrasing
 /// (`deadlineLabel`, `resetRelativeLabel`, `resetAbsoluteLabel`), compact durations, and USD currency.
 enum Formatters {
-    static func currency(_ amount: Double, fractionDigits: Int = 2) -> String {
+    static func currency(_ amount: Double, fractionDigits: Int = 2, currencyCode: String? = nil) -> String {
         let f = NumberFormatter()
         f.numberStyle = .currency
-        f.currencyCode = "USD"
+        f.currencyCode = currencyCode ?? "USD"
         f.locale = Locale(identifier: "en_US")
         f.maximumFractionDigits = fractionDigits
         f.minimumFractionDigits = fractionDigits
         // The fallback must also respect the requested precision: a raw "$\(amount)" would leak the
         // double's full decimals (e.g. "$180.168"), which is exactly the rounding glitch we're fixing.
         return f.string(from: amount as NSNumber) ?? "$\(String(format: "%.\(fractionDigits)f", amount))"
+    }
+
+    /// The symbol a currency code prints with ("$" for USD, "€" for EUR). `nil` means USD.
+    static func currencySymbol(_ currencyCode: String?) -> String {
+        guard let currencyCode, currencyCode.uppercased() != "USD" else { return "$" }
+        let f = NumberFormatter()
+        f.numberStyle = .currency
+        f.currencyCode = currencyCode.uppercased()
+        f.locale = Locale(identifier: "en_US")
+        return f.currencySymbol ?? currencyCode.uppercased()
     }
 
     /// The app's compact month/day, e.g. "Jun 21" — localized, no year. Shared so every short calendar

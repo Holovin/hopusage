@@ -19,12 +19,15 @@ struct MetricValue: Hashable, Sendable, Codable {
     /// True when the number is imputed locally rather than measured or billed — it drives the ⓘ note.
     /// Per value because a spend row's dollars are an estimate while its token count is real.
     var estimated: Bool
+    /// The currency of a `.dollars` value billed in something other than USD. `nil` means USD.
+    var currencyCode: String?
 
-    init(number: Double, kind: MetricKind, label: String? = nil, estimated: Bool = false) {
+    init(number: Double, kind: MetricKind, label: String? = nil, estimated: Bool = false, currencyCode: String? = nil) {
         self.number = number
         self.kind = kind
         self.label = label
         self.estimated = estimated
+        self.currencyCode = currencyCode
     }
 }
 
