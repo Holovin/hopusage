@@ -1,0 +1,103 @@
+name: Fork Release
+
+# Fork: builds an ad-hoc signed, universal HopUsage DMG from `fork/v0.7-base` and publishes it as a
+# GitHub Release. No secrets, no Developer ID, no notarization (see script/fork_release.sh).
+#
+# A release is cut by changing FORK_VERSION on `fork/v0.7-base`, never by pushing a tag by hand:
+#   - the version reads as <fork base>-fork.<original release that was backported>, e.g.
+#     0.7.16-fork.0.8.0;
+#   - a push that touches FORK_VERSION starts this workflow, which reads the file at the branch tip.
+#     Several bumps in one push therefore build only the last one;
+#   - if the tag v<version> already exists the run stops without building, so a push that leaves the
+#     version as it was (or reverts it) releases nothing;
+#   - otherwise it builds the DMG, tags the commit it built, and publishes the release;
+#   - a `-beta` in the original version makes it a GitHub pre-release.
+#
+# "Run workflow" does the same by hand. When the tag already exists it rebuilds that tag's commit and
+# replaces the DMG on the existing release.
+on:
+  push:
+    branches: ["fork/v0.7-base"]
+    paths: ["FORK_VERSION"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# One release at a time, so two quick pushes can't both try to create the same tag.
+concurrency:
+  group: fork-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Always the tip of the fork's main branch, whatever started the run.
+          ref: fork/v0.7-base
+          fetch-depth: 0          # full history so the CFBundleVersion (commit count) is correct
+          fetch-tags: true
+
+      - name: Resolve version
+        id: meta
+        run: |
+          VERSION="$(tr -d '[:space:]' < FORK_VERSION)"
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+-fork\.[0-9][0-9A-Za-z.-]*$ ]] \
+            || { echo "FORK_VERSION is not a fork version (want e.g. 0.7.16-fork.0.8.0): '$VERSION'" >&2; exit 1; }
+          TAG="v$VERSION"
+          BUILD=true
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+              echo "Tag $TAG exists: rebuilding its commit and replacing the DMG."
+              git checkout --detach "refs/tags/$TAG"
+            else
+              echo "::notice::Tag $TAG already exists, nothing to release."
+              BUILD=false
+            fi
+          fi
+          # A backport of an original beta (0.7.16-fork.0.8.0-beta.3) ships as a GitHub pre-release, so
+          # it never takes the "Latest" badge from a stable one.
+          if [[ "${VERSION#*-fork.}" == *-beta* ]]; then PRERELEASE=true; else PRERELEASE=false; fi
+          {
+            echo "tag=$TAG"
+            echo "version=$VERSION"
+            echo "build=$BUILD"
+            echo "prerelease=$PRERELEASE"
+            echo "sha=$(git rev-parse HEAD)"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Select Xcode
+        if: steps.meta.outputs.build == 'true'
+        run: sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Build the DMG
+        if: steps.meta.outputs.build == 'true'
+        env:
+          HOPUSAGE_VERSION: ${{ steps.meta.outputs.version }}
+        run: ./script/fork_release.sh
+
+      - name: Publish DMG to GitHub Releases
+        if: steps.meta.outputs.build == 'true'
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          # Creates the tag on the commit that was built, if it does not exist yet.
+          target_commitish: ${{ steps.meta.outputs.sha }}
+          name: HopUsage ${{ steps.meta.outputs.version }}
+          prerelease: ${{ steps.meta.outputs.prerelease }}
+          files: dist/fork-release/HopUsage-${{ steps.meta.outputs.version }}.dmg
+          generate_release_notes: true
+          body: |
+            Universal build (Apple Silicon and Intel), macOS 15 or later.
+
+            This build is not notarized by Apple, so macOS blocks it on first launch. After dragging
+            HopUsage to Applications, run this once in Terminal:
+
+            ```bash
+            xattr -dr com.apple.quarantine /Applications/HopUsage.app
+            ```
+
+            macOS asks for Keychain access again after every update, because the build is signed
+            without a developer certificate.

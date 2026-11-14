@@ -14,14 +14,25 @@ HopUsage shows how much of your AI coding plans you've used: session and weekly 
 
 ## Installation
 
-This fork publishes no releases and no Homebrew cask. Build it from source:
+Download the DMG from [Releases](https://github.com/Holovin/hopusage/releases) and drag HopUsage to
+Applications. The build is universal (Apple Silicon and Intel) but not notarized by Apple, so macOS
+blocks it on first launch. Run this once in Terminal:
+
+```sh
+xattr -dr com.apple.quarantine /Applications/HopUsage.app
+```
+
+There is no Homebrew cask, and the app does not update itself; see [Updates](docs/updates.md). macOS
+asks for Keychain access again after every update, because the build is signed without a developer
+certificate. Requires macOS 15 (Sequoia) or later.
+
+Or build it from source:
 
 ```sh
 ./script/build_and_run.sh
 ```
 
-That stages and launches `dist/HopUsage.app`. The app does not update itself; see
-[Updates](docs/updates.md). Requires macOS 15 (Sequoia) or later.
+That stages and launches `dist/HopUsage.app`.
 
 ## Supported Providers
 
@@ -86,6 +97,13 @@ swift test             # run the test suite
 SwiftPM package, SwiftUI content hosted in an AppKit-owned `NSStatusItem` + custom key-capable `NSPanel`, Swift 6 strict concurrency. The app and CLI share one module: providers implement a small `ProviderRuntime` protocol (auth store → usage client → mapper → `ProviderSnapshot`), and both surfaces read the same normalized data — see the [architecture overview](docs/architecture.md) for how the pieces fit together and [AGENTS.md](AGENTS.md) for engineering conventions.
 
 ## Releasing
+
+> **Fork note:** this fork ships through [.github/workflows/fork-release.yml](.github/workflows/fork-release.yml)
+> instead. A release is cut by changing [FORK_VERSION](FORK_VERSION) on `fork/v0.7-base`, for example
+> to `0.7.16-fork.0.8.0` (fork base, then the original release that was backported). The push builds a
+> universal, ad-hoc signed DMG with `script/fork_release.sh`, tags the commit, and publishes a GitHub
+> Release. No secrets, no Developer ID, no notarization. The rest of this section describes the
+> original pipeline, which does not run here.
 
 Releases are automated: pushing a `v*` tag on `main` builds, signs, notarizes, and publishes a new version. A plain tag (`v0.7.1`) ships to everyone; a pre-release suffix (`v0.7.1-beta.1`) ships to the beta channel. The pipeline lives in [.github/workflows/release.yml](.github/workflows/release.yml), and the step-by-step is in the `release-swift` skill.
 
