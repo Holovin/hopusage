@@ -371,7 +371,7 @@ struct WidgetRowView: View {
                     }
                 } else if data.showsResetExpiries {
                     RateLimitResetsDetail(
-                        count: data.resetCreditCount, expiries: data.expiriesAt,
+                        count: data.resetCreditCount, expiries: data.expiriesAt, names: data.resetNames,
                         onHoverChange: { inside in modelHover.detailHover(inside) },
                         onPinChange: { pinned in modelHover.setPinned(pinned) },
                         // Rows without a claimable service (previews, share renders, a Claude account

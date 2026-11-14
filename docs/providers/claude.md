@@ -33,6 +33,9 @@ timeline popover Codex uses. A reset whose grant has no deadline still counts, b
 Accounts outside the program read `0 available`; if Anthropic doesn't report the program at all for
 your plan, or reports a reset HopUsage can't read, the row shows **No data**.
 
+Each reset in the popover is named for what it refills: **Session** (the 5-hour limit), **Weekly** (the
+weekly limits), **Full Reset** (both), or **Fable** (a reset that gives back the week for Fable).
+
 To use a reset, hover a node in the popover and click **Use**, then confirm. Anthropic decides which
 reset is spent (the next one it offers), and the confirm card says which limits it refills. The claim
 only ever uses the login the resets were read with, never another Claude login on the Mac. If that

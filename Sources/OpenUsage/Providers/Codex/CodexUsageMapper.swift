@@ -246,6 +246,13 @@ enum CodexUsageMapper {
     /// per-credit expiry list); falls back to the usage body's embedded `rate_limit_reset_credits`
     /// object (count only) when that fetch was unavailable — mirroring the JS plugin. `ProviderParse.number`
     /// returns nil for missing/null/non-numeric counts, so a malformed count skips the row entirely.
+    /// ChatGPT's one reset type refills every limit, so each credit lists as a Full Reset.
+    static func resetNames(in lines: [MetricLine]) -> [ResetName] {
+        guard case .values(_, _, _, let expiries, _, _)? = lines.first(where: { $0.label == "Rate Limit Resets" })
+        else { return [] }
+        return Set(expiries).sorted().map { ResetName(expiresAt: $0, name: "Full Reset") }
+    }
+
     static func readResetCredits(
         body: [String: Any],
         resetCredits: HTTPResponse?

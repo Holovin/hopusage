@@ -208,10 +208,13 @@ final class CodexProvider: ProviderRuntime {
         }
         // Pending history is not evidence of no usage. The store may restore last-good spend rows.
         if history != nil { MetricLine.appendNoDataIfNeeded(&mapped.lines) }
-        return ProviderSnapshot.make(
+        var snapshot = ProviderSnapshot.make(
             provider: provider, plan: mapped.plan, lines: mapped.lines, refreshedAt: now(),
             usageHistory: history?.usageHistory, warning: warning
         )
+        let resetNames = CodexUsageMapper.resetNames(in: mapped.lines)
+        snapshot.resetNames = resetNames.isEmpty ? nil : resetNames
+        return snapshot
     }
 
     private struct CodexLocalHistory: Sendable {

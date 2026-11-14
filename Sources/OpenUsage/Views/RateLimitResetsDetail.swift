@@ -20,6 +20,8 @@ struct RateLimitResetsDetail: View {
     /// no credits (empty state); > 0 → credits we have but whose expiry times weren't fetched.
     let count: Int
     let expiries: [Date]
+    /// What each reset refills, by deadline. Empty when the provider doesn't say.
+    var names: [ResetName] = []
     /// Reports whether the cursor is inside the popover, so the trigger keeps it open while the cursor
     /// travels from the inline value into the popover, and closes once it leaves both.
     var onHoverChange: (Bool) -> Void
@@ -83,11 +85,11 @@ struct RateLimitResetsDetail: View {
             // "You have no rate limit resets" under a still-running spinner reads as a contradiction.
             if let claimingExpiry, !visibleExpiries.contains(claimingExpiry) {
                 claimingRow().transition(.opacity)
-                if case .timeline(let entries) = Self.content(count: count - claimedExpiries.count, expiries: visibleExpiries) {
+                if case .timeline(let entries) = Self.content(count: count - claimedExpiries.count, expiries: visibleExpiries, names: names) {
                     timeline(entries)
                 }
             } else {
-                switch Self.content(count: count - claimedExpiries.count, expiries: visibleExpiries) {
+                switch Self.content(count: count - claimedExpiries.count, expiries: visibleExpiries, names: names) {
                 case .timeline(let entries): timeline(entries)
                 case .unknownExpiries(let count): unknownExpiriesState(count)
                 case .empty: emptyState
@@ -253,9 +255,16 @@ struct RateLimitResetsDetail: View {
 
     private func row(_ entry: Entry) -> some View {
         HStack(spacing: 8) {
+            if let name = entry.name {
+                Text(name)
+                    .font(.system(size: density.supportingPointSize, weight: .medium))
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+            }
             Text(entry.time)
                 .font(.system(size: density.supportingPointSize))
-                .foregroundStyle(.primary)
+                .foregroundStyle(entry.name == nil ? .primary : .secondary)
                 .lineLimit(1)
             Spacer(minLength: 8)
             trailing(entry)
@@ -447,8 +456,8 @@ struct RateLimitResetsDetail: View {
     /// Empty `expiries` is ambiguous: a genuinely empty balance (`count == 0`) shows the empty state,
     /// but a positive `count` with no expiries means the dedicated expiry fetch was unavailable and the
     /// row fell back to the usage-body count — show that count rather than "no resets".
-    static func content(count: Int, expiries: [Date], now: Date = Date()) -> Content {
-        let entries = entries(from: expiries, now: now)
+    static func content(count: Int, expiries: [Date], names: [ResetName] = [], now: Date = Date()) -> Content {
+        let entries = entries(from: expiries, names: names, now: now)
         if !entries.isEmpty { return .timeline(entries) }
         if count > 0 { return .unknownExpiries(count: count) }
         return .empty
@@ -462,6 +471,7 @@ struct RateLimitResetsDetail: View {
         let date: Date       // the credit's expiry instant — identity for the claim flow
         let key: Key         // view identity: the expiry plus its ordinal among equal expiries
         let severity: WidgetData.MeterSeverity
+        var name: String? = nil // what the reset refills, e.g. "Weekly"; nil when the provider doesn't say
         let time: String       // exact expiry, e.g. "Jul 12 at 5:30 PM"; "Expiring soon" when imminent
         let countdown: String? // "12d 18h"; nil when imminent (no useful countdown to show)
 
@@ -471,7 +481,7 @@ struct RateLimitResetsDetail: View {
         }
 
         var accessibilityLabel: String {
-            "Reset \(number), \(time)" + (countdown.map { ", expires in \($0)" } ?? "")
+            "\(name ?? "Reset") \(number), \(time)" + (countdown.map { ", expires in \($0)" } ?? "")
         }
     }
 
@@ -481,7 +491,8 @@ struct RateLimitResetsDetail: View {
     /// off the *relative* window — `Formatters.whenLabel(.relative)` collapses to `soon` at ≤5 minutes,
     /// while `.absolute` only collapses once past-due — so both formats agree instead of the exact time
     /// printing a wall-clock while the countdown reads "soon".
-    static func entries(from expiries: [Date], now: Date = Date()) -> [Entry] {
+    static func entries(from expiries: [Date], names: [ResetName] = [], now: Date = Date()) -> [Entry] {
+        let nameByExpiry = Dictionary(names.map { ($0.expiresAt, $0.name) }, uniquingKeysWith: { first, _ in first })
         var seen: [Date: Int] = [:]
         return expiries.sorted().enumerated().map { index, date in
             let ordinal = seen[date, default: 0]
@@ -495,6 +506,7 @@ struct RateLimitResetsDetail: View {
                 date: date,
                 key: Entry.Key(date: date, ordinal: ordinal),
                 severity: WidgetData.expirySeverity(secondsRemaining: date.timeIntervalSince(now)),
+                name: nameByExpiry[date],
                 time: (imminent || absolute == nil) ? "Expiring soon" : absolute!,
                 countdown: imminent ? nil : relative
             )

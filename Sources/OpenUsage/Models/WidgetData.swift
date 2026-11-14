@@ -34,6 +34,8 @@ struct WidgetData: Hashable {
     /// credits — one entry per still-available credit). Empty for every other row. Kept as raw `Date`s so
     /// the tooltip formats live and follows the global relative/absolute mode (see `expiryTooltip`).
     var expiriesAt: [Date] = []
+    /// What each of `expiriesAt`'s resets refills, when the provider says. Empty for every other row.
+    var resetNames: [ResetName] = []
     /// Descriptor opt-in marking this as the Codex rate-limit-reset-credits row. When set, the value
     /// column reveals the resets popover on hover (a timeline of each credit's expiry, or an empty
     /// state when none are available) and lights up like the spend rows — so it stays reachable even

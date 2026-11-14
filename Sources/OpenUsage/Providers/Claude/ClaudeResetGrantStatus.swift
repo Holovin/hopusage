@@ -8,6 +8,25 @@ struct ClaudeResetGrantStatus: Equatable, Sendable {
         var resetsLeft: Int
         var endsAt: Date?
         var clears: [String]
+        var type: String?
+        var givesBackWeekly = false
+
+        /// What the grant refills, decided as Claude Code decides it: a grant that gives back the week's
+        /// Fable use is a Fable reset whatever its type says, then the type, then the windows it clears.
+        var name: String {
+            if givesBackWeekly { return "Fable" }
+            switch type {
+            case "session": return "Session"
+            case "weekly": return "Weekly"
+            case "full": return "Full Reset"
+            default: break
+            }
+            let session = clears.contains("five_hour")
+            let other = clears.contains { $0 != "five_hour" }
+            if session && !other { return "Session" }
+            if other && !session { return "Weekly" }
+            return "Full Reset"
+        }
     }
 
     var eligible: Bool
@@ -31,7 +50,9 @@ struct ClaudeResetGrantStatus: Equatable, Sendable {
                 id: id,
                 resetsLeft: max(0, left),
                 endsAt: ClaudeUsageMapper.resetDate(grant["ends_at"]),
-                clears: grant["clears"] as? [String] ?? []
+                clears: grant["clears"] as? [String] ?? [],
+                type: grant["type"] as? String,
+                givesBackWeekly: grant["gives_back_weekly"] as? Bool == true
             ))
         }
         let nextGrantID = (object["next_grant_id"] as? String).flatMap { $0.isEmpty ? nil : $0 }
@@ -65,6 +86,21 @@ struct ClaudeResetGrantStatus: Equatable, Sendable {
         return "Refills your \(names.joined(separator: " and ")) limits now. This can't be undone."
     }
 
+    /// The grants whose resets the row counts: eligible, with a reset left, and not yet expired.
+    func availableGrants(now: Date) -> [Grant] {
+        guard eligible else { return [] }
+        return grants.filter { grant in
+            grant.resetsLeft >= 1 && !(grant.endsAt.map { $0 <= now } ?? false)
+        }
+    }
+
+    /// What each listed reset refills, for the resets popover.
+    func resetNames(now: Date) -> [ResetName] {
+        availableGrants(now: now).compactMap { grant in
+            grant.endsAt.map { ResetName(expiresAt: $0, name: grant.name) }
+        }
+    }
+
     /// The row reads "N available" and each remaining reset's grant deadline rides along in
     /// `expiriesAt` for the resets popover; a grant with several resets left contributes one expiry per
     /// reset. Grants past their deadline or with none left are skipped, and an ineligible account reads
@@ -72,12 +108,9 @@ struct ClaudeResetGrantStatus: Equatable, Sendable {
     func line(now: Date) -> MetricLine {
         var count = 0
         var expiries: [Date] = []
-        if eligible {
-            for grant in grants where grant.resetsLeft >= 1 {
-                if let endsAt = grant.endsAt, endsAt <= now { continue }
-                count += grant.resetsLeft
-                if let endsAt = grant.endsAt { expiries += Array(repeating: endsAt, count: grant.resetsLeft) }
-            }
+        for grant in availableGrants(now: now) {
+            count += grant.resetsLeft
+            if let endsAt = grant.endsAt { expiries += Array(repeating: endsAt, count: grant.resetsLeft) }
         }
         return .values(
             label: "Rate Limit Resets",

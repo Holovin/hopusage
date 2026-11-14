@@ -1,6 +1,13 @@
 import Foundation
 
 /// Latest normalized output for one provider refresh.
+/// What one rate-limit reset refills, keyed by the reset's deadline: "Session", "Weekly", "Fable", or
+/// "Full Reset". The resets popover shows it beside the deadline.
+struct ResetName: Hashable, Sendable, Codable {
+    var expiresAt: Date
+    var name: String
+}
+
 struct ProviderSnapshot: Hashable, Sendable, Codable {
     let providerID: String
     let displayName: String
@@ -22,6 +29,8 @@ struct ProviderSnapshot: Hashable, Sendable, Codable {
     /// Row titles this reading renames, keyed by line label (Cursor's team-pool Extra Usage reads
     /// "Team Spend", Claude Enterprise's reads "Spend"). Older cached snapshots carry none.
     var lineTitles: [String: String]?
+    /// Names for the Rate Limit Resets row's resets. Older cached snapshots carry none.
+    var resetNames: [ResetName]?
 
     init(
         providerID: String,

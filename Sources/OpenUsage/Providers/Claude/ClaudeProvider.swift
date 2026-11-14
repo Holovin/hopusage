@@ -350,6 +350,8 @@ final class ClaudeProvider: ProviderRuntime {
         )
         let titles = ClaudeUsageMapper.lineTitles(plan: mapped.plan)
         snapshot.lineTitles = titles.isEmpty ? nil : titles
+        let resetNames = resetGrantsCheck?.status?.resetNames(now: now()) ?? []
+        snapshot.resetNames = resetNames.isEmpty ? nil : resetNames
         return snapshot
     }
 
