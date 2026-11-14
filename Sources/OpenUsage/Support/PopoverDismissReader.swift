@@ -63,16 +63,32 @@ struct PopoverKeyReader: NSViewRepresentable {
         eventWindowID == popoverWindowID
     }
 
+    enum Key: Equatable {
+        case escape, `return`, settings, undo
+    }
+
+    /// The popover key an event stands for, if any. Esc and Return sit on the same key in every layout, so
+    /// they match by key code. ⌘, and ⌘Z match the character typed with ⌘ held, so they follow the layout,
+    /// including one like Dvorak – QWERTY ⌘ that switches to QWERTY while ⌘ is down: on QWERTZ the Z key
+    /// sits where QWERTY has Y. Only bare Return navigates (⌘⏎, ⌥⏎ belong to other controls), and only
+    /// plain ⌘, and ⌘Z count: a bare comma or z is typing, and ⇧⌘Z is redo.
+    nonisolated static func key(keyCode: UInt16, modifiers: NSEvent.ModifierFlags, characters: String?) -> Key? {
+        let modifiers = modifiers.intersection([.command, .option, .control, .shift])
+        switch (keyCode, modifiers, characters?.lowercased()) {
+        case (53, _, _): return .escape
+        case (36, [], _): return .return
+        case (_, [.command], ","): return .settings
+        case (_, [.command], "z"): return .undo
+        default: return nil
+        }
+    }
+
     final class MonitorView: NSView {
         var onEscape: (@MainActor () -> Bool)?
         var onReturn: (@MainActor () -> Bool)?
         var onSettings: (@MainActor () -> Bool)?
         var onUndo: (@MainActor () -> Bool)?
         private var monitor: Any?
-        private static let escapeKeyCode: UInt16 = 53
-        private static let returnKeyCode: UInt16 = 36
-        private static let commaKeyCode: UInt16 = 43
-        private static let zKeyCode: UInt16 = 6
 
         override func viewDidMoveToWindow() {
             super.viewDidMoveToWindow()
@@ -82,31 +98,12 @@ struct PopoverKeyReader: NSViewRepresentable {
             }
             guard window != nil else { return }
             monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
-                let keyCode = event.keyCode
-                guard keyCode == MonitorView.escapeKeyCode
-                    || keyCode == MonitorView.returnKeyCode
-                    || keyCode == MonitorView.commaKeyCode
-                    || keyCode == MonitorView.zKeyCode else {
-                    return event
-                }
-                let isReturn = keyCode == MonitorView.returnKeyCode
-                let isComma = keyCode == MonitorView.commaKeyCode
-                let isUndo = keyCode == MonitorView.zKeyCode
-                // Only bare Return navigates; ⌘⏎, ⌥⏎, etc. belong to other controls.
-                if isReturn,
-                   !event.modifierFlags.intersection([.command, .option, .control, .shift]).isEmpty {
-                    return event
-                }
-                // Only plain ⌘, navigates; a bare comma (typing) or ⌥⌘, etc. belong elsewhere.
-                if isComma,
-                   event.modifierFlags.intersection([.command, .option, .control, .shift]) != [.command] {
-                    return event
-                }
-                // Only plain ⌘Z undoes; a bare z (typing) or ⇧⌘Z (redo) belong elsewhere.
-                if isUndo,
-                   event.modifierFlags.intersection([.command, .option, .control, .shift]) != [.command] {
-                    return event
-                }
+                guard let key = PopoverKeyReader.key(
+                    keyCode: event.keyCode, modifiers: event.modifierFlags, characters: event.characters
+                ) else { return event }
+                let isReturn = key == .return
+                let isComma = key == .settings
+                let isUndo = key == .undo
                 let eventWindowID = event.window.map(ObjectIdentifier.init)
                 let consumed = MainActor.assumeIsolated { () -> Bool in
                     // Only act while the popover is on-screen; the SwiftUI tree (and this monitor) can

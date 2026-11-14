@@ -95,6 +95,8 @@ When HopUsage ships a new default metric, existing layouts get it once. If you t
 | ⌘R | Refresh now from the dashboard or Settings (skips the cache) |
 | ⌘, | Open / close Settings (in the popover) |
 
+⌘Z and ⌘, follow your keyboard layout: they match the character you type, not the key's position.
+
 A global shortcut (recorded in Settings) toggles the popover from anywhere.
 
 ## Closing
