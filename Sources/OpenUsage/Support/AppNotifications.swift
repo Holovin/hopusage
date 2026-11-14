@@ -53,9 +53,17 @@ final class AppNotifications: NSObject, UNUserNotificationCenterDelegate {
     /// tests.
     func openSystemNotificationsSettings() {
         guard !Self.isRunningUnderTests else { return }
-        if let url = URL(string: "x-apple.systempreferences:com.apple.Notifications-Settings.extension") {
+        if let url = Self.systemNotificationsSettingsURL(bundleID: Bundle.main.bundleIdentifier) {
             NSWorkspace.shared.open(url)
         }
+    }
+
+    /// System Settings → Notifications, opened on this app's own page when the bundle id is known so
+    /// the switch is one click away, and on the Notifications list otherwise.
+    static func systemNotificationsSettingsURL(bundleID: String?) -> URL? {
+        let base = "x-apple.systempreferences:com.apple.Notifications-Settings.extension"
+        guard let bundleID, !bundleID.isEmpty else { return URL(string: base) }
+        return URL(string: "\(base)?id=\(bundleID)")
     }
 
     /// Post one immediate notification. `idPrefix` names the source (e.g. a metric key) for the log line;
