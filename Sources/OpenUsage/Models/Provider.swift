@@ -29,10 +29,18 @@ struct Provider: Identifiable, Hashable {
             return ProviderLink(label: label, url: url)
         }
     }
+
+    /// The links a provider card shows. Fork: none, the quick-link buttons are switched off
+    /// (`ProviderLink.showsOnCards`).
+    var cardLinks: [ProviderLink] { ProviderLink.showsOnCards ? visibleLinks : [] }
 }
 
 /// One external quick-link button on a provider card: a label and a URL opened in the default browser.
 struct ProviderLink: Hashable {
+    /// Fork: the quick-link buttons (Status, Dashboard, …) are switched off, so a card shows metrics only.
+    /// The providers keep declaring their links so the original's row can be turned back on here.
+    static let showsOnCards = false
+
     let label: String
     let url: String
 }

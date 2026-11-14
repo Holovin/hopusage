@@ -9,6 +9,14 @@ final class ProviderLinksTests: XCTestCase {
         Provider(id: "test", displayName: "Test", icon: .providerMark("test"), links: links)
     }
 
+    /// Fork: the quick-link buttons are switched off, so a card gets no links even when the provider has some.
+    func testCardsShowNoLinks() {
+        XCTAssertFalse(ProviderLink.showsOnCards)
+        let links = [ProviderLink(label: "Status", url: "https://status.example.com/")]
+        XCTAssertEqual(provider(links).visibleLinks, links)
+        XCTAssertTrue(provider(links).cardLinks.isEmpty)
+    }
+
     func testNoLinksYieldsEmptyVisibleLinks() {
         XCTAssertTrue(provider([]).visibleLinks.isEmpty)
     }

@@ -14,6 +14,9 @@ Each provider card leads with its **Always Visible** metrics. When a card is col
 
 When you expand a card, the tucked-away metrics open below the line as a single-column list, so each detail row keeps the full card width.
 
+> **Fork note:** the quick-link buttons are switched off in this fork (`ProviderLink.showsOnCards`), so a
+> card shows metrics only. The next paragraph describes the original behavior.
+
 A provider card can also show **quick-link buttons** pinned at the bottom of its expanded section — Status, Console, Dashboard, and the like — that open the provider's own pages in your default browser. They're part of the expander, so collapsing the caret hides them along with the tucked-away metrics. The caret sits below the links. Buttons lay out up to three across, wrapping to a second row when there are more.
 
 ## Total Spend

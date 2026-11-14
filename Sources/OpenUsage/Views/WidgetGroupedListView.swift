@@ -140,7 +140,7 @@ struct WidgetGroupedListView: View {
             expandedRows: expandedRows,
             hasExpandedMetrics: group.hasExpandedMetrics,
             isExpanded: isExpanded,
-            links: group.provider.visibleLinks
+            links: group.provider.cardLinks
         )
         // Same card builder the lifted preview uses, so the floating chip can't drift from the live card.
         return DashboardMetricCard {
@@ -328,7 +328,7 @@ struct WidgetGroupedListView: View {
         // The separator is a drop target whenever the expanded section is open — including a links-only
         // section (buttons but no expanded metrics), so a metric can be dragged across the boundary
         // even when only buttons are showing below it.
-        let hasExpandedContent = group.hasExpandedMetrics || !group.provider.visibleLinks.isEmpty
+        let hasExpandedContent = group.hasExpandedMetrics || !group.provider.cardLinks.isEmpty
         guard hasExpandedContent, layout.isProviderExpanded(providerID) else { return alwaysShown }
         let expanded = group.expandedWidgets.compactMap { layout.descriptor(for: $0)?.id }
         return alwaysShown + [expandedDividerID(for: providerID)] + expanded
@@ -346,7 +346,7 @@ struct WidgetGroupedListView: View {
                 return dataStore.data(for: descriptor)
             }
             : []
-        let links = group.provider.visibleLinks
+        let links = group.provider.cardLinks
         let hasExpandedContent = group.hasExpandedMetrics || !links.isEmpty
         return ReorderLift.make(
             id: group.provider.id,
