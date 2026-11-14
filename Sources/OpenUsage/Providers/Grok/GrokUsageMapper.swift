@@ -30,9 +30,11 @@ enum GrokUsageMapper {
         }
         // A missing `onDemandCap` means no pay-as-you-go (proto-JSON also drops a 0 cap) → the
         // Disabled badge, same as a present cap of 0.
+        // The cap is in cents, like the rest of the billing response.
+        let cap = MetricFormatter.number(ProviderParse.centsToDollars(config.onDemandCap), kind: .dollars, style: .row)
         lines.append(.badge(
             label: "Pay as you go",
-            text: config.onDemandCap > 0 ? "\(formatUnits(config.onDemandCap)) cap" : "Disabled",
+            text: config.onDemandCap > 0 ? "\(cap) cap" : "Disabled",
             colorHex: config.onDemandCap > 0 ? "#22c55e" : "#a3a3a3"
         ))
         return GrokMappedUsage(lines: lines)
@@ -65,12 +67,5 @@ enum GrokUsageMapper {
         }
         let trimmed = plan.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? nil : trimmed
-    }
-
-    private static func formatUnits(_ value: Double) -> String {
-        if value.rounded() == value {
-            return String(Int(value))
-        }
-        return String(value)
     }
 }

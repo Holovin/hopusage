@@ -412,14 +412,14 @@ final class GrokWidgetDataStoreTests: XCTestCase {
             snapshot: ProviderSnapshot(
                 providerID: provider.id,
                 displayName: provider.displayName,
-                lines: [.badge(label: "Pay as you go", text: "2500 cap", colorHex: "#22c55e")]
+                lines: [.badge(label: "Pay as you go", text: "$25.00 cap", colorHex: "#22c55e")]
             )
         )
         let store = WidgetDataStore(registry: WidgetRegistry(providers: [provider], descriptors: [descriptor]), providers: [runtime])
 
         await store.refreshAll()
 
-        XCTAssertEqual(store.data(for: descriptor).valueText, "2500 cap")
+        XCTAssertEqual(store.data(for: descriptor).valueText, "$25.00 cap")
     }
 }
 
