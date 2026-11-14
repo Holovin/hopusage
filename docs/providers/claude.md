@@ -36,6 +36,10 @@ your plan, or reports a reset HopUsage can't read, the row shows **No data**.
 Each reset in the popover is named for what it refills: **Session** (the 5-hour limit), **Weekly** (the
 weekly limits), **Full Reset** (both), or **Fable** (a reset that gives back the week for Fable).
 
+> **Fork note:** spending a reset from the popover is switched off in this fork (`ResetClaims.isEnabled`).
+> The popover only lists the resets; there is no **Use** button. Use a reset with `/rate-limit-options`
+> in Claude Code. The rest of this section describes the original behavior.
+
 To use a reset, hover a node in the popover and click **Use**, then confirm. Anthropic decides which
 reset is spent (the next one it offers), and the confirm card says which limits it refills. The claim
 only ever uses the login the resets were read with, never another Claude login on the Mac. If that

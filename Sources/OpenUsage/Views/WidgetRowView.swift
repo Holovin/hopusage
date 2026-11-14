@@ -377,7 +377,7 @@ struct WidgetRowView: View {
                         // Rows without a claimable service (previews, share renders, a Claude account
                         // with no next grant) show the read-only timeline.
                         claim: resetClaim.flatMap { service in
-                            service.isClaimable ? { expiry, redeemRequestID in
+                            ResetClaims.isEnabled && service.isClaimable ? { expiry, redeemRequestID in
                                 await service.claim(creditExpiringAt: expiry, redeemRequestID: redeemRequestID)
                             } : nil
                         },

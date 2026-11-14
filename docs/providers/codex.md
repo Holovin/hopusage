@@ -132,6 +132,10 @@ The "Rate Limit Resets" row shows the on-demand reset-credit count, e.g. `2 avai
 
 ### Using a reset from the popover
 
+> **Fork note:** spending a reset from the popover is switched off in this fork (`ResetClaims.isEnabled`).
+> The popover only lists the credits; there is no **Use** button. Use a credit from the Codex CLI
+> instead. The rest of this section describes the original behavior.
+
 You can also spend a reset credit right from that popover — the same claim the Codex CLI's "Usage limit resets" picker performs. Hover a credit in the timeline and a **Use** button appears; clicking it expands that credit into an inline confirmation ("Immediately reset your usage limits. This can't be undone.") with **Reset** / **Cancel**. Confirming claims that exact credit and immediately resets your 5-hour and weekly windows; the app then refreshes Codex so the meters and the remaining count reflect it before the success line ("Reset claimed. Enjoy!") appears.
 
 Safeguards, because a claim is irreversible:

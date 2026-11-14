@@ -14,6 +14,12 @@ enum ResetClaimOutcome: Equatable, Sendable {
     case failed
 }
 
+/// Fork: spending a reset from the popover is switched off. The popover lists the resets and what each
+/// refills, read-only; the claim services stay wired so the original's flow can be turned back on here.
+enum ResetClaims {
+    static let isEnabled = false
+}
+
 /// Claims one rate-limit reset from the resets popover. Never throws: every failure is logged and
 /// collapsed to an outcome.
 @MainActor

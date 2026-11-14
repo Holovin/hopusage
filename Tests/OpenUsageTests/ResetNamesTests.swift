@@ -1,7 +1,7 @@
 import XCTest
 @testable import OpenUsage
 
-/// The resets popover names what each reset refills.
+/// The resets popover names what each reset refills, and spending one from the popover is switched off.
 final class ResetNamesTests: XCTestCase {
     private func grant(_ fields: String) -> ClaudeResetGrantStatus.Grant? {
         let json = #"{"eligible":true,"grants":[{"id":"g1","resets_left":1,"ends_at":"2099-01-01T00:00:00Z",\#(fields)}]}"#
@@ -44,5 +44,9 @@ final class ResetNamesTests: XCTestCase {
         XCTAssertEqual(entries.map(\.name), ["Weekly", nil])
         XCTAssertTrue(entries[0].accessibilityLabel.hasPrefix("Weekly 1,"))
         XCTAssertTrue(entries[1].accessibilityLabel.hasPrefix("Reset 2,"))
+    }
+
+    func testSpendingAResetFromThePopoverIsSwitchedOff() {
+        XCTAssertFalse(ResetClaims.isEnabled)
     }
 }
