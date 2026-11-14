@@ -25,10 +25,13 @@ APP_DISPLAY="HopUsage"                  # user-facing app name
 BUNDLE_ID="${BUNDLE_ID:-com.holovin-local.hopusage.dev}"
 ICLOUD_CONTAINER_ID="iCloud.com.holovin-local.hopusage.dev"
 MIN_SYSTEM_VERSION="15.0"
-APP_VERSION="0.7.0"
 APP_BUILD="0.7.0"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# Fork: the dev bundle shows the same version as a release, read from FORK_VERSION, with "-dev" added
+# where the Info.plist is written (e.g. 0.7.16-fork.0.8.0-dev).
+APP_VERSION="$(tr -d '[:space:]' < "$ROOT_DIR/FORK_VERSION")"
+[ -n "$APP_VERSION" ] || { echo "FORK_VERSION is empty" >&2; exit 1; }
 DIST_DIR="$ROOT_DIR/dist"
 APP_BUNDLE="$DIST_DIR/$APP_DISPLAY.app"
 APP_CONTENTS="$APP_BUNDLE/Contents"
