@@ -47,8 +47,14 @@ extension ClaudeProvider {
             try await checkCredentialGeneration(expectedGeneration, forceDesktopFallback: forceDesktopFallback)
             // Checked after the await: a claim during it must not get the pre-claim status put back.
             guard resetClaimEpoch == epoch else { return held }
-            AppLog.warn(LogTag.plugin("claude"), "reset grants lookup failed; retrying in an hour: \(error.localizedDescription)")
-            resetGrantsCheck = ClaudeResetGrantsCheck(
+            // A read that can't connect before the first answer, such as a Mac waking with no network,
+            // stays due for the next refresh instead of leaving the row empty for an hour.
+            let offlineBeforeAnswer = previous == nil && error is URLError
+            AppLog.warn(
+                LogTag.plugin("claude"),
+                "reset grants lookup failed; retrying \(offlineBeforeAnswer ? "on the next refresh" : "in an hour"): \(error.localizedDescription)"
+            )
+            resetGrantsCheck = offlineBeforeAnswer ? nil : ClaudeResetGrantsCheck(
                 credentialFingerprint: fingerprint, checkedAt: now, status: previous?.status
             )
             return held

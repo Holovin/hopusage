@@ -200,6 +200,39 @@ final class ClaudeResetClaimTests: XCTestCase {
         XCTAssertNotNil(provider.resetGrantsCheck)
     }
 
+    func testAGrantsReadThatCannotConnectBeforeTheFirstAnswerStaysDue() async {
+        let offline = RateLimitSwitch()
+        offline.on = true
+        let http = RoutingHTTPClient { request in
+            if request.isClaudeResetGrantsCheck {
+                guard !offline.on else { throw URLError(.notConnectedToInternet) }
+                return Self.json(#"{"cedar_ember":\#(Self.grantsBlock)}"#)
+            }
+            switch request.url.path {
+            case "/api/oauth/usage":
+                return Self.json(#"{"five_hour":{"utilization":100,"resets_at":"2099-01-01T00:00:00.000Z"}}"#)
+            case "/api/oauth/profile":
+                return Self.json(#"{"account":{"uuid":"acct"},"organization":{"uuid":"\#(Self.orgUUID)","organization_type":"claude_max"}}"#)
+            default:
+                return HTTPResponse(statusCode: 404, headers: [:], body: Data())
+            }
+        }
+        let provider = makeProvider(http: http)
+
+        _ = await provider.refresh()
+        XCTAssertNil(provider.resetGrantsCheck, "no answer yet, so the read must not wait out the hour")
+
+        offline.on = false
+        _ = await provider.refresh()
+        XCTAssertNotNil(provider.resetGrantsCheck?.status)
+
+        // Once an answer is held, a failed read keeps it and waits the hour.
+        offline.on = true
+        _ = await provider.refresh()
+        XCTAssertNotNil(provider.resetGrantsCheck?.status)
+        XCTAssertEqual(http.requests.filter(\.isClaudeResetGrantsCheck).count, 2)
+    }
+
     func testRefusedClaimKeepsTheCache() async {
         let http = makeHTTP(claim: { _ in Self.json(#"{"result":"not_limited","reason":null}"#) })
         let provider = makeProvider(http: http)
