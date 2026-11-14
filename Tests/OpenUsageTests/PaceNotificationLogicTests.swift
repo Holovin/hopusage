@@ -27,12 +27,35 @@ final class PaceNotificationLogicTests: XCTestCase {
         fraction: Double = 0.5,
         resetsAt: Date? = nil,
         from previous: NotificationState = NotificationState(),
-        toggles: PaceNotificationToggles = .allOn
+        toggles: PaceNotificationToggles = .allOn,
+        now: Date? = nil
     ) -> PaceNotificationLogic.Transition {
+        // By default the previous window's reset has already passed, so a later reset is a new window.
         PaceNotificationLogic.transitions(
             state: state, fraction: fraction, resetsAt: resetsAt ?? reset,
-            previous: previous, toggles: toggles
+            previous: previous, toggles: toggles, now: now ?? previous.resetsAt ?? .distantPast
         )
+    }
+
+    // MARK: - Reset window
+
+    func testAResetThatMovesForwardBeforeItPassesIsTheSameWindow() {
+        let now = reset.addingTimeInterval(-3600)
+        let later = reset.addingTimeInterval(1800)
+        XCTAssertFalse(PaceNotificationLogic.resetWindowAdvanced(resetsAt: later, previousReset: reset, now: now))
+        XCTAssertTrue(PaceNotificationLogic.resetWindowAdvanced(resetsAt: later, previousReset: reset, now: reset))
+        XCTAssertTrue(PaceNotificationLogic.resetWindowAdvanced(resetsAt: later, previousReset: nil, now: now))
+        XCTAssertFalse(PaceNotificationLogic.resetWindowAdvanced(resetsAt: nil, previousReset: reset, now: reset))
+    }
+
+    func testARollingResetDoesNotRepeatAnAlert() {
+        let now = reset.addingTimeInterval(-3600)
+        let first = step(running, fraction: 0.05, from: NotificationState(primed: true), now: now)
+        XCTAssertFalse(first.fire.isEmpty)
+        let rolled = step(
+            running, fraction: 0.05, resetsAt: reset.addingTimeInterval(1800), from: first.newState, now: now
+        )
+        XCTAssertTrue(rolled.fire.isEmpty)
     }
 
     // MARK: - Pace-verdict edges

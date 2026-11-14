@@ -136,13 +136,14 @@ enum PaceNotificationLogic {
         fraction: Double,
         resetsAt: Date?,
         previous: NotificationState,
-        toggles: PaceNotificationToggles
+        toggles: PaceNotificationToggles,
+        now: Date
     ) -> Transition {
         var next = previous
 
         // New window: reset dedup. A nil-or-equal reset keeps the window; a reset appearing where there
         // was none or moving later by more than the jitter tolerance starts fresh.
-        if resetWindowAdvanced(resetsAt: resetsAt, previousReset: previous.resetsAt) {
+        if resetWindowAdvanced(resetsAt: resetsAt, previousReset: previous.resetsAt, now: now) {
             next.firedMilestones = []
             next.wasUnderTenPercent = false
             next.previousBucket = .untracked
@@ -253,9 +254,11 @@ enum PaceNotificationLogic {
     /// meaningful advance re-arms milestones; the UI can still display the exact provider timestamp.
     static let resetWindowJitterTolerance: TimeInterval = 1
 
-    static func resetWindowAdvanced(resetsAt: Date?, previousReset: Date?) -> Bool {
+    /// A new window starts only once the old reset has passed. A reset that moves forward before then, like
+    /// a rolling session, is the same window.
+    static func resetWindowAdvanced(resetsAt: Date?, previousReset: Date?, now: Date) -> Bool {
         guard let resetsAt else { return false }
         guard let previousReset else { return true }
-        return resetsAt.timeIntervalSince(previousReset) > resetWindowJitterTolerance
+        return previousReset <= now && resetsAt.timeIntervalSince(previousReset) > resetWindowJitterTolerance
     }
 }
