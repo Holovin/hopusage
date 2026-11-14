@@ -10,7 +10,7 @@ Tracks your Cursor plan usage using the login from the Cursor app.
 | Cursor Models | Usage percent for Cursor's own models, including Cursor Grok and Composer |
 | Other Models | Usage percent for other models |
 | Grok Bot | Grok Bot weekly usage percent and reset countdown; enabled by default |
-| Extra Usage | On-demand spend; user-scoped when available, otherwise the team aggregate; shown as a meter when Cursor returns a limit. Titled Team Spend when the limit is the team's shared pool |
+| Extra Usage | On-demand spend; user-scoped when available, otherwise the team aggregate; shown as a meter when Cursor returns a limit. Titled Team Spend when the limit is the team's shared pool. Spend is read from the same budget as the limit: a personal cap shows your own spend, the team pool shows the team's |
 | Requests | Optional copy of the included request count vs. cap for custom layouts |
 | Credits | Credit balance left from grants and prepaid account balance |
 

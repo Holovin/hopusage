@@ -221,9 +221,22 @@ enum CursorUsageMapper {
 
         if let spendLimitUsage {
             let individualLimit = ProviderParse.number(spendLimitUsage["individualLimit"])
-            let limit = individualLimit ?? ProviderParse.number(spendLimitUsage["pooledLimit"]) ?? 0
-            let remaining = ProviderParse.number(spendLimitUsage["individualRemaining"]) ?? ProviderParse.number(spendLimitUsage["pooledRemaining"]) ?? 0
-            let spent = onDemandSpendCents(from: spendLimitUsage, limit: limit, remaining: remaining)
+            // Spend is read from the same budget as the limit: a personal cap never shows the team's
+            // pooled spend against it, and the team pool never shows one member's.
+            let hasTeamSpend = facts.isTeamByShape || ProviderParse.number(spendLimitUsage["pooledUsed"]) ?? 0 > 0
+            let budget: (limit: Double, spent: [String], remaining: String?) = if let individualLimit {
+                (individualLimit, hasTeamSpend ? ["individualUsed"] : ["individualUsed", "totalSpend"], "individualRemaining")
+            } else if facts.pooledLimit > 0 {
+                (facts.pooledLimit, ["pooledUsed"], "pooledRemaining")
+            } else {
+                (0, ["individualUsed", "pooledUsed", "totalSpend"], nil)
+            }
+            let limit = budget.limit
+            let spent = onDemandSpendCents(
+                reported: budget.spent.compactMap { ProviderParse.number(spendLimitUsage[$0]) },
+                limit: limit,
+                remaining: budget.remaining.flatMap { ProviderParse.number(spendLimitUsage[$0]) }
+            )
             // The team's shared pool is not a personal cap, so the row says whose spend it is.
             if individualLimit == nil && facts.isTeamByShape && (limit > 0 || spent > 0) {
                 lineTitles["On-demand"] = "Team Spend"
@@ -246,16 +259,11 @@ enum CursorUsageMapper {
         return CursorMappedUsage(plan: planLabel(planName), lines: lines, lineTitles: lineTitles)
     }
 
-    private static func onDemandSpendCents(from spendLimitUsage: [String: Any], limit: Double, remaining: Double) -> Double {
-        let reported = [
-            ProviderParse.number(spendLimitUsage["individualUsed"]),
-            ProviderParse.number(spendLimitUsage["pooledUsed"]),
-            ProviderParse.number(spendLimitUsage["totalSpend"])
-        ].compactMap { $0 }
+    private static func onDemandSpendCents(reported: [Double], limit: Double, remaining: Double?) -> Double {
         if let positive = reported.first(where: { $0 > 0 }) {
             return positive
         }
-        let inferred = max(0, limit - remaining)
+        let inferred = remaining.map { max(0, limit - $0) } ?? 0
         return inferred > 0 ? inferred : (reported.first ?? 0)
     }
 
