@@ -107,7 +107,7 @@ final class CodexSwapAccountTests: XCTestCase {
         let fresh = layout()
         XCTAssertTrue(Set(ids).isSubset(of: Set(fresh.displayGroups.map { $0.provider.id })))
         for id in ids {
-            XCTAssertTrue(fresh.pinnedMetricIDs.contains(id + ".weekly"))
+            XCTAssertFalse(fresh.pinnedMetricIDs.contains(id + ".weekly"), "the fork pins nothing by default")
             XCTAssertTrue(fresh.expandedMetricIDs.contains(id + ".spark"))
         }
         // Model the pre-Swap installation, including an explicit pin customization.
@@ -117,7 +117,7 @@ final class CodexSwapAccountTests: XCTestCase {
             if hasSavedPlacement {
                 LayoutPersistence(defaults: existingDefaults, storageKey: "openusage.layout.v1").savePlaced(legacy.placed)
             }
-            legacy.setPinned(false, for: "codex.session")
+            legacy.setPinned(true, for: "codex.session")
             let oldPins = legacy.pinnedMetricIDs
             let upgraded = LayoutStore(registry: registry, defaults: existingDefaults,
                 defaultMetricIDs: DefaultLayout.expandingAccounts(DefaultLayout.metricIDs, providerIDs: ids),

@@ -16,8 +16,8 @@ final class AntigravityLayoutTests: XCTestCase {
             "antigravity.today", "antigravity.yesterday", "antigravity.last30"
         ])
 
-        // The Gemini pair is pinned (2-per-provider cap), mirroring Claude/Codex Session+Weekly.
-        XCTAssertEqual(store.pinnedMetricIDs, ["antigravity.geminiPro", "antigravity.geminiWeekly"])
+        // Fork: nothing is pinned by default.
+        XCTAssertEqual(store.pinnedMetricIDs, [])
 
         // Gemini pair, Argon Weekly, and trend above the fold; Claude and spend below the caret.
         let group = store.customizeGroups.first { $0.provider.id == "antigravity" }
@@ -86,10 +86,9 @@ final class AntigravityLayoutTests: XCTestCase {
         XCTAssertEqual(store.pinnedMetricIDs, ["antigravity.geminiPro"])
     }
 
-    func testAbsentPinsKeyAdoptsGeminiWeeklyPinOnUpgrade() {
+    func testAbsentPinsKeyAdoptsTheDefaultPinsOnUpgrade() {
         // Pins re-derive from current defaults whenever the pins key is absent, and init never
-        // persists pins — so an existing user who never touched pins automatically gains the
-        // Gemini Weekly pin (still within the 2-per-provider cap).
+        // persists pins. Fork: the defaults pin nothing, so such a user ends up with no pins.
         let defaults = makeDefaults("PinsAbsent")
         saveStored([
             PlacedWidget(descriptorID: "antigravity.geminiPro"),
@@ -97,7 +96,7 @@ final class AntigravityLayoutTests: XCTestCase {
         ], forKey: "layout", in: defaults)
 
         let store = LayoutStore(registry: .antigravityOnly, defaults: defaults, storageKey: "layout")
-        XCTAssertEqual(store.pinnedMetricIDs, ["antigravity.geminiPro", "antigravity.geminiWeekly"])
+        XCTAssertEqual(store.pinnedMetricIDs, [])
     }
 
     func testArgonUpgradeSeedsOnceAndPreservesSavedPinsOrderAndOptOuts() {
@@ -151,7 +150,7 @@ final class AntigravityLayoutTests: XCTestCase {
 
             XCTAssertTrue(store.isMetricEnabled("antigravity.argonWeekly"))
             XCTAssertFalse(store.expandedMetricIDs.contains("antigravity.argonWeekly"))
-            XCTAssertEqual(store.pinnedMetricIDs, ["antigravity.geminiPro", "antigravity.geminiWeekly"])
+            XCTAssertEqual(store.pinnedMetricIDs, [])
             XCTAssertEqual(Array(store.orderedSupportedMetrics(for: "antigravity").prefix(3).map(\.id)), [
                 "antigravity.geminiPro", "antigravity.geminiWeekly", "antigravity.argonWeekly"
             ])

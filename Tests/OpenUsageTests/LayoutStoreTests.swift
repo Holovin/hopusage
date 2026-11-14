@@ -100,7 +100,8 @@ final class LayoutStoreTests: XCTestCase {
         XCTAssertTrue(store.undo())
         XCTAssertFalse(store.isPinned("cursor.usage"), "undo reverses a pin")
 
-        // Unpin a default-pinned metric, then undo → back to pinned.
+        // Unpin a pinned metric, then undo → back to pinned.
+        store.setPinned(true, for: "claude.session")
         XCTAssertTrue(store.isPinned("claude.session"))
         store.setPinned(false, for: "claude.session")
         XCTAssertFalse(store.isPinned("claude.session"))
@@ -675,8 +676,8 @@ final class LayoutStoreTests: XCTestCase {
         XCTAssertFalse(store.isPinned("claude.fable"))
         XCTAssertFalse(store.isMetricEnabled("claude.sonnet"))
         XCTAssertTrue(store.isMetricEnabled("codex.session"))
-        XCTAssertTrue(store.isPinned("codex.session"))
-        XCTAssertTrue(store.isPinned("codex.weekly"))
+        XCTAssertFalse(store.isPinned("codex.session"))
+        XCTAssertFalse(store.isPinned("codex.weekly"))
         XCTAssertTrue(store.isMetricEnabled("cursor.grokBot"))
         XCTAssertFalse(store.isMetricEnabled("cursor.requests"))
         XCTAssertFalse(store.isMetricEnabled("cursor.credits"))
@@ -749,35 +750,47 @@ final class LayoutStoreTests: XCTestCase {
         XCTAssertEqual(reloaded.orderedSupportedMetrics(for: "claude").map(\.id).first, "claude.extra")
     }
 
-    func testFreshStoreSeedsDefaultPins() {
-        let store = makeStore("SeedPins")
-        let expected = Set(DefaultLayout.pinnedMetricIDs.filter { MockData.descriptor($0) != nil })
+    /// Fork: a fresh install pins nothing, so the menu bar shows only the app icon.
+    func testFreshStorePinsNothing() {
+        XCTAssertTrue(DefaultLayout.pinnedMetricIDs.isEmpty)
+        XCTAssertTrue(makeStore("SeedPins").pinnedMetricIDs.isEmpty)
+    }
 
-        XCTAssertFalse(expected.isEmpty, "fixture registry should know some default-pinned metrics")
-        XCTAssertEqual(store.pinnedMetricIDs, expected)
+    func testFreshStoreSeedsTheDefaultPinsItIsGiven() {
+        let store = LayoutStore(
+            registry: .mock, defaults: makeDefaults("SeedGivenPins"), storageKey: "layout",
+            defaultPinnedMetricIDs: ["claude.session", "codex.weekly", "nope.unknown"]
+        )
+        XCTAssertEqual(store.pinnedMetricIDs, ["claude.session", "codex.weekly"])
     }
 
     func testUnpinningEverythingPersistsAndIsNotReseeded() {
         let defaults = makeDefaults("UnpinAll")
-        let store = LayoutStore(registry: .mock, defaults: defaults, storageKey: "layout")
+        let store = LayoutStore(
+            registry: .mock, defaults: defaults, storageKey: "layout", defaultPinnedMetricIDs: ["claude.session"]
+        )
         XCTAssertFalse(store.pinnedMetricIDs.isEmpty)
 
         for id in store.pinnedMetricIDs { store.setPinned(false, for: id) }
         XCTAssertTrue(store.pinnedMetricIDs.isEmpty)
 
-        let reloaded = LayoutStore(registry: .mock, defaults: defaults, storageKey: "layout")
+        let reloaded = LayoutStore(
+            registry: .mock, defaults: defaults, storageKey: "layout", defaultPinnedMetricIDs: ["claude.session"]
+        )
         XCTAssertTrue(reloaded.pinnedMetricIDs.isEmpty, "an explicitly emptied pin set must not be reseeded")
     }
 
     func testResetToDefaultRestoresDefaultPins() {
-        let store = makeStore("ResetPins")
-        for id in store.pinnedMetricIDs { store.setPinned(false, for: id) }
-        XCTAssertTrue(store.pinnedMetricIDs.isEmpty)
+        let store = LayoutStore(
+            registry: .mock, defaults: makeDefaults("ResetPins"), storageKey: "layout",
+            defaultPinnedMetricIDs: ["claude.session"]
+        )
+        store.setPinned(false, for: "claude.session")
+        store.setPinned(true, for: "codex.weekly")
 
         store.resetToDefault()
 
-        let expected = Set(DefaultLayout.pinnedMetricIDs.filter { MockData.descriptor($0) != nil })
-        XCTAssertEqual(store.pinnedMetricIDs, expected)
+        XCTAssertEqual(store.pinnedMetricIDs, ["claude.session"])
     }
 
     func testResetToDefaultRestoresProviderOrderAndMarksDefaultsSeeded() {

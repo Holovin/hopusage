@@ -72,22 +72,9 @@ enum DefaultLayout {
         "cursor.onDemand", "cursor.today", "cursor.yesterday", "cursor.last30"
     ]
 
-    /// Metrics pinned to the menu bar on first launch, so the app shows real numbers out of the box
-    /// instead of a lone icon. Two per provider for Antigravity, Claude, Codex, and Cursor — the
-    /// per-provider cap (`LayoutStore.maxPinsPerProvider`). Filtered to the active registry by
-    /// `LayoutStore`, like `metricIDs`.
-    static let pinnedMetricIDs: [String] = [
-        "antigravity.geminiPro", "antigravity.geminiWeekly",
-        "claude.session", "claude.weekly",
-        "codex.session", "codex.weekly",
-        "cursor.auto", "cursor.api",
-        "copilot.premium",
-        // Ollama: Monthly is the current plans' meter. Legacy plans' Session and Weekly stay unpinned so
-        // they don't spend the two-star cap on rows a current plan never shows.
-        "ollama.monthly",
-        "openrouter.credits",
-        "zai.session", "zai.weekly"
-    ]
+    /// Metrics pinned to the menu bar on first launch. Fork: none, so a fresh install shows only the app
+    /// icon and every star is the user's own choice. The original pinned two per provider.
+    static let pinnedMetricIDs: [String] = []
 
     /// Metrics placed in the per-provider On Demand section on a fresh install. This is
     /// membership, not enablement: optional disabled rows like Sonnet or Cursor Requests/Credits are

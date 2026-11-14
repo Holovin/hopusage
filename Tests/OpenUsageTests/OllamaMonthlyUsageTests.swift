@@ -110,8 +110,9 @@ final class OllamaMonthlyUsageTests: XCTestCase {
         ])
         XCTAssertFalse(fresh.expandedMetricIDs.contains("ollama.monthly"))
         XCTAssertTrue(fresh.expandedMetricIDs.contains("ollama.purchasedCredits"))
-        XCTAssertEqual(fresh.pinnedMetricIDs, ["ollama.monthly"])
+        XCTAssertEqual(fresh.pinnedMetricIDs, [], "the fork pins nothing by default")
         // A current plan shows Monthly and Purchased Credits, so both fit under the two-star cap.
+        fresh.setPinned(true, for: "ollama.monthly")
         XCTAssertTrue(fresh.canPin("ollama.purchasedCredits"))
         fresh.setPinned(true, for: "ollama.purchasedCredits")
         XCTAssertEqual(fresh.pinnedMetricIDs, ["ollama.monthly", "ollama.purchasedCredits"])
