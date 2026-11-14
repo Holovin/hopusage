@@ -214,20 +214,24 @@ struct SettingsScreen: View {
                 .padding(.horizontal, 12)
                 .padding(.bottom, 8)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            row("Help Make HopUsage Better") {
-                Toggle("", isOn: Binding(
-                    get: { container.telemetry.isEnabled },
-                    set: { container.telemetry.setEnabled($0) }
-                ))
-                .settingsSwitchStyle()
+            // Fork: telemetry is switched off (`TelemetryConfig.isEnabled`), so the switch would do nothing
+            // and is hidden with it.
+            if TelemetryConfig.isEnabled {
+                row("Help Make HopUsage Better") {
+                    Toggle("", isOn: Binding(
+                        get: { container.telemetry.isEnabled },
+                        set: { container.telemetry.setEnabled($0) }
+                    ))
+                    .settingsSwitchStyle()
+                }
+                // Daily activity and crash reports are always on; the toggle only gates extra analytics.
+                Text("Share additional anonymous usage stats that tell the team where to improve.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 12)
+                    .padding(.bottom, 8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
-            // Daily activity and crash reports are always on; the toggle only gates extra analytics.
-            Text("Share additional anonymous usage stats that tell the team where to improve.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 12)
-                .padding(.bottom, 8)
-                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 

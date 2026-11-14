@@ -1,8 +1,8 @@
 # Privacy & Usage Data
 
 > **Fork note:** telemetry is switched off in this fork (`TelemetryConfig.isEnabled`). No ping, extra
-> analytics, or crash report is sent, whatever **Help Make HopUsage Better** is set to. The telemetry
-> sections below describe the original behavior.
+> analytics, or crash report is sent, and the **Help Make HopUsage Better** switch is hidden from
+> Settings. The telemetry sections below describe the original behavior.
 
 HopUsage always sends an **anonymous daily active ping** and **anonymous crash reports** so we can
 count active users and fix app crashes. These are not optional.

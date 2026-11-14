@@ -58,7 +58,9 @@ All three alerts default off. The first time you turn one on, HopUsage asks for 
 | Setting | Options | What it does |
 |---|---|---|
 | Hide From Screen Share | On / Off | Off (default). On replaces the menu bar strip with the HopUsage icon and wordmark while your screen is being shared or recorded, and restores your starred metrics the moment the capture ends. See [Menu bar](menu-bar.md#hiding-usage-while-screen-sharing). |
-| Help Make HopUsage Better | On / Off | On (default) shares extra anonymous usage analytics — provider-refresh summaries and error categories. Off stops that extra sharing. Daily activity and crash reports are always sent. See [Privacy & Usage Data](privacy.md) for exactly what is and isn't sent. |
+
+> **Fork note:** telemetry is switched off in this fork, so the **Help Make HopUsage Better** switch is
+> hidden. See [Privacy & Usage Data](privacy.md).
 
 ## Advanced
 
