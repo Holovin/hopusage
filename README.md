@@ -1,16 +1,35 @@
 # HopUsage
 
 > **HopUsage is an unofficial fork of [OpenUsage](https://github.com/robinebers/openusage).** It is not
-> the official OpenUsage and is not endorsed by or affiliated with its author. Self-updates and
-> telemetry are switched off in this fork.
+> the official OpenUsage and is not endorsed by or affiliated with its author.
 
 Track your AI coding subscriptions from the macOS menu bar — native Swift edition.
 
-HopUsage shows how much of your AI coding plans you've used: session and weekly limits, credits, and spend, all in one popover. Pin your most important metrics straight into the menu bar.
+## What This Fork Changes
 
-<p align="center">
-  <img src="assets/screenshot.jpg?v=20260706" alt="HopUsage menu bar tracker showing Claude and Codex session, weekly, and spend usage" width="900">
-</p>
+HopUsage stays on OpenUsage **0.7.16**, the last version that tracks spend and tokens from local logs,
+and adds on top:
+
+- **Backported fixes** from OpenUsage 0.8.x (Claude Max and Ultra plan names, Claude Extra Usage in
+  your billing currency, Antigravity's Gemini and Argon quotas, Ollama free plans, Grok pay-as-you-go
+  in dollars, named rate limit resets, and more — see the [changelog](CHANGELOG.md)).
+- **[Copilot (CLI/Desktop)](docs/providers/copilot-cli.md).** The Copilot card only reads the token
+  of an editor plugin (`~/.config/github-copilot`) or the GitHub CLI (`gh`), never the login of the
+  GitHub Copilot desktop app and `copilot` CLI (`~/.copilot`), so it can show a different account or
+  none. This separate card reads the app's login and adds its spend per day, for the current billing
+  period, and per model.
+- **Different defaults:** Dark theme, 24-hour time, Reduce Animations on, Total Spend off, nothing
+  pinned to the menu bar.
+- **Fork build:** telemetry, self-updates, and iCloud Sync are switched off (the app is signed without
+  an Apple developer certificate and isn't notarized); model prices are fetched from this repository
+  instead of the original project's site.
+- **Removed:** the Use button for Claude's rate limit resets (use `/rate-limit-options` in Claude Code),
+  the quick-link buttons on provider cards (Status, Dashboard, Usage), and dragging metric rows on the
+  dashboard (reorder them in Customize instead).
+
+For everything else — providers, features, settings — read the
+[OpenUsage 0.7.16 README](https://github.com/robinebers/openusage/blob/abf472d5dbb23645c3afbb5a0c7429606ffbdcd7/README.md)
+and this repository's [docs](docs/README.md).
 
 ## Installation
 
@@ -34,105 +53,25 @@ Or build it from source:
 
 That stages and launches `dist/HopUsage.app`.
 
-## Supported Providers
+## Coming From OpenUsage
 
-- **[Antigravity](docs/providers/antigravity.md)** — shared Gemini and Claude pool quotas, 5-hour and weekly windows
-- **[Claude](docs/providers/claude.md)** — session, weekly, model-specific limits, extra usage, local daily spend
-- **[Codex](docs/providers/codex.md)** — session, weekly, credits, local daily spend
-- **[Copilot](docs/providers/copilot.md)** — AI credits, extra usage, organization billing, chat and completions
-- **[Cursor](docs/providers/cursor.md)** — credits, total usage, Grok Bot, Cursor Models, Other Models, requests, on-demand, per-day spend
-- **[Devin](docs/providers/devin.md)** — weekly and daily quota, extra usage balance
-- **[Grok](docs/providers/grok.md)** — weekly shared pool, pay-as-you-go, local daily spend
-- **[Ollama](docs/providers/ollama.md)** — Ollama Cloud monthly credits (or session and weekly limits on legacy plans), purchased credits
-- **[OpenCode](docs/providers/opencode.md)** — Go session/weekly/monthly caps, Zen spend, local daily spend
-- **[OpenRouter](docs/providers/openrouter.md)** — credit balance, daily/weekly/monthly spend (API key)
-- **[Z.ai](docs/providers/zai.md)** — session, weekly, web-search quotas (GLM Coding Plan, API key)
+HopUsage has its own app name, bundle id, and data folder, so it installs next to OpenUsage without
+clashing — but it doesn't see OpenUsage's data:
 
-Most providers read the credentials already on your machine (keychain, auth files, app state) — no extra login. OpenRouter and Z.ai are the exceptions: they have no local credential to reuse, so you supply an API key (see [OpenRouter setup](docs/providers/openrouter.md) or [Z.ai setup](docs/providers/zai.md)). Credentials are used only for the corresponding provider requests. HopUsage's separate anonymous summaries and public pricing downloads are documented under [Privacy & usage data](docs/privacy.md).
+- macOS asks again for access to each provider's Keychain login.
+- Settings, layout, and pinned metrics start from HopUsage's defaults.
+- Saved history (such as Cursor's spend history and the log-scan cache) starts empty. To keep it, quit
+  both apps and copy the contents of `~/Library/Application Support/OpenUsage` into
+  `~/Library/Application Support/HopUsage`. This works best from OpenUsage 0.7.x.
 
-## Features
+## Fork Releasing
 
-- **Menu bar pins.** Pin metrics to the menu bar (up to 2 per provider); render as compact text or mini bars. The strip hides metrics with no data instead of showing placeholders.
-- **Dashboard popover.** Provider-grouped meters with live reset countdowns and pace indicators. Click usage or reset values to flip their display everywhere; right-click a row to hide or star it, refresh its provider, or open Customize.
-- **Global shortcut.** Toggle the popover from anywhere — record any combo in Settings.
-- **Customize.** Turn providers and metrics on or off, choose which rows stay Always Visible or On Demand, and drag-reorder both.
-- **Stale-while-revalidate.** Cached values display instantly at launch; refresh runs every 5 minutes.
-- **[One-shot CLI](docs/cli.md).** Agents can read stable limit JSON through the same five-minute cache with `hopusage`, or bypass freshness with `hopusage --force`; the menu-bar app does not need to be running.
-- **[Local HTTP API](docs/local-http-api.md).** Other apps can read machine-friendly limits from `127.0.0.1:6736/v1/limits`; the legacy `/v1/usage` UI contract remains supported. It is loopback-only and never serves credentials; note that browser pages can read it too — see the [privacy note](docs/local-http-api.md#cors-and-privacy).
-- **[Proxy support](docs/proxy.md).** Route provider requests through SOCKS5 or HTTP(S) via `~/.hopusage/config.json`.
-- **Native settings.** Launch at login, global shortcut, icon style, theme, density, 12/24-hour time — see [Settings](docs/settings.md).
-- **[Automatic updates](docs/updates.md).** Signed, notarized in-app updates via Sparkle, with an optional beta channel.
-
-
-
-## Documentation
-
-Behavior docs live in [docs/](docs/README.md): the [dashboard](docs/dashboard.md), [menu bar pins](docs/menu-bar.md), [settings](docs/settings.md), [refresh & caching](docs/refreshing.md), the [CLI](docs/cli.md), the [local HTTP API](docs/local-http-api.md), the [proxy](docs/proxy.md), and one page per provider.
-
-For working on the code, see the developer docs: [architecture](docs/architecture.md), [adding a provider](docs/adding-a-provider.md), and [debugging & capturing logs](docs/debugging.md).
-
-## Requirements
-
-- macOS 15 (Sequoia) or later
-- Universal binary — runs natively on both Apple Silicon and Intel Macs
-
-The Today / Yesterday / Last 30 Days spend tiles are computed natively from local CLI logs (Claude,
-Codex, and Grok) or Cursor's usage export — no Node.js or other runtime needed. Dollars are estimated
-with [dynamically refreshed model pricing](docs/pricing.md).
-
-
-
-## Building
-
-```sh
-swift build            # debug build
-swift test             # run the test suite
-./script/build_and_run.sh   # build and launch the dev app from dist/ (no install)
-```
-
-
-
-## Architecture
-
-SwiftPM package, SwiftUI content hosted in an AppKit-owned `NSStatusItem` + custom key-capable `NSPanel`, Swift 6 strict concurrency. The app and CLI share one module: providers implement a small `ProviderRuntime` protocol (auth store → usage client → mapper → `ProviderSnapshot`), and both surfaces read the same normalized data — see the [architecture overview](docs/architecture.md) for how the pieces fit together and [AGENTS.md](AGENTS.md) for engineering conventions.
-
-## Releasing
-
-> **Fork note:** this fork ships through [.github/workflows/fork-release.yml](.github/workflows/fork-release.yml)
-> instead. A release is cut by changing [FORK_VERSION](FORK_VERSION) on `fork/v0.7-base`, for example
-> to `0.7.16-fork.0.8.0` (fork base, then the original release that was backported). The push builds a
-> universal, ad-hoc signed DMG with `script/fork_release.sh`, tags the commit, and publishes a GitHub
-> Release. No secrets, no Developer ID, no notarization. The rest of this section describes the
-> original pipeline, which does not run here.
-
-Releases are automated: pushing a `v*` tag on `main` builds, signs, notarizes, and publishes a new version. A plain tag (`v0.7.1`) ships to everyone; a pre-release suffix (`v0.7.1-beta.1`) ships to the beta channel. The pipeline lives in [.github/workflows/release.yml](.github/workflows/release.yml), and the step-by-step is in the `release-swift` skill.
-
-### Release setup (one-time)
-
-The release workflow needs these repository secrets (Settings → Secrets and variables → Actions):
-
-
-| Secret                       | What it is                                                            |
-| ---------------------------- | --------------------------------------------------------------------- |
-| `APPLE_CERTIFICATE`          | base64 of your Developer ID Application `.p12`                        |
-| `APPLE_CERTIFICATE_PASSWORD` | the password set when exporting that `.p12`                           |
-| `APPLE_ID`                   | the Apple ID email used for notarization                              |
-| `APPLE_PASSWORD`             | an app-specific password for that Apple ID                            |
-| `APPLE_TEAM_ID`              | your Apple Developer team ID                                          |
-| `APPLE_DEVELOPER_ID_ICLOUD_PROFILE` | base64 Developer ID provisioning profile for the production iCloud container |
-| `SPARKLE_PUBLIC_KEY`         | base64 EdDSA public key, baked into the build as `SUPublicEDKey`      |
-| `SPARKLE_PRIVATE_KEY`        | base64 EdDSA private key used to sign the DMG                         |
-| `POSTHOG_CLI_API_KEY`        | PostHog personal API key used to upload dSYMs for crash symbolication |
-| `POSTHOG_CLI_PROJECT_ID`     | numeric PostHog project ID the dSYMs upload to                        |
-
-
-Export the Developer ID Application cert (with its private key) from Keychain Access as a `.p12`, then `base64 -i DeveloperID.p12 | pbcopy`. App-specific passwords come from appleid.apple.com → Sign-In and Security → App-Specific Passwords. Generate the Sparkle EdDSA key pair once with Sparkle's `generate_keys` tool; the public and private values must be a matching pair or signing is silently skipped.
-
-For iCloud Sync, store the original development and Developer ID provisioning profiles in 1Password as secure documents. Install the development profile on each registered Mac; base64-encode the Developer ID profile and store it only in the `APPLE_DEVELOPER_ID_ICLOUD_PROFILE` Actions secret. See [iCloud Sync](docs/icloud-sync.md#development-and-release-setup) for the container identifiers, build command, and file-inspection command.
-
-The two `POSTHOG_CLI_*` secrets are only used to upload debug symbols (dSYMs) so PostHog can symbolicate crash reports: `POSTHOG_CLI_API_KEY` is a PostHog personal API key (PostHog → Settings → Personal API keys) and `POSTHOG_CLI_PROJECT_ID` is the numeric ID from your project URL. The upload host is hardcoded in the workflow (`https://us.i.posthog.com`), so there is no `POSTHOG_CLI_HOST` secret. Unlike the secrets above these don't block a release — if `POSTHOG_CLI_API_KEY` is unset the workflow skips the upload with a warning and the release still ships, but crash reports for that version show raw addresses instead of symbolicated stack traces.
-
-The repository must be public (Sparkle fetches the DMG and appcast anonymously), and the appcast is served from GitHub Pages — confirm Settings → Pages points at the `gh-pages` branch after the first release.
+A release is cut by changing [FORK_VERSION](FORK_VERSION) on `fork/v0.7-base`, for example to
+`0.7.16-fork.0.8.0` (fork base, then the original release that was backported), together with that
+version's section in [CHANGELOG.md](CHANGELOG.md). The push runs
+[fork-release.yml](.github/workflows/fork-release.yml): it builds a universal, ad-hoc signed DMG with
+`script/fork_release.sh`, tags the commit, and publishes a GitHub Release. No secrets, no Developer ID,
+no notarization.
 
 ## Contributing
 
@@ -140,7 +79,3 @@ This is a personal fork: features and providers belong in the original project, 
 fixes are welcome here. Read [CONTRIBUTING.md](CONTRIBUTING.md) first. Report security issues privately
 per [SECURITY.md](SECURITY.md). The OpenUsage name and logo are covered by the
 [trademark policy](TRADEMARK.md).
-
-## License
-
-[MIT](LICENSE)
