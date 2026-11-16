@@ -6,13 +6,13 @@ How HopUsage turns token counts into the estimated dollars on the Claude, Codex,
 
 Prices are layered from three sources; when the same model appears in more than one, the higher layer wins:
 
-1. **HopUsage pricing supplement** — a small JSON file maintained in this repo and published to GitHub Pages. It covers models no public catalog carries (Cursor-native models like `auto` and `composer-*`), fast-variant multipliers, and alias rules that map provider log/CSV slugs to catalog keys.
+1. **HopUsage pricing supplement** — a small JSON file maintained in this repo; apps fetch it from the repo's `fork/v0.7-base` branch. It covers models no public catalog carries (Cursor-native models like `auto` and `composer-*`), fast-variant multipliers, and alias rules that map provider log/CSV slugs to catalog keys.
 2. **LiteLLM** — the community-maintained `model_prices_and_context_window.json`, covering the vast majority of API-priced models.
 3. **models.dev** — a gap-filler for models LiteLLM misses (e.g. some brand-new or niche models).
 
 The app ships with bundled snapshots of all three, so pricing works offline and on first launch. At runtime each source is refetched about once an hour (with ETag revalidation) and cached in `~/Library/Application Support/HopUsage/pricing/`. A refresh never blocks a usage scan — scans always price against the freshest data already on hand.
 
-Because the supplement is published to GitHub Pages on merge, a pricing correction reaches installed apps within about an hour — no app update needed.
+Because apps fetch the supplement straight from the `fork/v0.7-base` branch, a pricing correction pushed there reaches installed apps within about an hour — no app update needed.
 
 Updating the app also works. The supplement carries an ISO-8601 `updated_at` timestamp, and the app uses whichever of the cached and bundled copies is newer, so a build shipping fresher rates applies them straight away instead of waiting on the cache to expire. Timestamp precision matters because multiple pricing changes can land on the same day. Older date-only values remain supported. This matters most offline: without it, an old cache would shadow the shipped rates for as long as the feed stayed unreachable.
 
@@ -50,9 +50,9 @@ Costs are computed per usage event from four token buckets — plain input, cach
 
 ## Privacy
 
-The pricing refresh fetches three public price lists (from `raw.githubusercontent.com`, `models.dev`, and this repo's GitHub Pages). These requests carry no usage or log data — nothing about your usage leaves your Mac.
+The pricing refresh fetches three public price lists (from `raw.githubusercontent.com`, `models.dev`, and this repo's `fork/v0.7-base` branch on `raw.githubusercontent.com`). These requests carry no usage or log data — nothing about your usage leaves your Mac.
 
 ## Maintainer notes
 
-- **Supplement changes** (new Cursor-native model, price correction, new alias): edit `Sources/OpenUsage/Resources/pricing_supplement.json`, sync entries from [Cursor models & pricing](https://cursor.com/docs/models-and-pricing.md), and update `updated_at` to the current UTC timestamp. On merge to `main`, `.github/workflows/pricing-supplement.yml` publishes it to gh-pages; installed apps pick it up within about an hour. The bundled copy ships with the next release for first launches. The **pricing-update skill** (`.agents/skills/pricing-update/`) walks an agent through the whole sync: pull the Cursor page, diff, edit, validate, and open a PR.
+- **Supplement changes** (new Cursor-native model, price correction, new alias): edit `Sources/OpenUsage/Resources/pricing_supplement.json`, sync entries from [Cursor models & pricing](https://cursor.com/docs/models-and-pricing.md), and update `updated_at` to the current UTC timestamp. Once it's pushed to `fork/v0.7-base`, installed apps pick it up within about an hour. The bundled copy ships with the next release for first launches. The **pricing-update skill** (`.agents/skills/pricing-update/`) walks an agent through the whole sync: pull the Cursor page, diff, edit, validate, and open a PR.
 - **Bundled snapshots** (`pricing_litellm_snapshot.json`, `pricing_models_dev_snapshot.json`): regenerate occasionally (e.g. before a release) with `script/update_pricing_snapshots.sh`. Staleness is harmless — runtime fetches override them.

@@ -52,7 +52,9 @@ actor ModelPricingStore {
     static let defaultSourceURLs: [SourceID: URL] = [
         .litellm: URL(string: "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json")!,
         .modelsDev: URL(string: "https://models.dev/api.json")!,
-        .supplement: URL(string: "https://robinebers.github.io/openusage/pricing_supplement.json")!
+        // Fork: the fork's own copy on its main branch, not the original project's gh-pages. It changes
+        // only when the owner asks for a pricing check (see AGENTS.md "Fork").
+        .supplement: URL(string: "https://raw.githubusercontent.com/Holovin/hopusage/fork/v0.7-base/Sources/OpenUsage/Resources/pricing_supplement.json")!
     ]
 
     private static var defaultCacheDirectory: URL {

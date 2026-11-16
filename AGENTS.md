@@ -30,6 +30,11 @@ this file that contradicts them.
   to release. The bump is its own commit, `chore(fork): bump version to <version>`, and it also adds
   that version's section at the top of `CHANGELOG.md` (`## v<version>`, with **Backported** and **Fork**
   lists). The section becomes the release notes; the release fails without it.
+- **Pricing supplement:** apps fetch `Sources/OpenUsage/Resources/pricing_supplement.json` straight from
+  `fork/v0.7-base` on `raw.githubusercontent.com`, not the original project's gh-pages. Before a release,
+  check it against the original's latest supplement and [Cursor models & pricing](https://cursor.com/docs/models-and-pricing.md)
+  and bring it up to date — only when the owner asks for it, never automatically or as part of an
+  unrelated change.
 - The Releases section below describes the original pipeline. It does not run in this fork.
 
 ## Agent Instructions
