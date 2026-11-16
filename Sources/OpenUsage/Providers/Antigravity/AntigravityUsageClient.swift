@@ -94,14 +94,15 @@ struct AntigravityUsageClient: Sendable {
     }
 
     /// The Antigravity client's own User-Agent shape (`%s/%s (aidev_client; os_type=…; arch=…)` in its
-    /// language server). Google marks other callers `UNSUPPORTED_CLIENT` and drops `paidTier`.
+    /// language server). Google marks other callers `UNSUPPORTED_CLIENT` and drops `paidTier`. It names
+    /// the hub client: that identity gets the separate Argon quota, the IDE identity does not.
     static let clientUserAgent: String = {
         #if arch(arm64)
         let arch = "arm64"
         #else
         let arch = "amd64"
         #endif
-        return "antigravity/2.24.0 (aidev_client; os_type=darwin; arch=\(arch))"
+        return "antigravity/hub/2.24.0 (aidev_client; os_type=darwin; arch=\(arch))"
     }()
 
     /// `ClientMetadata` enum names as they appear in the Antigravity language server's protos.

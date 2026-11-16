@@ -227,6 +227,10 @@ final class AntigravityQuotaSummaryTests: XCTestCase {
         },
                        "a complete daily response must not be replaced by the partial production response")
 
+        // Google gives the separate Argon quota only to the hub client identity.
+        let summaryRequest = routing.requests.first { $0.url.path == AntigravityUsageClient.quotaSummaryPath }
+        XCTAssertEqual(summaryRequest?.headers["User-Agent"]?.hasPrefix("antigravity/hub/"), true)
+
         // Without Antigravity's client metadata loadCodeAssist omits currentTier/paidTier.
         let planRequest = routing.requests.first { $0.url.path.contains("loadCodeAssist") }
         let planBody = planRequest?.body.flatMap { try? JSONSerialization.jsonObject(with: $0) } as? [String: Any]
