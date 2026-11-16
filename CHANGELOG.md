@@ -4,6 +4,15 @@ Releases of HopUsage, the fork, come first: `v0.7.<fork patch>-fork.<original ve
 patch goes up for a release of the fork's own changes. **Backported** lists what was ported from that
 original release onto the 0.7 line, with the original commit; **Fork** lists the fork's own changes. The original project's history up to v0.7.16, where the fork starts, follows below.
 
+## v0.7.17-fork.0.8.1-beta.2
+
+The fork's own changes on top of the v0.8.1-beta.2 backport.
+
+### Fork
+- Add a Copilot (CLI/Desktop) card for the account signed in to the GitHub Copilot desktop app and `copilot` CLI, with its spend per day, for the current billing period, and per model, from the AI credits Copilot records
+- Fetch the pricing supplement from the fork's own branch instead of the original project's site
+- Rewrite the README around what the fork changes and how to move over from OpenUsage
+
 ## v0.7.16-fork.0.8.1-beta.2
 
 ### Backported
