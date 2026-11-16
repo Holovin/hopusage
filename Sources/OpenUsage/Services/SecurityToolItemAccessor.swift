@@ -7,6 +7,8 @@ import Security
 /// keeps access. Claude Code, gh, Cursor's agent, and Antigravity save through `security`, so
 /// OpenUsage reads and saves those logins through it too. The user's Always Allow then survives
 /// every renewal, and OpenUsage's saves never lock those tools out of their own logins.
+/// The Copilot desktop app's `copilot-cli` item is only read, through `security` too, so an Always
+/// Allow is granted to `security` and survives HopUsage updates (ad-hoc builds change signature).
 struct SecurityToolItemAccessor: SecurityItemAccessing {
     var processRunner: any ProcessRunning = SystemProcessRunner()
 
@@ -19,6 +21,7 @@ struct SecurityToolItemAccessor: SecurityItemAccessing {
             || service.hasSuffix(KeychainICloudDeviceIDStore.serviceSuffix)
             || [
                 CopilotAuthStore.ghKeychainService,
+                CopilotCLIAuthStore.keychainService,
                 CursorAuthStore.keychainAccessTokenService,
                 CursorAuthStore.keychainRefreshTokenService,
                 AntigravityAuthStore.keychainService,

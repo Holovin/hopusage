@@ -28,6 +28,8 @@ A dollar credit figure (e.g. "$12 of $15 used") isn't shown: GitHub only exposes
 
 ## Where credentials come from
 
+The GitHub Copilot desktop app and the `copilot` CLI have their own card, [Copilot (CLI/Desktop)](copilot-cli.md); this card doesn't read their login.
+
 Checked in this order (prompt-free files first, Keychain last):
 
 1. Copilot editor token: `~/.config/github-copilot/apps.json` (older `hosts.json`) — written by the VS Code / JetBrains / Neovim Copilot plugins.

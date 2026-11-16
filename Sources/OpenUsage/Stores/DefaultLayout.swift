@@ -37,6 +37,10 @@ enum DefaultLayout {
         "copilot.premium", "copilot.extra", "copilot.orgCredits", "copilot.orgSpend",
         "copilot.chat", "copilot.completions",
 
+        // Copilot (CLI/Desktop): Credits, Today, Yesterday, Usage Trend, and This Period; the other
+        // meters and Last 30 Days are opt-in.
+        "copilot-cli.premium", "copilot-cli.today", "copilot-cli.yesterday", "copilot-cli.trend", "copilot-cli.period",
+
         "devin.daily", "devin.weekly", "devin.extra",
 
         "grok.weekly", "grok.trend",
@@ -100,6 +104,9 @@ enum DefaultLayout {
         // caret. Chat/Completions carry real counts on free only — on paid they're unlimited
         // (suppressed), so they read "No data" there.
         "copilot.orgCredits", "copilot.orgSpend", "copilot.chat", "copilot.completions",
+        // Copilot (CLI/Desktop): the opt-in meters, Extra Usage, and Last 30 Days sit below the caret.
+        "copilot-cli.orgCredits", "copilot-cli.orgSpend", "copilot-cli.chat", "copilot-cli.completions",
+        "copilot-cli.extra", "copilot-cli.last30",
         "devin.extra",
         "grok.payAsYouGo", "grok.today", "grok.yesterday", "grok.last30",
         // Ollama: the plan meters stay above the fold; purchased credits sit below the caret.

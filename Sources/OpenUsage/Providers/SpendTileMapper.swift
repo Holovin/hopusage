@@ -80,6 +80,33 @@ enum SpendTileMapper {
         entry.totalTokens > 0 || (entry.costUSD ?? 0) > 0
     }
 
+    /// Append one spend row covering a whole custom period (e.g. Copilot's billing month), shaped like
+    /// Last 30 Days: total cost · tokens with the period's per-model breakdown on hover. Appends nothing
+    /// for an idle period, so the row reads "No data".
+    static func appendPeriodUsage(
+        label: String,
+        _ usage: DailyUsageSeries,
+        to lines: inout [MetricLine],
+        estimated: Bool = true,
+        modelUsage: ModelUsageSeries? = nil,
+        modelSourceNote: String? = nil
+    ) {
+        let totalTokens = usage.daily.reduce(0) { $0 + $1.totalTokens }
+        let costSamples = usage.daily.compactMap(\.costUSD)
+        let totalCost = costSamples.isEmpty ? nil : costSamples.reduce(0, +)
+        guard totalTokens > 0 || (totalCost ?? 0) > 0 else { return }
+        lines.append(.values(label: label,
+                             values: spendValues(tokens: totalTokens, costUSD: totalCost, estimated: estimated),
+                             modelBreakdown: modelBreakdown(
+                                modelUsage,
+                                days: Set(usage.daily.compactMap { dayKey(fromUsageDate: $0.date) }),
+                                totalTokens: totalTokens,
+                                totalCostUSD: totalCost,
+                                sourceNote: modelSourceNote,
+                                fallbackPricingModelsByDay: nil
+                             )))
+    }
+
     /// Append the Usage Trend chart line: one bar per calendar day over the window, value = tokens used
     /// that day. Tokens are always measured (no estimate flag), so the chart needs only the per-day
     /// counts plus a source note. Appends nothing when the whole window is idle, so a source with no

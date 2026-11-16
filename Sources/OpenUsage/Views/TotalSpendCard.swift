@@ -384,6 +384,7 @@ enum TotalSpendPalette {
         "openrouter": hex(0x6467F2),                         // OpenRouter indigo
         "antigravity": hex(0x4285F4),                        // Google blue
         "copilot": hex(0xA855F7),                            // Copilot purple
+        "copilot-cli": hex(0xA855F7),                        // Copilot (CLI/Desktop) — same purple
         "amp": hex(0xF34E3F),
         "factory": dynamic(light: 0x48484A, dark: 0xC7C7CC),
         "kimi": hex(0x0A66FF),

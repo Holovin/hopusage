@@ -69,6 +69,7 @@ enum ProviderCatalog {
             CursorProvider(),
             AntigravityProvider(),
             CopilotProvider(defaults: defaults),
+            CopilotProvider.cli(defaults: defaults),
             DevinProvider(),
             GrokProvider(),
             OllamaProvider(),

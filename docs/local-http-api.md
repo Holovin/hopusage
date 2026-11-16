@@ -112,6 +112,7 @@ is still 0 because OpenCode reports whole percentages.
 | Cursor | `totalUsage`, `grokBot`, `autoUsage`, `apiUsage`, `onDemand`, `requests`, `credits` |
 | Antigravity | `geminiSession`, `geminiWeekly`, `argonWeekly`, `nonGeminiSession`, `nonGeminiWeekly` |
 | Copilot | `premiumCredits`, `extraUsage`, `orgCredits`, `orgSpend`, `chat`, `completions` |
+| Copilot (CLI/Desktop) (`copilot-cli`) | Same as Copilot |
 | Devin | `daily`, `weekly`, `extraUsageBalance` |
 | Grok | `weekly` |
 | Ollama | `session`, `weekly`, `monthly` |

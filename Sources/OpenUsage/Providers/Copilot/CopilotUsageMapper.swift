@@ -212,6 +212,16 @@ enum CopilotUsageMapper {
 }
 
 extension CopilotUsageMapper {
+    /// The Credits meter's reset — the end of the current billing period — when the response carries one.
+    static func creditsResetAt(_ lines: [MetricLine]) -> Date? {
+        for line in lines {
+            if case .progress(let label, _, _, _, let resetsAt, _, _, _) = line, label == "Credits" {
+                return resetsAt
+            }
+        }
+        return nil
+    }
+
     /// GitHub sends its rate limits as 429, or as 403 with `x-ratelimit-remaining: 0` or `retry-after`.
     static func isRateLimit(_ response: HTTPResponse) -> Bool {
         response.statusCode == 429

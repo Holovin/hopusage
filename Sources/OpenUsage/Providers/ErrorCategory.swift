@@ -155,8 +155,8 @@ extension DevinUsageError: CategorizedError {
 extension CopilotAuthError: CategorizedError {
     var errorCategory: ErrorCategory {
         switch self {
-        case .notLoggedIn: .notLoggedIn
-        case .tokenInvalid: .authExpired
+        case .notLoggedIn, .appNotLoggedIn: .notLoggedIn
+        case .tokenInvalid, .appTokenInvalid: .authExpired
         }
     }
 }

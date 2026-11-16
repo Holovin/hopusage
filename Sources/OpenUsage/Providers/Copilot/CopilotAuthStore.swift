@@ -8,6 +8,10 @@ struct CopilotToken: Hashable, Sendable {
 enum CopilotAuthError: Error, LocalizedError, Equatable {
     case notLoggedIn
     case tokenInvalid
+    /// The Copilot desktop app / `copilot` CLI login (`CopilotCLIAuthStore`) is missing.
+    case appNotLoggedIn
+    /// The Copilot desktop app / `copilot` CLI token was rejected.
+    case appTokenInvalid
 
     var errorDescription: String? {
         switch self {
@@ -15,6 +19,10 @@ enum CopilotAuthError: Error, LocalizedError, Equatable {
             return "Sign in to GitHub Copilot in your editor, or run gh auth login, and try again."
         case .tokenInvalid:
             return "GitHub token invalid or expired. Re-authenticate (gh auth login) and try again."
+        case .appNotLoggedIn:
+            return "Sign in to the GitHub Copilot app, or run copilot and use /login, and try again."
+        case .appTokenInvalid:
+            return "GitHub Copilot app token invalid or expired. Sign in to the GitHub Copilot app again and try again."
         }
     }
 }
