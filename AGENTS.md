@@ -21,8 +21,11 @@ this file that contradicts them.
   and the JSON schema. **Not renamed, leave as is:** SwiftPM targets and folders (`OpenUsage*`), the log
   subsystem, and `openusage.*` settings keys, so backports conflict less.
 - **Commits:** fork-only changes use the `chore(fork):` prefix, one concern per commit.
-- **Releases:** the version lives in `FORK_VERSION` as `0.7.16-fork.<original version>`, e.g.
-  `0.7.16-fork.0.8.0`. A push to `fork/v0.7-base` that changes the file runs
+- **Releases:** the version lives in `FORK_VERSION` as `0.7.<fork patch>-fork.<original version>`,
+  e.g. `0.7.16-fork.0.8.0`. The original version is the last backported release; the fork patch starts
+  at 16 (the fork's base) and goes up by one for a release of the fork's own changes with no new
+  backport (`0.7.16-fork.0.8.1-beta.2` → `0.7.17-fork.0.8.1-beta.2`), then stays for later backports.
+  A push to `fork/v0.7-base` that changes the file runs
   `.github/workflows/fork-release.yml`: it builds a universal, ad-hoc signed, un-notarized DMG with
   `script/fork_release.sh`, tags the commit `v<version>`, and publishes a GitHub Release (a pre-release
   when the original version is a beta). Nothing is released while the tag already exists. Never push

@@ -4,8 +4,8 @@ name: Fork Release
 # GitHub Release. No secrets, no Developer ID, no notarization (see script/fork_release.sh).
 #
 # A release is cut by changing FORK_VERSION on `fork/v0.7-base`, never by pushing a tag by hand:
-#   - the version reads as <fork base>-fork.<original release that was backported>, e.g.
-#     0.7.16-fork.0.8.0;
+#   - the version reads as 0.7.<fork patch>-fork.<last original release that was backported>, e.g.
+#     0.7.16-fork.0.8.0; the fork patch goes up for a release of the fork's own changes;
 #   - a push that touches FORK_VERSION starts this workflow, which reads the file at the branch tip.
 #     Several bumps in one push therefore build only the last one;
 #   - if the tag v<version> already exists the run stops without building, so a push that leaves the

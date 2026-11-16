@@ -1,8 +1,8 @@
 # Changelog
 
-Releases of HopUsage, the fork, come first: `v0.7.16-fork.<original version>`. **Backported** lists what
-was ported from that original release onto the 0.7 line, with the original commit; **Fork** lists the
-fork's own changes. The original project's history up to v0.7.16, where the fork starts, follows below.
+Releases of HopUsage, the fork, come first: `v0.7.<fork patch>-fork.<original version>`, where the fork
+patch goes up for a release of the fork's own changes. **Backported** lists what was ported from that
+original release onto the 0.7 line, with the original commit; **Fork** lists the fork's own changes. The original project's history up to v0.7.16, where the fork starts, follows below.
 
 ## v0.7.16-fork.0.8.1-beta.2
 

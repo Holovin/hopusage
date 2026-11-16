@@ -67,7 +67,8 @@ clashing — but it doesn't see OpenUsage's data:
 ## Fork Releasing
 
 A release is cut by changing [FORK_VERSION](FORK_VERSION) on `fork/v0.7-base`, for example to
-`0.7.16-fork.0.8.0` (fork base, then the original release that was backported), together with that
+`0.7.16-fork.0.8.0` (the fork's own patch number, then the last original release that was backported;
+the patch number goes up for a release with only the fork's own changes), together with that
 version's section in [CHANGELOG.md](CHANGELOG.md). The push runs
 [fork-release.yml](.github/workflows/fork-release.yml): it builds a universal, ad-hoc signed DMG with
 `script/fork_release.sh`, tags the commit, and publishes a GitHub Release. No secrets, no Developer ID,
