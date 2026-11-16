@@ -233,7 +233,7 @@ final class OllamaUsageMapperTests: XCTestCase {
             "not json",
             #"{"limits":{"session":{"usage":0.349}}}"#,
             #"{"purchased":{"balance_usd":25}}"#,
-            #"{"included":{},"purchased":{"balance_usd":25}}"#
+            #"{"included":{}}"#
         ]
         for body in bodies {
             XCTAssertThrowsError(try OllamaUsageMapper.balanceLines(data(body)), body) { error in

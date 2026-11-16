@@ -47,7 +47,8 @@ enum OllamaUsageMapper {
         return (outcome, try balanceLines(balanceBody))
     }
 
-    /// Session and Weekly (legacy plans) or Monthly (current plans), then Purchased Credits.
+    /// Session and Weekly (legacy plans) or Monthly (current plans), then Purchased Credits. A free plan
+    /// has only the last one.
     static func balanceLines(_ body: Data) throws -> [MetricLine] {
         // `included` is the plan allowance this provider exists to show. Missing, or matching neither
         // documented shape, means the response isn't one OpenUsage understands: a loud failure rather
@@ -67,11 +68,12 @@ enum OllamaUsageMapper {
         if let monthly = monthlyLine(included) {
             lines.append(monthly)
         }
-        guard !lines.isEmpty else { throw OllamaUsageError.invalidResponse }
-
         if let purchased = purchasedLine(root["purchased"]) {
             lines.append(purchased)
         }
+        // Checked after Purchased Credits: a free plan has no allowance of any kind, and its card still
+        // shows that balance.
+        guard !lines.isEmpty else { throw OllamaUsageError.invalidResponse }
         return lines
     }
 

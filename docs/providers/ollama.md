@@ -14,7 +14,8 @@ settings page.
 
 Ollama's current plans come with a monthly dollar allowance; plans from before that change keep their
 session and weekly limits instead. Each account reports one or the other, so HopUsage shows whichever
-your plan has and leaves the other rows out.
+your plan has and leaves the other rows out. A free plan has neither, so its card shows only Purchased
+Credits.
 
 Your plan (Free, Pro, Max) is shown beside the provider name. If Ollama can't tell HopUsage which plan
 you're on, the badge is left off and the card explains why — the meters keep working either way.

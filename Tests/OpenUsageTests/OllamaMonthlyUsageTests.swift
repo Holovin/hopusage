@@ -27,6 +27,25 @@ final class OllamaMonthlyUsageTests: XCTestCase {
         ])
     }
 
+    /// A free ollama.com account: a $0 allowance, no session or weekly limits, no purchased credits.
+    func testAFreePlanWithNoAllowanceShowsItsPurchasedCredits() throws {
+        let free = Data(#"""
+        {"included":{"balance_usd":0,"allowance_usd":0,
+                     "period":{"from":"2026-10-14T00:00:00Z","until":"2026-11-14T00:00:00Z"}},
+         "purchased":{"balance_usd":0}}
+        """#.utf8)
+
+        XCTAssertEqual(try OllamaUsageMapper.balanceLines(free), [
+            .values(label: "Purchased Credits", values: [MetricValue(number: 0, kind: .dollars)])
+        ])
+    }
+
+    func testABalanceBodyWithNothingToShowIsStillInvalid() {
+        for body in [#"{"included":{}}"#, #"{"purchased":{"balance_usd":0}}"#, #"{"ok":true}"#, "[]"] {
+            XCTAssertThrowsError(try OllamaUsageMapper.balanceLines(Data(body.utf8)), body)
+        }
+    }
+
     func testAllLabelsMatchWidgetDescriptorsInDeclarationOrder() throws {
         let legacy = try OllamaUsageMapper.balanceLines(Data(#"""
         {"included":{"session":{"remaining_percent":90},"weekly":{"remaining_percent":80},
