@@ -1,5 +1,57 @@
 # Changelog
 
+Releases of HopUsage, the fork, come first: `v0.7.16-fork.<original version>`. **Backported** lists what
+was ported from that original release onto the 0.7 line, with the original commit; **Fork** lists the
+fork's own changes. The original project's history up to v0.7.16, where the fork starts, follows below.
+
+## v0.7.16-fork.0.8.1-beta.2
+
+### Backported
+- Accept Ollama free plans with no included allowance: the card shows Purchased Credits instead of an error ([509c6282](https://github.com/robinebers/openusage/commit/509c6282))
+
+## v0.7.16-fork.0.8.1-beta.1
+
+### Backported
+- Ask for Antigravity quotas as the hub client, so Google includes the separate Argon weekly quota ([e1ffa571](https://github.com/robinebers/openusage/commit/e1ffa571))
+
+## v0.7.16-fork.0.8.0
+
+The first release of the fork: v0.7.16 with selected fixes from v0.8.0-beta.1 through v0.8.0.
+
+### Backported
+- Show Claude's Max and Ultra plan names ([dd94b651](https://github.com/robinebers/openusage/commit/dd94b651))
+- Cap Retry-After waits at one hour ([9d704d4f](https://github.com/robinebers/openusage/commit/9d704d4f))
+- Guard against provider numbers too large for an Int ([b91d4171](https://github.com/robinebers/openusage/commit/b91d4171))
+- Read Z.ai's 401 inside an OK response as a rejected key ([a67a7835](https://github.com/robinebers/openusage/commit/a67a7835))
+- Read GitHub's 403 rate limit as a rate limit for Copilot ([2114be56](https://github.com/robinebers/openusage/commit/2114be56))
+- Stop caching provider responses ([520caec7](https://github.com/robinebers/openusage/commit/520caec7))
+- Show Claude's Extra Usage in the account's billing currency ([8a883219](https://github.com/robinebers/openusage/commit/8a883219))
+- Title Cursor's team-pool Extra Usage row Team Spend ([c17aec97](https://github.com/robinebers/openusage/commit/c17aec97))
+- Title Claude Enterprise's Extra Usage row Spend ([e44d9d76](https://github.com/robinebers/openusage/commit/e44d9d76))
+- Open the app's own notification settings page ([c3f830c9](https://github.com/robinebers/openusage/commit/c3f830c9))
+- Read Antigravity's active Gemini quotas ([ee981593](https://github.com/robinebers/openusage/commit/ee981593))
+- Count resets a month or more away in months and days ([974f3931](https://github.com/robinebers/openusage/commit/974f3931))
+- Name each rate limit reset in the resets popover ([974f3931](https://github.com/robinebers/openusage/commit/974f3931))
+- Show Grok's pay-as-you-go cap in dollars ([b7d81db2](https://github.com/robinebers/openusage/commit/b7d81db2))
+- Read Cursor's Extra Usage spend from the limit's own budget ([b3f6e792](https://github.com/robinebers/openusage/commit/b3f6e792))
+- Retry a Claude reset grants read that fails offline before the first answer ([cbb3bf74](https://github.com/robinebers/openusage/commit/cbb3bf74))
+- Match ⌘Z and ⌘, on the typed character, so they work on every keyboard layout ([3a735d69](https://github.com/robinebers/openusage/commit/3a735d69))
+- Start a new alert window only once the old reset has passed ([f84068b3](https://github.com/robinebers/openusage/commit/f84068b3))
+
+### Fork
+- Rename the app, the bundled executable, the command line tool, config paths, and the JSON schema to HopUsage / `hopusage`, with new bundle ids
+- Switch off the Sparkle updater, PostHog telemetry and crash reports, and iCloud Sync
+- Replace the app icon and the menu bar mark with a gauge
+- Remove the dashboard notice that announced the next version
+- Credit the fork in About
+- Change the default settings: Dark theme, 24-hour time, Reduce Animations on, Total Spend off, Used meter style, absolute reset times, pacing always visible
+- Pin nothing to the menu bar by default
+- Switch off spending a rate limit reset from the popover
+- Switch off the quick-link buttons on provider cards
+- Switch off dragging metric rows on the dashboard
+- Hide the telemetry switch, Check for Updates, and Report an Issue
+- Release a universal, ad-hoc signed DMG from GitHub Actions when `FORK_VERSION` changes
+
 ## v0.7.16
 
 > **A new OpenUsage is coming.** The next update removes spend and token tracking, with no transition period, and moves sign-in into the app. To keep these features, stay on this version. Details: [#1441](https://github.com/robinebers/openusage/issues/1441)

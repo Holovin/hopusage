@@ -27,7 +27,9 @@ this file that contradicts them.
   `script/fork_release.sh`, tags the commit `v<version>`, and publishes a GitHub Release (a pre-release
   when the original version is a beta). Nothing is released while the tag already exists. Never push
   release tags by hand, and never change `FORK_VERSION` on your own initiative; the owner decides when
-  to release. The bump is its own commit, `chore(fork): bump version to <version>`.
+  to release. The bump is its own commit, `chore(fork): bump version to <version>`, and it also adds
+  that version's section at the top of `CHANGELOG.md` (`## v<version>`, with **Backported** and **Fork**
+  lists). The section becomes the release notes; the release fails without it.
 - The Releases section below describes the original pipeline. It does not run in this fork.
 
 ## Agent Instructions

@@ -10,7 +10,8 @@ name: Fork Release
 #     Several bumps in one push therefore build only the last one;
 #   - if the tag v<version> already exists the run stops without building, so a push that leaves the
 #     version as it was (or reverts it) releases nothing;
-#   - otherwise it builds the DMG, tags the commit it built, and publishes the release;
+#   - otherwise it builds the DMG, tags the commit it built, and publishes the release. The release
+#     notes are that version's section of CHANGELOG.md, so the bump commit must add it;
 #   - a `-beta` in the original version makes it a GitHub pre-release.
 #
 # "Run workflow" does the same by hand. When the tag already exists it rebuilds that tag's commit and
@@ -68,6 +69,13 @@ jobs:
             echo "sha=$(git rev-parse HEAD)"
           } >> "$GITHUB_OUTPUT"
 
+      # Before the build, so a version with no changelog section fails in seconds.
+      - name: Write release notes from CHANGELOG.md
+        if: steps.meta.outputs.build == 'true'
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: ./script/fork_release_notes.sh "$VERSION" > "$RUNNER_TEMP/release-notes.md"
+
       - name: Select Xcode
         if: steps.meta.outputs.build == 'true'
         run: sudo xcode-select -s /Applications/Xcode.app
@@ -88,16 +96,4 @@ jobs:
           name: HopUsage ${{ steps.meta.outputs.version }}
           prerelease: ${{ steps.meta.outputs.prerelease }}
           files: dist/fork-release/HopUsage-${{ steps.meta.outputs.version }}.dmg
-          generate_release_notes: true
-          body: |
-            Universal build (Apple Silicon and Intel), macOS 15 or later.
-
-            This build is not notarized by Apple, so macOS blocks it on first launch. After dragging
-            HopUsage to Applications, run this once in Terminal:
-
-            ```bash
-            xattr -dr com.apple.quarantine /Applications/HopUsage.app
-            ```
-
-            macOS asks for Keychain access again after every update, because the build is signed
-            without a developer certificate.
+          body_path: ${{ runner.temp }}/release-notes.md
