@@ -14,7 +14,8 @@ this file that contradicts them.
 - **Backports:** each original release, betas included, is backported on its own branch named
   `fork/v0.7-backport-v<version>`, cut from `fork/v0.7-base`. For each release: research what changed,
   group it by feature, agree with the owner on what to port, then port it. When a backport is done,
-  `fork/v0.7-base` moves to it.
+  `fork/v0.7-base` moves to it; the branch is then replaced by a tag of the same name, pushed, and the
+  branch is deleted locally and on `origin`.
 - **Switched off, keep off:** the Sparkle updater, PostHog telemetry, and iCloud Sync, each behind a
   flag with a comment. The original workflows live in `.github/workflows-disabled/`.
 - **Renamed:** the app name, bundle ids, the bundled executable, the `hopusage` command, config paths,
