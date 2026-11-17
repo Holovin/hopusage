@@ -623,7 +623,9 @@ final class CodexLogUsageScannerTests: XCTestCase {
             ("gpt-6-astra", 4.95),
             ("gpt-6.1-sol", 0.97),
             ("gpt-6-sol", 0.99),
-            ("gpt-6-luna", 0.0495)
+            ("gpt-6-luna", 0.0495),
+            ("gpt-6.2-sol", 0.97),
+            ("gpt-6.2-astra", 3.88)
         ]
 
         for (model, expected) in expectedCosts {
@@ -711,6 +713,32 @@ final class CodexLogUsageScannerTests: XCTestCase {
         }
     }
 
+    func testUltrafastGPT62IsThreeTimesUntilMarch2027ThenSixTimes() {
+        let cases: [(timestamp: String, multiplier: Double)] = [
+            ("2027-03-01T07:59:59.000Z", 3),
+            ("2027-03-01T08:00:00.000Z", 6)
+        ]
+
+        for model in ["gpt-6.2-sol", "gpt-6.2-astra"] {
+            for entry in cases {
+                let standard = CodexLogUsageScanner.aggregate(
+                    events: [makeEvent(entry.timestamp, model: model, input: 100_000, cached: 20_000, output: 10_000)],
+                    since: .distantPast, pricing: TestPricing.bundled
+                ).series.daily.first?.costUSD ?? 0
+                let ultrafast = CodexLogUsageScanner.aggregate(
+                    events: [makeEvent(
+                        entry.timestamp, model: model, input: 100_000, cached: 20_000, output: 10_000,
+                        isUltrafast: true
+                    )],
+                    since: .distantPast, pricing: TestPricing.bundled
+                ).series.daily.first?.costUSD ?? 0
+
+                XCTAssertGreaterThan(standard, 0, model)
+                XCTAssertEqual(ultrafast / standard, entry.multiplier, accuracy: 0.000_001, "\(model) \(entry.timestamp)")
+            }
+        }
+    }
+
     func testUltrafastFastAliasUsesSixTimesBaseRates() {
         let timestamp = "2026-05-12T08:00:00.000Z"
         let standard = CodexLogUsageScanner.aggregate(
@@ -771,7 +799,9 @@ final class CodexLogUsageScannerTests: XCTestCase {
             ("gpt-6-astra", 2, 2),
             ("gpt-6.1-sol", 2, 2),
             ("gpt-6-sol", 2, 2),
-            ("gpt-6-luna", 2, 2)
+            ("gpt-6-luna", 2, 2),
+            ("gpt-6.2-sol", 2, 2),
+            ("gpt-6.2-astra", 2, 2)
         ]
 
         for entry in cases {

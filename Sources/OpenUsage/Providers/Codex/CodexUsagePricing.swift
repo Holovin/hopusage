@@ -105,17 +105,26 @@ enum CodexUsagePricing {
     /// Lower-level entry point for the native scanner, which resolves its own rates so it can swap in
     /// the user's selected fallback model and carry the per-event service-tier flags.
     static func cost(
-        rates: ModelRates, tokens: TokenBreakdown, model: String, fastTier: Bool, ultrafastTier: Bool = false
+        rates: ModelRates, tokens: TokenBreakdown, model: String, fastTier: Bool, ultrafastTier: Bool = false,
+        at timestamp: Date
     ) -> Double {
         var prepared = Prepared(rates: adjusted(rates, model: model), fastTier: fastTier || ultrafastTier)
-        if ultrafastTier, let multiplier = ultrafastMultiplier(base: datedBaseModel(model)) {
+        if ultrafastTier, let multiplier = ultrafastMultiplier(base: datedBaseModel(model), at: timestamp) {
             prepared.rates.fastMultiplier = multiplier
         }
         return cost(prepared: prepared, tokens: tokens)
     }
 
-    static func ultrafastMultiplier(base: String) -> Double? {
-        base == "gpt-6-astra" ? 6 : nil
+    /// GPT-6.2 Ultrafast is 3x through February 28, 2027 and 6x from March 1, 2027, Pacific time
+    /// (developers.openai.com/api/docs/models/gpt-6.2-sol and gpt-6.2-astra).
+    static let gpt62UltrafastSixTimesSince = OpenUsageISO8601.date(from: "2027-03-01T08:00:00Z")!
+
+    static func ultrafastMultiplier(base: String, at timestamp: Date) -> Double? {
+        switch base {
+        case "gpt-6-astra": return 6
+        case "gpt-6.2-sol", "gpt-6.2-astra": return timestamp < gpt62UltrafastSixTimesSince ? 3 : 6
+        default: return nil
+        }
     }
 
     /// Applies every model-derived Codex adjustment in one pass so the slug is normalized once.
@@ -147,7 +156,8 @@ enum CodexUsagePricing {
         case "gpt-5.5", "gpt-5.5-pro": return 2.5
         case "gpt-5.4", "gpt-5.4-pro",
              "gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna",
-             "gpt-6-astra", "gpt-6.1-sol", "gpt-6-sol", "gpt-6-luna": return 2
+             "gpt-6-astra", "gpt-6.1-sol", "gpt-6-sol", "gpt-6-luna",
+             "gpt-6.2-sol", "gpt-6.2-astra": return 2
         default: return rates.fastMultiplier == 1 ? 2 : rates.fastMultiplier
         }
     }
@@ -173,6 +183,8 @@ enum CodexUsagePricing {
         case "gpt-6.1-sol": return (4, 15, 0.2)
         case "gpt-6-sol": return (4, 15, 0.4)
         case "gpt-6-luna": return (0.2, 0.75, 0.02)
+        case "gpt-6.2-sol": return (4, 15, 0.2)
+        case "gpt-6.2-astra": return (16, 60, 0.8)
         default: return nil
         }
     }

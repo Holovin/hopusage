@@ -42,7 +42,7 @@ Cursor Grok 4.7 is priced in the supplement from that same table: $2 input, $0.5
 
 Claude Opus 5.5 uses [Anthropic's published rates](https://platform.claude.com/docs/en/about-claude/pricing): $4 input, $5 five-minute cache write, $0.20 cache read, and $20 output per million tokens. Fast mode is 2x across those token types. The supplement resolves Claude log IDs, Cursor CSV slugs, and Router labels to those rates until the public pricing catalogs include the model.
 
-GPT-6 Sol, GPT-6.1 Sol, and GPT-6 Luna use the rates on [OpenAI's pricing page](https://developers.openai.com/api/docs/pricing), with Fast at 2x. GPT-5.6 Sol uses OpenAI's promotional rates, available at least through November 21, 2026. Codex Ultrafast is 6x for GPT-6 Astra only; other models on Ultrafast use their Fast multiplier.
+GPT-6 Sol, GPT-6.1 Sol, GPT-6.2 Sol, GPT-6.2 Astra, and GPT-6 Luna use the rates on [OpenAI's pricing page](https://developers.openai.com/api/docs/pricing), with Fast at 2x. GPT-5.6 Sol uses OpenAI's promotional rates, available at least through November 21, 2026. Codex Ultrafast is 6x for GPT-6 Astra; for GPT-6.2 Sol and GPT-6.2 Astra it is 3x through February 28, 2027 and 6x from March 1, 2027 (Pacific time). Other models on Ultrafast use their Fast multiplier.
 
 ## What the estimate includes
 

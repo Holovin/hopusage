@@ -88,7 +88,8 @@ extension CodexLogUsageScanner {
             ),
             model: model,
             fastTier: fastTier,
-            ultrafastTier: ultrafastTier
+            ultrafastTier: ultrafastTier,
+            at: event.timestamp
         )
     }
 }

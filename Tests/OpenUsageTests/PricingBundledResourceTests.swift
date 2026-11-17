@@ -294,6 +294,8 @@ final class PricingBundledResourceTests: XCTestCase {
             "GPT-6 Astra (Auto Balanced)": "gpt-6-astra",
             "GPT-6 Sol (Auto)": "gpt-6-sol",
             "GPT-6.1 Sol (Auto)": "gpt-6.1-sol",
+            "GPT-6.2 Sol (Auto)": "gpt-6.2-sol",
+            "GPT-6.2 Astra (Auto Balanced)": "gpt-6.2-astra",
             "GPT-6 Luna (Auto)": "gpt-6-luna",
             "GPT-5.6 Luna (Auto)": "gpt-5.6-luna",
             "Gemini 3.1 Pro (Auto Balanced)": "gemini-3.1-pro-preview",
@@ -337,6 +339,30 @@ final class PricingBundledResourceTests: XCTestCase {
                 expected,
                 model
             )
+        }
+    }
+
+    func testGPT62PricingAndAliases() throws {
+        let pricing = Self.pricing
+        let expectedRates: [(model: String, rates: [Double])] = [
+            ("gpt-6.2-sol", [2, 2.5, 0.1, 10]),
+            ("gpt-6.2-astra", [8, 10, 0.4, 40])
+        ]
+
+        for entry in expectedRates {
+            let base = try XCTUnwrap(pricing.supplement.pricing[entry.model], entry.model)
+            XCTAssertEqual(
+                [base.inputPerMillion, base.cacheWritePerMillion, base.cacheReadPerMillion, base.outputPerMillion],
+                entry.rates,
+                entry.model
+            )
+            XCTAssertEqual(pricing.resolve(model: entry.model), base, entry.model)
+            XCTAssertEqual(pricing.supplement.canonicalName(for: "\(entry.model)-xhigh"), entry.model)
+            XCTAssertEqual(pricing.supplement.canonicalName(for: "\(entry.model)-xhigh-fast"), "\(entry.model)-fast")
+            let fast = try XCTUnwrap(pricing.resolve(model: "\(entry.model)-high-fast"))
+            XCTAssertEqual(fast.inputPerMillion, base.inputPerMillion * 2, entry.model)
+            XCTAssertEqual(fast.outputPerMillion, base.outputPerMillion * 2, entry.model)
+            XCTAssertTrue(pricing.supplement.fallbackModels["codex"]?.contains(entry.model) ?? false, entry.model)
         }
     }
 

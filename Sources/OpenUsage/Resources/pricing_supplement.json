@@ -1,6 +1,6 @@
 {
   "$comment": "OpenUsage pricing supplement. Prices Cursor-native models that no public catalog carries, supplies fast-variant multipliers the catalogs omit, and maps provider log/CSV model slugs to canonical pricing keys (LiteLLM keys, models.dev ids, or entries in this file). Cursor Router rows name the routed model in prose instead of a slug ('Opus 5 (Auto Balanced)'), so those labels get alias rules too. Published to gh-pages by .github/workflows/pricing-supplement.yml on every change, so installed apps pick edits up within about an hour - no release needed. Rates are USD per million tokens. Sources: https://cursor.com/docs/models-and-pricing.md for Cursor-native entries; https://platform.claude.com/docs/en/about-claude/pricing for Claude Fable 5.1; https://developers.openai.com/api/docs/models/daybreak-blue-latest and https://developers.openai.com/api/docs/pricing for Daybreak aliases and rates; https://docs.z.ai/guides/overview/pricing for GLM 5.3.",
-  "updated_at": "2026-10-16T23:28:55Z",
+  "updated_at": "2026-11-17T21:00:00Z",
   "pricing": {
     "auto": {
       "input_per_million": 1.25,
@@ -208,6 +208,20 @@
       "cache_read_per_million": 1.0,
       "output_per_million": 50.0
     },
+    "gpt-6.2-astra": {
+      "$comment": "OpenAI GPT-6.2 Astra official rates (developers.openai.com/api/docs/models/gpt-6.2-astra). Cache write is 1.25x input; cache read is 0.05x. Fast mode is 2x.",
+      "input_per_million": 8.0,
+      "cache_write_per_million": 10.0,
+      "cache_read_per_million": 0.4,
+      "output_per_million": 40.0
+    },
+    "gpt-6.2-sol": {
+      "$comment": "OpenAI GPT-6.2 Sol official rates (developers.openai.com/api/docs/models/gpt-6.2-sol). Cache write is 1.25x input; cache read is 0.05x. Fast mode is 2x.",
+      "input_per_million": 2.0,
+      "cache_write_per_million": 2.5,
+      "cache_read_per_million": 0.1,
+      "output_per_million": 10.0
+    },
     "gpt-6.1-sol": {
       "$comment": "OpenAI GPT-6.1 Sol official rates from https://developers.openai.com/api/docs/pricing. Cache write is 1.25x input; cache read is 0.05x. Public catalogs have not added it yet.",
       "input_per_million": 2.0,
@@ -284,6 +298,8 @@
     "gpt-5.6-sol": 2.0,
     "gpt-6-astra": 2.0,
     "gpt-6.1-sol": 2.0,
+    "gpt-6.2-sol": 2.0,
+    "gpt-6.2-astra": 2.0,
     "gpt-6-sol": 2.0,
     "gpt-6-luna": 2.0,
     "gpt-5.6-terra": 2.0,
@@ -391,6 +407,10 @@
     { "pattern": "^gpt-5\\.6-sol(?:-(?:none|low|medium|high|xhigh|max|ultra))?$", "canonical": "gpt-5.6-sol" },
     { "pattern": "^gpt-6-astra(?:-(?:none|low|medium|high|xhigh|max|ultra))?-fast$", "canonical": "gpt-6-astra-fast" },
     { "pattern": "^gpt-6-astra(?:-(?:none|low|medium|high|xhigh|max|ultra))?$", "canonical": "gpt-6-astra" },
+    { "pattern": "^gpt-6\\.2-astra(?:-(?:none|low|medium|high|xhigh|max|ultra))?-fast$", "canonical": "gpt-6.2-astra-fast" },
+    { "pattern": "^gpt-6\\.2-astra(?:-(?:none|low|medium|high|xhigh|max|ultra))?$", "canonical": "gpt-6.2-astra" },
+    { "pattern": "^gpt-6\\.2-sol(?:-(?:none|low|medium|high|xhigh|max|ultra))?-fast$", "canonical": "gpt-6.2-sol-fast" },
+    { "pattern": "^gpt-6\\.2-sol(?:-(?:none|low|medium|high|xhigh|max|ultra))?$", "canonical": "gpt-6.2-sol" },
     { "pattern": "^gpt-6\\.1-sol(?:-(?:none|low|medium|high|xhigh|max|ultra))?-fast$", "canonical": "gpt-6.1-sol-fast" },
     { "pattern": "^gpt-6\\.1-sol(?:-(?:none|low|medium|high|xhigh|max|ultra))?$", "canonical": "gpt-6.1-sol" },
     { "pattern": "^gpt-6-sol(?:-(?:none|low|medium|high|xhigh|max|ultra))?-fast$", "canonical": "gpt-6-sol-fast" },
@@ -435,6 +455,8 @@
     { "pattern": "(?i)^GPT-6 Astra \\(Auto[^)]*\\)$", "canonical": "gpt-6-astra" },
     { "pattern": "(?i)^GPT-6 Sol \\(Auto[^)]*\\)$", "canonical": "gpt-6-sol" },
     { "pattern": "(?i)^GPT-6\\.1 Sol \\(Auto[^)]*\\)$", "canonical": "gpt-6.1-sol" },
+    { "pattern": "(?i)^GPT-6\\.2 Sol \\(Auto[^)]*\\)$", "canonical": "gpt-6.2-sol" },
+    { "pattern": "(?i)^GPT-6\\.2 Astra \\(Auto[^)]*\\)$", "canonical": "gpt-6.2-astra" },
     { "pattern": "(?i)^GPT-6 Luna \\(Auto[^)]*\\)$", "canonical": "gpt-6-luna" },
     { "pattern": "(?i)^GPT-5\\.6 Terra \\(Auto[^)]*\\)$", "canonical": "gpt-5.6-terra" },
     { "pattern": "(?i)^GPT-5\\.6 Luna \\(Auto[^)]*\\)$", "canonical": "gpt-5.6-luna" },
@@ -450,6 +472,8 @@
   ],
   "fallback_models": {
     "codex": [
+      "gpt-6.2-astra",
+      "gpt-6.2-sol",
       "gpt-6-astra",
       "gpt-6.1-sol",
       "gpt-6-sol",
