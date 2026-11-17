@@ -32,7 +32,7 @@ concurrency:
 
 jobs:
   release:
-    runs-on: macos-26
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v7
         with:
@@ -78,7 +78,7 @@ jobs:
 
       - name: Select Xcode
         if: steps.meta.outputs.build == 'true'
-        run: sudo xcode-select -s /Applications/Xcode.app
+        run: sudo xcode-select -s /Applications/Xcode_26.3.app
 
       - name: Build the DMG
         if: steps.meta.outputs.build == 'true'
