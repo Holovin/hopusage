@@ -121,7 +121,8 @@ enum CodexUsagePricing {
 
     static func ultrafastMultiplier(base: String, at timestamp: Date) -> Double? {
         switch base {
-        case "gpt-6-astra": return 6
+        // developers.openai.com/api/docs/models/gpt-6.1-sol: "Ultrafast mode prices are 6x Standard."
+        case "gpt-6-astra", "gpt-6.1-sol": return 6
         case "gpt-6.2-sol", "gpt-6.2-astra": return timestamp < gpt62UltrafastSixTimesSince ? 3 : 6
         default: return nil
         }

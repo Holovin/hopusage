@@ -758,6 +758,25 @@ final class CodexLogUsageScannerTests: XCTestCase {
         XCTAssertEqual(ultrafastFastAlias, standard * 6, accuracy: 0.000_001)
     }
 
+    func testUltrafastGPT61SolCostsSixTimesStandard() {
+        let standard = CodexLogUsageScanner.aggregate(
+            events: [makeEvent(
+                "2026-10-12T08:00:00.000Z", model: "gpt-6.1-sol", input: 100_000, cached: 20_000, output: 10_000
+            )],
+            since: .distantPast, pricing: TestPricing.bundled
+        ).series.daily.first?.costUSD ?? 0
+        let ultrafast = CodexLogUsageScanner.aggregate(
+            events: [makeEvent(
+                "2026-10-12T08:00:00.000Z", model: "gpt-6.1-sol", input: 100_000, cached: 20_000, output: 10_000,
+                isUltrafast: true
+            )],
+            since: .distantPast, pricing: TestPricing.bundled
+        ).series.daily.first?.costUSD ?? 0
+
+        XCTAssertGreaterThan(standard, 0)
+        XCTAssertEqual(ultrafast, standard * 6, accuracy: 0.000_001)
+    }
+
     func testUltrafastGPT6SolUsesFastPrice() {
         let standard = CodexLogUsageScanner.aggregate(
             events: [makeEvent(
