@@ -4,14 +4,16 @@ Releases of HopUsage, the fork, come first: `v0.7.<fork patch>-fork.<original ve
 patch goes up for a release of the fork's own changes. **Backported** lists what was ported from that
 original release onto the 0.7 line, with the original commit; **Fork** lists the fork's own changes. The original project's history up to v0.7.16, where the fork starts, follows below.
 
-## v0.7.17-fork.0.8.1-beta.2
+## v0.7.18-fork.0.8.1-beta.2
 
-The fork's own changes on top of the v0.8.1-beta.2 backport.
+The fork's own changes on top of the v0.8.1-beta.2 backport. v0.7.17-fork.0.8.1-beta.2 was never published, so its changes ship here.
 
 ### Fork
 - Add a Copilot (CLI/Desktop) card for the account signed in to the GitHub Copilot desktop app and `copilot` CLI, with its spend per day, for the current billing period, and per model, from the AI credits Copilot records
 - Fetch the pricing supplement from the fork's own branch instead of the original project's site
 - Rewrite the README around what the fork changes and how to move over from OpenUsage
+- Price GPT-6.2 Sol and GPT-6.2 Astra, including requests over 272k input tokens, Fast, and Ultrafast (3x through February 28, 2027, then 6x)
+- Price GPT-6.1 Sol on Ultrafast at 6x instead of the Fast rate
 
 ## v0.7.16-fork.0.8.1-beta.2
 
