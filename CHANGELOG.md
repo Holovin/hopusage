@@ -4,6 +4,15 @@ Releases of HopUsage, the fork, come first: `v0.7.<fork patch>-fork.<original ve
 patch goes up for a release of the fork's own changes. **Backported** lists what was ported from that
 original release onto the 0.7 line, with the original commit; **Fork** lists the fork's own changes. The original project's history up to v0.7.16, where the fork starts, follows below.
 
+## v0.7.19-fork.0.8.1-beta.3
+
+### Backported
+- Stop checking Launch at Login with macOS on every popover redraw; Settings checks it when it opens ([e288b3da](https://github.com/robinebers/openusage/commit/e288b3da))
+
+### Fork
+- Show an OpenAI organization's billed API spend on Codex cards as an API Usage row, with a per-project breakdown on hover. Add an OpenAI Admin key in Customize → Codex; the period start and refresh interval are set per card
+- Show only the version in the popover footer
+
 ## v0.7.18-fork.0.8.1-beta.2
 
 The fork's own changes on top of the v0.8.1-beta.2 backport. v0.7.17-fork.0.8.1-beta.2 was never published, so its changes ship here.
