@@ -73,7 +73,7 @@ struct SettingsScreen: View {
         .padding(.horizontal, 14)
         .padding(.vertical, 12)
         .task { await refreshNotificationsAuth() }
-        .onChange(of: layout.screen) { _, screen in
+        .onChange(of: layout.screen, initial: true) { _, screen in
             if screen == .settings {
                 scrollPosition.scrollTo(edge: .top)
                 launchAtLogin.refreshStatus()
