@@ -23,6 +23,8 @@ final class CodexProvider: ProviderRuntime {
     let now: @Sendable () -> Date
     let pricing: @Sendable () async -> ModelPricing
     let fallbackModel: @MainActor () -> String?
+    /// Fork: this account's OpenAI API billing (the API Usage row), read with its own Admin key.
+    let apiUsage: OpenAIAPIUsage
 
     init(
         localHistoryWait: Duration = .seconds(5),
@@ -35,7 +37,8 @@ final class CodexProvider: ProviderRuntime {
         historyScope: CodexHistoryScope = .allHomes,
         now: @escaping @Sendable () -> Date = Date.init,
         pricing: @escaping @Sendable () async -> ModelPricing = { await ModelPricingStore.shared.current() },
-        fallbackModel: @escaping @MainActor () -> String? = { CodexFallbackModelSetting.current() }
+        fallbackModel: @escaping @MainActor () -> String? = { CodexFallbackModelSetting.current() },
+        apiUsage: OpenAIAPIUsage? = nil
     ) {
         self.localHistoryWait = localHistoryWait
         self.provider = provider
@@ -48,6 +51,9 @@ final class CodexProvider: ProviderRuntime {
         self.now = now
         self.pricing = pricing
         self.fallbackModel = fallbackModel
+        // The app's catalog passes the card's real key store; any other construction (tests, previews)
+        // gets an inert one that never reads a saved key or calls OpenAI.
+        self.apiUsage = apiUsage ?? OpenAIAPIUsage.inert(cardID: provider.id)
     }
 
     var widgetDescriptors: [WidgetDescriptor] {
@@ -74,7 +80,11 @@ final class CodexProvider: ProviderRuntime {
                     estimatedCost: true,
                     sourceNote: "From your Codex logs (estimated)"
                 )
-        ] + WidgetDescriptor.spendTiles(provider: provider)
+        ] + WidgetDescriptor.spendTiles(provider: provider) + [
+            // Fork: the account's OpenAI API spend, with the per-project breakdown on hover.
+            .combined(id: "\(provider.id).apiUsage", provider: provider, title: OpenAIAPIUsageMapper.label,
+                      isUsagePeriod: true)
+        ]
     }
 
     func hasLocalCredentials() async -> Bool {
@@ -208,9 +218,12 @@ final class CodexProvider: ProviderRuntime {
         }
         // Pending history is not evidence of no usage. The store may restore last-good spend rows.
         if history != nil { MetricLine.appendNoDataIfNeeded(&mapped.lines) }
+        let api = await apiUsage.current()
+        if let line = api.line { mapped.lines.append(line) }
+        let warnings = [warning, api.warning].compactMap { $0 }
         var snapshot = ProviderSnapshot.make(
             provider: provider, plan: mapped.plan, lines: mapped.lines, refreshedAt: now(),
-            usageHistory: history?.usageHistory, warning: warning
+            usageHistory: history?.usageHistory, warning: warnings.isEmpty ? nil : warnings.joined(separator: " ")
         )
         let resetNames = CodexUsageMapper.resetNames(in: mapped.lines)
         snapshot.resetNames = resetNames.isEmpty ? nil : resetNames
@@ -388,5 +401,23 @@ final class CodexProvider: ProviderRuntime {
             }
         }
         return response.accessToken
+    }
+}
+
+/// Fork: the API Usage row's Admin key, managed in Customize ▸ Codex like the other providers' keys.
+extension CodexProvider: APIKeyManaging {
+    var apiKeyStatus: APIKeyStatus { apiUsage.authStore.keyStatus() }
+    var apiKeyPlaceholder: String { "sk-admin-…" }
+    var apiKeySectionTitle: String { "OpenAI Admin Key" }
+    func currentAPIKey() -> String? { apiUsage.authStore.currentAPIKey() }
+
+    func saveAPIKey(_ key: String) throws {
+        try apiUsage.authStore.saveAPIKey(key)
+        apiUsage.invalidate()
+    }
+
+    func deleteAPIKey() throws {
+        try apiUsage.authStore.deleteAPIKey()
+        apiUsage.invalidate()
     }
 }

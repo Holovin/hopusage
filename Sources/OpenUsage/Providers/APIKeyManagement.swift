@@ -37,4 +37,13 @@ protocol APIKeyManaging: ProviderRuntime {
     /// Remove the saved key. If an env key is present the status falls back to `fromEnvironment`;
     /// otherwise `notSet`.
     func deleteAPIKey() throws
+    /// Fork: the hint shown in the empty key field.
+    var apiKeyPlaceholder: String { get }
+    /// Fork: the key section's caption in Customize.
+    var apiKeySectionTitle: String { get }
+}
+
+extension APIKeyManaging {
+    var apiKeyPlaceholder: String { "sk-or-v1-…" }
+    var apiKeySectionTitle: String { "API Key" }
 }

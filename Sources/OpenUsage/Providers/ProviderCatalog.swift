@@ -49,7 +49,8 @@ enum ProviderCatalog {
                     writableAuthHomes: Set(codex.plainWritableAuthHomes),
                     piCredentialSources: codex.plainPiCredentialSources
                 ),
-                logUsageScanner: CodexLogUsageScanner(additionalHomes: codex.plainAuthHomes)
+                logUsageScanner: CodexLogUsageScanner(additionalHomes: codex.plainAuthHomes),
+                apiUsage: OpenAIAPIUsage(cardID: "codex")
             ))
         } else {
             providers += codex.cards.map { card in
@@ -61,7 +62,8 @@ enum ProviderCatalog {
                         writableAuthHomes: Set(card.writableAuthHomes),
                         piCredentialSources: card.piCredentialSources
                     ),
-                    historyScope: .account(card.identity, codex.historyHomes, claimsPiUsage: card.claimsPiUsage)
+                    historyScope: .account(card.identity, codex.historyHomes, claimsPiUsage: card.claimsPiUsage),
+                    apiUsage: OpenAIAPIUsage(cardID: card.id)
                 )
             }
         }

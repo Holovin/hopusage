@@ -12,6 +12,7 @@ Tracks your ChatGPT/Codex subscription limits using the login from the Codex CLI
 | Rate Limit Resets | On-demand rate-limit reset credits, shown as a count (e.g. `2 available`) with a colored dot for the soonest expiry; hover the value for a timeline of each credit's expiry |
 | Extra Usage | Flex credits, shown verbatim as dollars + credits (e.g. `$31.84 · 796 credits`) |
 | Today / Yesterday / Last 30 Days | Local spend, as cost, tokens, or both (see below) |
+| API Usage | Fork: the OpenAI API organization's billed spend this period, with a per-project breakdown on hover. Needs an Admin key (see below); below the caret by default |
 
 When Codex reports your plan name, HopUsage shows it beside the provider name.
 Pro plans use the current names **Pro 100**, **Pro 200**, and **Pro 500** instead of the older usage multipliers.
@@ -103,6 +104,32 @@ Large session files are read in small chunks instead of being loaded into memory
 individual records are skipped and logged; local spend can be incomplete if a skipped record contained usage.
 
 For supported GPT-5.4, GPT-5.5, GPT-5.6, and GPT-6 models, requests above 272k input tokens use OpenAI's long-context rates for the whole request. These Codex-specific request rules apply consistently to native Codex logs and zero-cost Codex OAuth usage imported from pi or OpenCode. Daybreak Blue usage is priced as GPT-5.6 Sol, matching OpenAI's published alias and Daybreak pricing. Cached input uses the published cache-read discount when the pricing source provides one; otherwise it is estimated at the full input rate. Fast/priority estimates use each model's published Codex multiplier (for example, GPT-5.5 uses 2.5×); Ultrafast is 6× for GPT-6 Astra and uses the Fast multiplier for other models. Model names ending in `-fast` are normalized to their unscaled base rate before that multiplier is applied once.
+
+## API Usage
+
+Fork: each Codex account can show what an OpenAI API organization has spent, separate from the ChatGPT
+subscription the rest of the card tracks. The row shows dollars billed since the period started plus
+completion tokens; hover it for each project's name, dollars, share, and tokens (the top five by name,
+the rest as Other). The dollars are OpenAI's own billed amounts, not an estimate.
+
+- **Key:** the usage endpoints only accept an **Admin key** (`sk-admin-…`), created by the organization
+  owner at [platform.openai.com/settings/organization/admin-keys](https://platform.openai.com/settings/organization/admin-keys).
+  Add it in **Customize → Codex → OpenAI Admin Key**. Each Codex account has its own key, saved at
+  `~/.config/hopusage/openai-api/<card id>.json`. Without a key the row is not shown. An Admin key can
+  manage the whole organization, not just read usage, so keep it private.
+- **Period:** starts on **Customize → Codex → API Usage → Period Starts On** (the 1st by default), for
+  example when the organization's monthly credit grant renews. A month without that day starts on its
+  last day.
+- **Refresh:** OpenAI reports these numbers per day and with a delay, so the row is fetched at most once
+  per **Customize → Codex → API Usage → Refresh Every** (2 hours by default) and keeps its last result in
+  between. Saving a key or changing the period start fetches right away.
+- Key, period, and interval are all set per Codex account.
+- **Errors:** a failed fetch keeps the last result and shows a warning on the Codex card, with the reason
+  in the log. If tokens or project names can't be read, the row still shows dollars, or project ids.
+
+Calls, each with the Admin key against `https://api.openai.com/v1/organization` and following the page
+cursor: `GET /costs` and `GET /usage/completions` (both `bucket_width=1d&group_by=project_id`, since the
+period start), and `GET /projects?include_archived=true` for names (at most once a day).
 
 ## Troubleshooting
 
