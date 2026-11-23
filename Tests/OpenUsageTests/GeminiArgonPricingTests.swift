@@ -19,6 +19,7 @@ final class GeminiArgonPricingTests: XCTestCase {
             "gemini-4-argon-medium", "gemini-4-argon-high", "gemini-4-argon-xhigh",
             "gemini-4-argon-trial-high", "gemini-4-argon-high-trial",
             "gemini-4-argon-preview-high", "gemini-4-argon-xhigh-preview",
+            "gemini-4-argon-tiered-high",
             "Gemini 4 Argon", "Gemini 4 Argon (None)", "Gemini 4 Argon (Low)",
             "Gemini 4 Argon (Medium)", "Gemini 4 Argon (High)", "Gemini 4 Argon (XHigh)",
             "Gemini 4 Argon (Trial)", "Gemini 4 Argon (Preview)"
