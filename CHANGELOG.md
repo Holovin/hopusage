@@ -4,6 +4,14 @@ Releases of HopUsage, the fork, come first: `v0.7.<fork patch>-fork.<original ve
 patch goes up for a release of the fork's own changes. **Backported** lists what was ported from that
 original release onto the 0.7 line, with the original commit; **Fork** lists the fork's own changes. The original project's history up to v0.7.16, where the fork starts, follows below.
 
+## v0.7.20-fork.0.8.1-beta.3
+
+### Fork
+- Remove Antigravity's Argon Weekly row: Antigravity folded Argon into the shared Gemini pool, so its usage shows in Session and Weekly
+- Rename Antigravity's Claude row to Claude and GPT and its Claude Weekly row to Claude and GPT Weekly, after Antigravity's own name for that pool
+- Ask Google for Antigravity quotas as the regular Antigravity client instead of the hub client
+- Price Gemini 4 Neon, Hydrogen, and Carbon, including effort variants and Antigravity's subagent model IDs
+
 ## v0.7.19-fork.0.8.1-beta.3
 
 ### Backported
