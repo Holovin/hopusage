@@ -13,13 +13,10 @@ struct AntigravityModelConfig: Sendable, Equatable {
 /// Turns Antigravity's quota responses into the app's metric vocabulary.
 ///
 /// The authoritative source is the `RetrieveUserQuotaSummary` RPC (`parseQuotaSummary`): the shared
-/// Gemini and non-Gemini pools each have rolling 5-hour and weekly windows, and eligible accounts
-/// have a separate Argon weekly quota. Builds without that RPC fall back to the
-/// legacy per-model endpoints, whose fine-grained models collapse into the two 5h pool meters
-/// ("Session", "Claude"), each keeping the
-/// worst (lowest) remaining fraction in its pool; the legacy data is 5h-only, so the weekly meters
-/// read "No data" there. Argon is excluded from legacy pooling because those endpoints do not
-/// identify its quota's pool or period.
+/// Gemini and non-Gemini pools each have rolling 5-hour and weekly windows. Builds without that RPC
+/// fall back to the legacy per-model endpoints, whose fine-grained models collapse into the two 5h
+/// pool meters ("Session", "Claude and GPT"), each keeping the worst (lowest) remaining fraction in
+/// its pool; the legacy data is 5h-only, so the weekly meters read "No data" there.
 enum AntigravityUsageMapper {
     /// Internal/duplicate model IDs that should never surface as a meter. Matched against the model ID
     /// (LS `modelOrAlias.model`, Cloud Code `model`/key); the Cloud Code path also drops `isInternal`.
@@ -34,7 +31,7 @@ enum AntigravityUsageMapper {
 
     /// The four shared-pool buckets, matched by **exact `bucketId` only** —
     /// a future bucket (e.g. `gemini-image-5h`) must never silently join a pool, and pool identity is
-    /// never inferred from `displayName`/`window`. Argon's distinct group is handled separately below.
+    /// never inferred from `displayName`/`window`.
     static let summaryBuckets: [(bucketID: String, label: String, periodMs: Int)] = [
         ("gemini-5h", AntigravityMetric.sessionLabel, MetricPeriod.sessionMs),
         ("gemini-weekly", AntigravityMetric.weeklyLabel, MetricPeriod.weekMs),
@@ -42,8 +39,8 @@ enum AntigravityUsageMapper {
         ("3p-weekly", AntigravityMetric.claudeWeeklyLabel, MetricPeriod.weekMs)
     ]
 
-    /// `RetrieveUserQuotaSummary` → up to five meters, ordered Session, Weekly, Argon Weekly,
-    /// Claude, Claude Weekly. Accepts both the LS envelope (`{"response": {"groups": …}}`) and the bare remote
+    /// `RetrieveUserQuotaSummary` → up to four meters, ordered Session, Weekly, Claude and GPT,
+    /// Claude and GPT Weekly. Accepts both the LS envelope (`{"response": {"groups": …}}`) and the bare remote
     /// payload (`{"groups": …}`).
     ///
     /// Nil means "not a summary" (undecodable body / no `groups` anywhere) and the caller may fall back
@@ -72,7 +69,7 @@ enum AntigravityUsageMapper {
         guard !groupLists.isEmpty else { return nil }
 
         var pooled: [String: (fraction: Double, resetTime: Date?)] = [:]
-        for bucket in groupLists.joined().filter({ $0.displayName != argonGroupName }).flatMap({ $0.buckets ?? [] }) {
+        for bucket in groupLists.joined().flatMap({ $0.buckets ?? [] }) {
             guard let id = bucket.bucketId, summaryBuckets.contains(where: { $0.bucketID == id }) else {
                 AppLog.warn(LogTag.plugin("antigravity"), "quota summary: skipping unrecognized bucket id '\(bucket.bucketId ?? "<absent>")'")
                 continue
@@ -85,63 +82,17 @@ enum AntigravityUsageMapper {
             pooled[id] = (fraction, bucket.resetTime.flatMap { OpenUsageISO8601.date(from: $0) })
         }
 
-        var lines: [MetricLine] = summaryBuckets.compactMap { spec in
+        return summaryBuckets.compactMap { spec in
             guard let entry = pooled[spec.bucketID] else { return nil }
             return line(pool: spec.label, fraction: entry.fraction, resetTime: entry.resetTime, periodMs: spec.periodMs)
         }
-        // Argon is judged per body: combining two hosts' Argon groups would read as an ambiguous bucket.
-        if let argon = groupLists.lazy.compactMap(argonWeeklyLine).first {
-            let index = lines.firstIndex {
-                $0.label == AntigravityMetric.claudeLabel || $0.label == AntigravityMetric.claudeWeeklyLabel
-            } ?? lines.endIndex
-            lines.insert(argon, at: index)
-        }
-        return lines
-    }
-
-    /// Match Argon's separate group and explicit weekly window. Require one unambiguous bucket;
-    /// shared-pool groups still use only the known exact IDs above.
-    private static let argonGroupName = "Gemini 4 Argon"
-
-    private static func argonWeeklyLine(_ groups: [QuotaSummaryGroup]) -> MetricLine? {
-        let argonGroups = groups.filter { $0.displayName == argonGroupName }
-        guard !argonGroups.isEmpty else { return nil }
-        let buckets = argonGroups.flatMap { $0.buckets ?? [] }
-        for bucket in buckets where bucket.window != "weekly" {
-            AppLog.warn(LogTag.plugin("antigravity"), "Argon quota has unsupported window '\(bucket.window ?? "<absent>")'; skipping its bucket")
-        }
-        let weekly = buckets.filter { $0.window == "weekly" }
-        guard weekly.count == 1, let bucket = weekly.first,
-              let id = bucket.bucketId?.nilIfEmpty,
-              !summaryBuckets.contains(where: { $0.bucketID == id }) else {
-            AppLog.warn(LogTag.plugin("antigravity"), "Argon quota group has no unambiguous separate weekly bucket; dropping its line")
-            return nil
-        }
-        guard !bucket.hasInvalidDisabledFlag else {
-            AppLog.warn(LogTag.plugin("antigravity"), "Argon weekly quota has an unusable disabled flag; dropping its line")
-            return nil
-        }
-        guard bucket.disabled != true else { return nil }
-        guard let fraction = bucket.remainingFraction, fraction.isFinite else {
-            AppLog.warn(LogTag.plugin("antigravity"), "Argon weekly quota has no usable remainingFraction; dropping its line")
-            return nil
-        }
-        return line(
-            pool: AntigravityMetric.argonWeeklyLabel,
-            fraction: fraction,
-            resetTime: bucket.resetTime.flatMap { OpenUsageISO8601.date(from: $0) },
-            periodMs: MetricPeriod.weekMs
-        )
     }
 
     /// Whether one summary body already has a usable fraction for all four shared-pool buckets, so no
-    /// other host's answer could add or change those meters under the first-wins merge. Argon is not
-    /// required: accounts without it never report it.
+    /// other host's answer could add or change those meters under the first-wins merge.
     static func isCompleteSummary(_ data: Data) -> Bool {
         guard let groups = summaryGroups(data) else { return false }
-        // Same group rule as the merge: a shared bucket id inside the Argon group never yields a meter.
-        let shared = groups.filter { $0.displayName != argonGroupName }
-        let usable = Set(shared.flatMap { $0.buckets ?? [] }.compactMap { bucket in
+        let usable = Set(groups.flatMap { $0.buckets ?? [] }.compactMap { bucket in
             bucket.remainingFraction?.isFinite == true ? bucket.bucketId : nil
         })
         return summaryBuckets.allSatisfy { usable.contains($0.bucketID) }
@@ -241,17 +192,13 @@ enum AntigravityUsageMapper {
     // MARK: - Line building (legacy pooling)
 
     /// Collapse model configs into the two quota-pool meters, keeping the worst fraction per pool and
-    /// ordering the Gemini pool ("Session") before Claude. Blacklisted and empty-label models are dropped.
+    /// ordering the Gemini pool ("Session") before Claude and GPT. Blacklisted and empty-label models are dropped.
     static func buildLines(_ configs: [AntigravityModelConfig]) -> [MetricLine] {
         var pooled: [String: (fraction: Double, resetTime: Date?)] = [:]
         for config in configs {
             let label = config.label.trimmingCharacters(in: .whitespaces)
             guard !label.isEmpty else { continue }
             if let id = config.modelID, modelBlacklist.contains(id) { continue }
-            if isArgonModel(label: label, modelID: config.modelID) {
-                AppLog.warn(LogTag.plugin("antigravity"), "Skipping legacy Argon quota: its pool and period are unavailable")
-                continue
-            }
 
             let pool = poolLabel(normalizeLabel(label))
             if let existing = pooled[pool] {
@@ -286,16 +233,6 @@ enum AntigravityUsageMapper {
 
     // MARK: - Pooling helpers (pure)
 
-    private static func isArgonModel(label: String, modelID: String?) -> Bool {
-        // M421 and the display name were observed in GetUserStatus; slug/effort IDs are also present
-        // in the app's model catalogue. Legacy quotaInfo carries no window, even when it has a value.
-        if modelID == "MODEL_PLACEHOLDER_M421" { return true }
-        return [label, modelID ?? ""].contains { value in
-            let normalized = value.lowercased().replacingOccurrences(of: " ", with: "-")
-            return normalized == "gemini-4-argon" || normalized.hasPrefix("gemini-4-argon-")
-        }
-    }
-
     /// "Gemini 3 Pro (High)" → "Gemini 3 Pro" — strip a trailing parenthetical variant.
     static func normalizeLabel(_ label: String) -> String {
         if let range = label.range(of: #"\s*\([^)]*\)\s*$"#, options: .regularExpression) {
@@ -306,13 +243,13 @@ enum AntigravityUsageMapper {
 
     static func poolLabel(_ normalizedLabel: String) -> String {
         // Pro and Flash draw from one shared pool since Antigravity's 2026-05-19 quota merge, so every
-        // remaining Gemini model (after excluding Argon) maps to the single "Session" meter; Claude,
+        // Gemini model maps to the single "Session" meter; Claude,
         // GPT-OSS, and any other non-Gemini model share the other pool.
         normalizedLabel.lowercased().contains("gemini") ? AntigravityMetric.sessionLabel : AntigravityMetric.claudeLabel
     }
 
     static func sortKey(_ poolLabel: String) -> String {
-        // The Gemini pool ("Session") before Claude, matching the widget declaration order.
+        // The Gemini pool ("Session") before Claude and GPT, matching the widget declaration order.
         poolLabel == AntigravityMetric.sessionLabel ? "0_\(poolLabel)" : "1_\(poolLabel)"
     }
 
@@ -359,17 +296,7 @@ private struct QuotaSummaryRoot: Decodable {
 }
 
 private struct QuotaSummaryGroup: Decodable {
-    let displayName: String?
     let buckets: [QuotaSummaryBucket]?
-
-    private enum CodingKeys: String, CodingKey { case displayName, buckets }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        // A malformed optional name must not invalidate otherwise usable shared-pool buckets.
-        displayName = (try? container.decodeIfPresent(String.self, forKey: .displayName)) ?? nil
-        buckets = try container.decodeIfPresent([QuotaSummaryBucket].self, forKey: .buckets)
-    }
 }
 
 /// A bucket that never fails its containing array: a malformed element (not an object, or a field of
@@ -379,26 +306,14 @@ private struct QuotaSummaryBucket: Decodable {
     let bucketId: String?
     let remainingFraction: Double?
     let resetTime: String?
-    let window: String?
-    let disabled: Bool?
-    let hasInvalidDisabledFlag: Bool
 
-    private enum CodingKeys: String, CodingKey { case bucketId, remainingFraction, resetTime, window, disabled }
+    private enum CodingKeys: String, CodingKey { case bucketId, remainingFraction, resetTime }
 
     init(from decoder: Decoder) {
         let container = try? decoder.container(keyedBy: CodingKeys.self)
         bucketId = container.flatMap { (try? $0.decodeIfPresent(String.self, forKey: .bucketId)) ?? nil }
         remainingFraction = container.flatMap { (try? $0.decodeIfPresent(Double.self, forKey: .remainingFraction)) ?? nil }
         resetTime = container.flatMap { (try? $0.decodeIfPresent(String.self, forKey: .resetTime)) ?? nil }
-        window = container.flatMap { (try? $0.decodeIfPresent(String.self, forKey: .window)) ?? nil }
-        do {
-            // Missing/null flags retain protobuf's default; a malformed flag cannot establish access.
-            disabled = try container?.decodeIfPresent(Bool.self, forKey: .disabled)
-            hasInvalidDisabledFlag = false
-        } catch {
-            disabled = nil
-            hasInvalidDisabledFlag = true
-        }
     }
 }
 

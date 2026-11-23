@@ -51,7 +51,7 @@ final class AntigravityProviderTests: XCTestCase {
 
         // Pro and Flash share one pool since Antigravity's 2026-05-19 quota merge, so all Gemini
         // models collapse into a single "Session" meter (worst fraction wins across the whole pool).
-        XCTAssertEqual(lines.map(\.label), ["Session", "Claude"])
+        XCTAssertEqual(lines.map(\.label), ["Session", "Claude and GPT"])
         XCTAssertEqual(used(lines[0]), 50)  // worst Gemini fraction (Pro Low 0.5) -> 50% used
         XCTAssertEqual(used(lines[1]), 70)  // worst non-Gemini (Claude 0.3) -> 70% used
     }
@@ -87,7 +87,7 @@ final class AntigravityProviderTests: XCTestCase {
         ]
         let lines = AntigravityUsageMapper.buildLines(configs)
         XCTAssertEqual(used(lines.first { $0.label == "Session" }), 0)   // clamped to full
-        XCTAssertEqual(used(lines.first { $0.label == "Claude" }), 100)  // clamped to empty
+        XCTAssertEqual(used(lines.first { $0.label == "Claude and GPT" }), 100)  // clamped to empty
     }
 
     func testPoolLabelClassification() {
@@ -96,8 +96,8 @@ final class AntigravityProviderTests: XCTestCase {
         XCTAssertEqual(AntigravityUsageMapper.poolLabel("Gemini 3.1 Pro"), "Session")
         XCTAssertEqual(AntigravityUsageMapper.poolLabel("Gemini 3.5 Flash"), "Session")
         XCTAssertEqual(AntigravityUsageMapper.poolLabel("Gemini 3.1 Flash Lite"), "Session")
-        XCTAssertEqual(AntigravityUsageMapper.poolLabel("Claude Opus 4.6"), "Claude")
-        XCTAssertEqual(AntigravityUsageMapper.poolLabel("GPT-OSS 120B"), "Claude")
+        XCTAssertEqual(AntigravityUsageMapper.poolLabel("Claude Opus 4.6"), "Claude and GPT")
+        XCTAssertEqual(AntigravityUsageMapper.poolLabel("GPT-OSS 120B"), "Claude and GPT")
         // Any Gemini model must stay in the Gemini pool, never Claude.
         XCTAssertEqual(AntigravityUsageMapper.poolLabel("Gemini Ultra"), "Session")
         XCTAssertEqual(AntigravityUsageMapper.poolLabel("gemini-3"), "Session")
@@ -135,7 +135,7 @@ final class AntigravityProviderTests: XCTestCase {
         let parsed = AntigravityUsageMapper.parseUserStatus(Data(json.utf8))
         XCTAssertEqual(parsed?.plan, "Pro")
         let lines = AntigravityUsageMapper.buildLines(parsed?.configs ?? [])
-        XCTAssertEqual(lines.map(\.label), ["Session", "Claude"])
+        XCTAssertEqual(lines.map(\.label), ["Session", "Claude and GPT"])
         XCTAssertEqual(used(lines[0]), 50)
         XCTAssertEqual(used(lines[1]), 0)
         XCTAssertNotNil(resetsAt(lines[0]))
@@ -354,7 +354,7 @@ final class AntigravityProviderTests: XCTestCase {
         let snapshot = await provider.refresh()
         XCTAssertEqual(snapshot.plan, "Pro")
         // Legacy per-model data merges into the two pool meters (worst fraction per pool).
-        XCTAssertEqual(snapshot.lines.map(\.label), ["Session", "Claude"])
+        XCTAssertEqual(snapshot.lines.map(\.label), ["Session", "Claude and GPT"])
         XCTAssertEqual(used(snapshot.lines[0]), 60)
         XCTAssertEqual(used(snapshot.lines[1]), 30)
     }

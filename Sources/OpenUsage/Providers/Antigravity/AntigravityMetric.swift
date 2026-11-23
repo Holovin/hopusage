@@ -6,20 +6,18 @@ import Foundation
 /// come from one place — label drift there is a silent "No data" failure.
 ///
 /// The shared Gemini and non-Gemini (Claude, GPT-OSS) pools each have a rolling 5-hour window plus a
-/// weekly window. Eligible accounts also report a separate Gemini 4 Argon weekly quota. The shared
-/// Gemini pair is titled "Session" / "Weekly"; the non-Gemini pool keeps its "Claude" name.
-/// `geminiID` keeps its historical `antigravity.geminiPro` raw value so existing users' layout state
-/// (enabled/pin/order) carries over to the shared meter with zero migration.
+/// weekly window. The shared Gemini pair is titled "Session" / "Weekly"; the non-Gemini pool is titled
+/// after Antigravity's own "Claude and GPT models" group. The `claude*` IDs keep their historical raw
+/// values, and `geminiID` keeps `antigravity.geminiPro`, so existing users' layout state
+/// (enabled/pin/order) carries over with zero migration.
 enum AntigravityMetric {
     static let geminiID = "antigravity.geminiPro"
     static let geminiWeeklyID = "antigravity.geminiWeekly"
-    static let argonWeeklyID = "antigravity.argonWeekly"
     static let claudeID = "antigravity.claude"
     static let claudeWeeklyID = "antigravity.claudeWeekly"
 
     static let sessionLabel = "Session"
     static let weeklyLabel = "Weekly"
-    static let argonWeeklyLabel = "Argon Weekly"
-    static let claudeLabel = "Claude"
-    static let claudeWeeklyLabel = "Claude Weekly"
+    static let claudeLabel = "Claude and GPT"
+    static let claudeWeeklyLabel = "Claude and GPT Weekly"
 }

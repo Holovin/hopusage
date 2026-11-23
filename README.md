@@ -11,7 +11,7 @@ HopUsage stays on OpenUsage **0.7.16**, the last version that tracks spend and t
 and adds on top:
 
 - **Backported fixes** from OpenUsage 0.8.x (Claude Max and Ultra plan names, Claude Extra Usage in
-  your billing currency, Antigravity's Gemini and Argon quotas, Ollama free plans, Grok pay-as-you-go
+  your billing currency, Antigravity's Gemini quotas, Ollama free plans, Grok pay-as-you-go
   in dollars, named rate limit resets, and more — see the [changelog](CHANGELOG.md)).
 - **[Copilot (CLI/Desktop)](docs/providers/copilot-cli.md).** The Copilot card only reads the token
   of an editor plugin (`~/.config/github-copilot`) or the GitHub CLI (`gh`), never the login of the

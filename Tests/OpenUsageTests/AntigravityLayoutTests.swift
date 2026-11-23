@@ -11,7 +11,7 @@ final class AntigravityLayoutTests: XCTestCase {
 
         // Every quota, trend, and spend metric is enabled in provider declaration order.
         XCTAssertEqual(store.placed.map(\.descriptorID), [
-            "antigravity.geminiPro", "antigravity.geminiWeekly", "antigravity.argonWeekly",
+            "antigravity.geminiPro", "antigravity.geminiWeekly",
             "antigravity.claude", "antigravity.claudeWeekly", "antigravity.trend",
             "antigravity.today", "antigravity.yesterday", "antigravity.last30"
         ])
@@ -19,10 +19,10 @@ final class AntigravityLayoutTests: XCTestCase {
         // Fork: nothing is pinned by default.
         XCTAssertEqual(store.pinnedMetricIDs, [])
 
-        // Gemini pair, Argon Weekly, and trend above the fold; Claude and spend below the caret.
+        // Gemini pair and trend above the fold; Claude and spend below the caret.
         let group = store.customizeGroups.first { $0.provider.id == "antigravity" }
         XCTAssertEqual(group?.alwaysShownMetrics.map(\.id), [
-            "antigravity.geminiPro", "antigravity.geminiWeekly", "antigravity.argonWeekly", "antigravity.trend"
+            "antigravity.geminiPro", "antigravity.geminiWeekly", "antigravity.trend"
         ])
         XCTAssertEqual(group?.expandedMetrics.map(\.id), [
             "antigravity.claude", "antigravity.claudeWeekly",
@@ -45,7 +45,6 @@ final class AntigravityLayoutTests: XCTestCase {
         let store = LayoutStore(registry: .antigravityOnly, defaults: defaults, storageKey: "layout")
 
         XCTAssertTrue(store.isMetricEnabled("antigravity.geminiWeekly"))
-        XCTAssertTrue(store.isMetricEnabled("antigravity.argonWeekly"))
         XCTAssertTrue(store.isMetricEnabled("antigravity.claudeWeekly"))
         XCTAssertTrue(store.isMetricEnabled("antigravity.trend"))
         XCTAssertTrue(store.isMetricEnabled("antigravity.today"))
@@ -56,7 +55,6 @@ final class AntigravityLayoutTests: XCTestCase {
         XCTAssertTrue(store.expandedMetricIDs.contains("antigravity.yesterday"))
         XCTAssertTrue(store.expandedMetricIDs.contains("antigravity.last30"))
         XCTAssertFalse(store.expandedMetricIDs.contains("antigravity.geminiWeekly"))
-        XCTAssertFalse(store.expandedMetricIDs.contains("antigravity.argonWeekly"))
         XCTAssertFalse(store.expandedMetricIDs.contains("antigravity.trend"))
         XCTAssertFalse(store.expandedMetricIDs.contains("antigravity.claude"),
                        "a metric the user already lived with is never silently tucked away")
@@ -99,62 +97,24 @@ final class AntigravityLayoutTests: XCTestCase {
         XCTAssertEqual(store.pinnedMetricIDs, [])
     }
 
-    func testArgonUpgradeSeedsOnceAndPreservesSavedPinsOrderAndOptOuts() {
-        let defaults = makeDefaults("ArgonUpgrade")
-        let previousIDs = preArgonMetricIDs
-        let savedOrder = Array(previousIDs.reversed())
-        // The previous release already offered every old metric; the user disabled Gemini Weekly.
-        saveStored(previousIDs.filter { $0 != "antigravity.geminiWeekly" }.map {
-            PlacedWidget(descriptorID: $0)
-        }, forKey: "layout", in: defaults)
-        saveStored(previousIDs, forKey: "layout.seededDefaults", in: defaults)
-        saveStored(["antigravity": savedOrder], forKey: "layout.metricOrderByProvider", in: defaults)
-        defaults.set(["antigravity.claude"], forKey: "layout.menuBarPins")
-        defaults.set(["antigravity.geminiPro"], forKey: "layout.expandedMetrics")
+    func testRetiredArgonWeeklyIsFilteredFromSavedLayout() {
+        // Argon Weekly shipped before Antigravity folded Argon into the shared Gemini pool; a layout
+        // saved with it enabled, pinned, ordered, and expanded must drop it everywhere.
+        let defaults = makeDefaults("RetiredArgon")
+        let savedIDs = currentMetricIDs + ["antigravity.argonWeekly"]
+        saveStored(savedIDs.map { PlacedWidget(descriptorID: $0) }, forKey: "layout", in: defaults)
+        saveStored(savedIDs, forKey: "layout.seededDefaults", in: defaults)
+        saveStored(["antigravity": ["antigravity.argonWeekly"] + currentMetricIDs],
+                   forKey: "layout.metricOrderByProvider", in: defaults)
+        defaults.set(["antigravity.argonWeekly", "antigravity.claude"], forKey: "layout.menuBarPins")
+        defaults.set(["antigravity.argonWeekly"], forKey: "layout.expandedMetrics")
 
         let store = LayoutStore(registry: .antigravityOnly, defaults: defaults, storageKey: "layout")
 
-        XCTAssertEqual(store.placed.filter { $0.descriptorID == "antigravity.argonWeekly" }.count, 1)
-        XCTAssertFalse(store.isMetricEnabled("antigravity.geminiWeekly"))
+        XCTAssertFalse(store.placed.contains { $0.descriptorID == "antigravity.argonWeekly" })
         XCTAssertEqual(store.pinnedMetricIDs, ["antigravity.claude"])
-        XCTAssertEqual(store.expandedMetricIDs, ["antigravity.geminiPro"])
-        XCTAssertEqual(store.orderedSupportedMetrics(for: "antigravity").map(\.id),
-                       savedOrder + ["antigravity.argonWeekly"])
-
-        store.setMetricEnabled("antigravity.argonWeekly", false)
-        let reloaded = LayoutStore(registry: .antigravityOnly, defaults: defaults, storageKey: "layout")
-        XCTAssertFalse(reloaded.isMetricEnabled("antigravity.argonWeekly"), "the new default is offered only once")
-        XCTAssertFalse(reloaded.isMetricEnabled("antigravity.geminiWeekly"))
-        XCTAssertEqual(reloaded.pinnedMetricIDs, ["antigravity.claude"])
-        XCTAssertEqual(reloaded.orderedSupportedMetrics(for: "antigravity").map(\.id),
-                       savedOrder + ["antigravity.argonWeekly"])
-    }
-
-    func testBothResetActionsRestoreArgonEnabledAlwaysVisibleUnpinnedAfterGeminiWeekly() {
-        for resetAll in [false, true] {
-            let defaults = makeDefaults("ArgonReset-\(resetAll)")
-            let allIDs = preArgonMetricIDs + ["antigravity.argonWeekly"]
-            saveStored(preArgonMetricIDs.map { PlacedWidget(descriptorID: $0) }, forKey: "layout", in: defaults)
-            saveStored(allIDs, forKey: "layout.seededDefaults", in: defaults)
-            saveStored(["antigravity": ["antigravity.argonWeekly"] + preArgonMetricIDs],
-                       forKey: "layout.metricOrderByProvider", in: defaults)
-            defaults.set(["antigravity.argonWeekly"], forKey: "layout.menuBarPins")
-            defaults.set(["antigravity.argonWeekly"], forKey: "layout.expandedMetrics")
-            let store = LayoutStore(registry: .antigravityOnly, defaults: defaults, storageKey: "layout")
-
-            if resetAll {
-                store.resetToDefault()
-            } else {
-                store.resetProvider("antigravity")
-            }
-
-            XCTAssertTrue(store.isMetricEnabled("antigravity.argonWeekly"))
-            XCTAssertFalse(store.expandedMetricIDs.contains("antigravity.argonWeekly"))
-            XCTAssertEqual(store.pinnedMetricIDs, [])
-            XCTAssertEqual(Array(store.orderedSupportedMetrics(for: "antigravity").prefix(3).map(\.id)), [
-                "antigravity.geminiPro", "antigravity.geminiWeekly", "antigravity.argonWeekly"
-            ])
-        }
+        XCTAssertFalse(store.expandedMetricIDs.contains("antigravity.argonWeekly"))
+        XCTAssertEqual(store.orderedSupportedMetrics(for: "antigravity").map(\.id), currentMetricIDs)
     }
 
     // A saved pins key never gains new default pins — asserted above in
@@ -162,7 +122,7 @@ final class AntigravityLayoutTests: XCTestCase {
 
     // MARK: - Fixtures
 
-    private var preArgonMetricIDs: [String] {
+    private var currentMetricIDs: [String] {
         [
             "antigravity.geminiPro", "antigravity.geminiWeekly",
             "antigravity.claude", "antigravity.claudeWeekly", "antigravity.trend",
